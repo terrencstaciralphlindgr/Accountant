@@ -128,15 +128,15 @@ def update_currencies(exid):
 
             else:
                 for code, dic in client.currencies.items():
-                    if code in EXCHANGES[exid]['SUPPORTED_QUOTE'] or \
-                            code in EXCHANGES[exid]['SUPPORTED_BASE']:
+                    if code in EXCHANGES[exid]['supported_quote'] or \
+                            code in EXCHANGES[exid]['supported_base']:
                         update(code, dic)
 
         else:
             client.load_markets(True)
             for code, dic in client.currencies.items():
-                if code in EXCHANGES[exid]['SUPPORTED_QUOTE'] or \
-                        code in EXCHANGES[exid]['SUPPORTED_BASE']:
+                if code in EXCHANGES[exid]['supported_quote'] or \
+                        code in EXCHANGES[exid]['supported_base']:
                     update(code, dic)
 
         log.info('Task complete', exid=exid)
