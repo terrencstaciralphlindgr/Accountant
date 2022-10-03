@@ -4,6 +4,7 @@ from accountant.models import TimestampedModel
 from accountant.methods import datetime_directive_ISO_8601, datetime_directive_ccxt
 from market.models import Exchange, Market, Currency
 from market.methods import get_market
+from account.models import Account
 import structlog
 
 log = structlog.get_logger(__name__)
@@ -16,10 +17,8 @@ class Inventory(TimestampedModel):
 
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='inventory', null=True)
-    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE, related_name='inventory', null=True)
     exchange = models.ForeignKey(Exchange, on_delete=models.CASCADE, related_name='inventory', null=True)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name='inventory', null=True)
-    trade = models.ForeignKey(Trade, on_delete=models.CASCADE, related_name='inventory', null=True)
     instrument = models.IntegerField(choices=Type.choices)
     stock = models.FloatField()
     total_cost = models.FloatField()
