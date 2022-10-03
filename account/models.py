@@ -22,7 +22,6 @@ class Account(TimestampedModel):
         FUTURE = 1, "FUTURE"
 
     name = models.CharField(max_length=20)
-    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE, related_name='account', null=True)
     exchange = models.ForeignKey(Exchange, on_delete=models.CASCADE, related_name='account', null=True)
     quote = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name='account_quote', null=True)
     now_trading, production = [models.BooleanField(default=False, null=True, blank=True) for i in range(2)]
