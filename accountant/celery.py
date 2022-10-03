@@ -74,7 +74,17 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
                     "level": "WARNING",
                     'propagate': False,
                 },
+                "account": {
+                    "handlers": ["console", "flat_line_file", "json_file"],
+                    "level": "INFO",
+                    'propagate': False,
+                },
                 "authentication": {
+                    "handlers": ["console", "flat_line_file", "json_file"],
+                    "level": "INFO",
+                    'propagate': False,
+                },
+                "market": {
                     "handlers": ["console", "flat_line_file", "json_file"],
                     "level": "INFO",
                     'propagate': False,
