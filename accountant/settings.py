@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'profit_n_loss.apps.ProfitNLossConfig',
     'statistic.apps.StatisticConfig',
+    'market.apps.MarketConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
