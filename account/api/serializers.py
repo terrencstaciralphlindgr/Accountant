@@ -4,7 +4,6 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from account.models import Account
 from market.models import Exchange, Currency
-from strategy.models import Strategy
 import structlog
 log = structlog.get_logger(__name__)
 
