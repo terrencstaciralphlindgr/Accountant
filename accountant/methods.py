@@ -5,7 +5,7 @@ import structlog
 log = structlog.get_logger(__name__)
 
 datetime_directive_ISO_8601 = "%Y-%m-%dT%H:%M:%SZ"
-directive_ccxt = '%Y-%m-%dT%H:%M:%S.%fZ'
+datetime_directive_ccxt = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 
 def get_env():
