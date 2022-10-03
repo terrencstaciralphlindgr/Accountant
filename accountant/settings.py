@@ -14,8 +14,8 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS').split()
 
 INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
-    'profit_n_loss.apps.CryptoquantConfig',
-    'statistic.apps.MarketConfig',
+    'profit_n_loss.apps.ProfitNLossConfigConfig',
+    'statistic.apps.StatisticConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
