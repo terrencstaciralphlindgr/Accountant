@@ -13,6 +13,7 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env('ALLOWED_HOSTS').split()
 
 INSTALLED_APPS = [
+    'account.apps.AccountConfig',
     'authentication.apps.AuthenticationConfig',
     'profit_n_loss.apps.ProfitNLossConfig',
     'statistic.apps.StatisticConfig',
