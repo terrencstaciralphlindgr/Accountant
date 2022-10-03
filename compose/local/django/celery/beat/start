@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+rm -f './celerybeat.pid'
+
+# watch only .py files
+watchfiles \
+  --filter python \
+  'celery -A accountant beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler'

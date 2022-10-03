@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -o errexit
+set -o nounset
+
+# watch only .py files
+watchfiles \
+  --filter python \
+  'celery -A accountant worker --loglevel=info --concurrency 4 -Q accountant_queue_1,accountant_queue_2,default'
+
