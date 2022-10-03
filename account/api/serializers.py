@@ -22,13 +22,11 @@ class AccountSerializer(serializers.ModelSerializer):
             id = validated_data['response']['id']
 
             # Select Foreign Keys
-            sname = validated_data['response']['foreign_keys']['strategy_name']
             exid = validated_data['response']['foreign_keys']['exchange_exid']
             code_quote = validated_data['response']['foreign_keys']['code_quote']
 
             del validated_data['response']['foreign_keys']
 
-            validated_data['strategy'] = get_object_or_404(Strategy, name=sname)
             validated_data['exchange'] = get_object_or_404(Exchange, exid=exid)
             validated_data['quote'] = get_object_or_404(Currency, code=code_quote)
 
