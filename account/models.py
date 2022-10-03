@@ -24,7 +24,7 @@ class Account(TimestampedModel):
     name = models.CharField(max_length=20)
     exchange = models.ForeignKey(Exchange, on_delete=models.CASCADE, related_name='account', null=True)
     quote = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name='account_quote', null=True)
-    now_trading, production = [models.BooleanField(default=False, null=True, blank=True) for i in range(2)]
+    production = models.BooleanField(default=False, null=True, blank=True)
     limit_price_tolerance = models.DecimalField(default=0, max_digits=4, decimal_places=3)
     api_key, api_secret = [models.CharField(max_length=100, blank=True) for i in range(2)]
     password = models.CharField(max_length=100, null=True, blank=True)
