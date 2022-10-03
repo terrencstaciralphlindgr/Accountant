@@ -6,6 +6,7 @@ from accountant.methods import get_env
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  # Contains manage.py and PROJECT_ROOT
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))  # Contains settings.py
+
 env = get_env()
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
@@ -14,7 +15,6 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS').split()
 INSTALLED_APPS = [
     'authentication.apps.AuthenticationConfig',
     'profit_n_loss.apps.CryptoquantConfig',
-    'performance.apps.LogicConfig',
     'statistic.apps.MarketConfig',
     'django.contrib.admin',
     'django.contrib.auth',
