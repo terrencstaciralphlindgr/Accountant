@@ -1,5 +1,4 @@
-from rest_framework import viewsets, mixins
-from account.models import Account
+from rest_framework import viewsets
 from account.api.serializers import AccountSerializer
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAdminUser
