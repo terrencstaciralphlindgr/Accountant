@@ -37,10 +37,8 @@ class Inventory(TimestampedModel):
 class AssetPnl(TimestampedModel):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='asset_pnl', null=True)
-    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE, related_name='asset_pnl', null=True)
     exchange = models.ForeignKey(Exchange, on_delete=models.CASCADE, related_name='asset_pnl', null=True)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name='asset_pnl', null=True)
-    trade = models.ForeignKey(Trade, on_delete=models.CASCADE, related_name='asset_pnl', null=True)
     inventory = models.ForeignKey(Inventory, on_delete=models.CASCADE, related_name='asset_pnl', null=True)
     sale_price = models.FloatField()
     sale_proceeds = models.FloatField()
@@ -60,10 +58,8 @@ class AssetPnl(TimestampedModel):
 class ContractPnL(TimestampedModel):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='contract_pnl', null=True)
-    strategy = models.ForeignKey(Strategy, on_delete=models.CASCADE, related_name='contract_pnl', null=True)
     exchange = models.ForeignKey(Exchange, on_delete=models.CASCADE, related_name='contract_pnl', null=True)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name='contract_pnl', null=True)
-    trade = models.ForeignKey(Trade, on_delete=models.CASCADE, related_name='contract_pnl', null=True)
     inventory = models.ForeignKey(Inventory, on_delete=models.CASCADE, related_name='contract_pnl', null=True)
     entry_price = models.FloatField()
     exit_price = models.FloatField()
