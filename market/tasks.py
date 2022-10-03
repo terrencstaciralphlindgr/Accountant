@@ -128,15 +128,15 @@ def update_currencies(exid):
 
             else:
                 for code, dic in client.currencies.items():
-                    if code in bookkeeper.settings.EXCHANGES[exid]['SUPPORTED_QUOTE'] or \
-                            code in bookkeeper.settings.EXCHANGES[exid]['SUPPORTED_BASE']:
+                    if code in EXCHANGES[exid]['SUPPORTED_QUOTE'] or \
+                            code in EXCHANGES[exid]['SUPPORTED_BASE']:
                         update(code, dic)
 
         else:
             client.load_markets(True)
             for code, dic in client.currencies.items():
-                if code in bookkeeper.settings.EXCHANGES[exid]['SUPPORTED_QUOTE'] or \
-                        code in bookkeeper.settings.EXCHANGES[exid]['SUPPORTED_BASE']:
+                if code in EXCHANGES[exid]['SUPPORTED_QUOTE'] or \
+                        code in EXCHANGES[exid]['SUPPORTED_BASE']:
                     update(code, dic)
 
         log.info('Task complete', exid=exid)
@@ -164,8 +164,8 @@ def update_markets(exid):
 
             base, quote = response['base'], response['quote']
 
-            if quote in bookkeeper.settings.EXCHANGES[exid]['SUPPORTED_QUOTE'] and \
-                    base in bookkeeper.settings.EXCHANGES[exid]['SUPPORTED_BASE']:
+            if quote in EXCHANGES[exid]['SUPPORTED_QUOTE'] and \
+                    base in EXCHANGES[exid]['SUPPORTED_BASE']:
 
                 try:
                     Currency.objects.get(exchange=exchange, code=base)
