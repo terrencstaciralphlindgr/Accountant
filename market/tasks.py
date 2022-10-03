@@ -164,8 +164,8 @@ def update_markets(exid):
 
             base, quote = response['base'], response['quote']
 
-            if quote in EXCHANGES[exid]['SUPPORTED_QUOTE'] and \
-                    base in EXCHANGES[exid]['SUPPORTED_BASE']:
+            if quote in EXCHANGES[exid]['supported_quote'] and \
+                    base in EXCHANGES[exid]['supported_base']:
 
                 try:
                     Currency.objects.get(exchange=exchange, code=base)
@@ -178,7 +178,7 @@ def update_markets(exid):
 
                 else:
 
-                    if quote in EXCHANGES[exid]['SUPPORTED_QUOTE']:
+                    if quote in EXCHANGES[exid]['supported_quote']:
 
                         tp = response['type'] if 'type' in response else None
                         swap = response['swap'] if 'swap' in response else None
