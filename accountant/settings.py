@@ -15,7 +15,7 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS').split()
 INSTALLED_APPS = [
     'account.apps.AccountConfig',
     'authentication.apps.AuthenticationConfig',
-    'profit_n_loss.apps.ProfitNLossConfig',
+    'pnl.apps.PnLConfig',
     'statistic.apps.StatisticConfig',
     'market.apps.MarketConfig',
     'django.contrib.admin',
@@ -176,7 +176,7 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
-        'profit_n_loss': {
+        'pnl': {
             'handlers': ['console', 'flat_line_file', 'json_file'],
             'level': 'INFO',
             'propagate': False,

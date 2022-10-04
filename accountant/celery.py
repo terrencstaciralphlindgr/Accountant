@@ -89,7 +89,7 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
                     "level": "INFO",
                     'propagate': False,
                 },
-                "profit_n_loss": {
+                "pnl": {
                     "handlers": ["console", "flat_line_file", "json_file"],
                     "level": "INFO",
                     'propagate': False,
