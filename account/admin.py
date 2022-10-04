@@ -35,6 +35,6 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(Trade)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'account', 'market', 'tradeid', )
-    readonly_fields = ('pk', 'account', 'market', 'tradeid', )
+    list_display = ('pk', 'account', 'order', 'tradeid', )
+    readonly_fields = ('pk', 'account', 'order', 'tradeid', )
     ordering = ('pk',)
