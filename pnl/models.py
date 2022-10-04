@@ -6,7 +6,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from accountant.models import TimestampedModel
 from accountant.methods import datetime_directive_ISO_8601, datetime_directive_ccxt
 from market.models import Exchange, Market, Currency
-from market.methods import get_market
 from account.models import Account
 import structlog
 
