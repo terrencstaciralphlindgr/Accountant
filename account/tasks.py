@@ -23,6 +23,12 @@ def fetch_orders(self, pk):
     if self.request.id:
         log.bind(worker=current_process().index, task=self.request.id[:3])
 
+    # Determine start datetime
+    qs = Order.objects.filter(account=account)
+    start_datetime = qs.latest('datetime') if qs else account.dt_created
+    params = dict(start_datetime=start_datetime)
+
+    log.bind(start_datetime=start_datetime)
     log.info('Fetch orders')
 
     def create_update(dic, wallet=None):
@@ -72,12 +78,12 @@ def fetch_orders(self, pk):
 
             for wallet in wallets:
                 client.options['defaultType'] = wallet
-                response = client.fetchOrders()
+                response = client.fetchOrders(params=params)
                 for dic in response:
                     create_update(dic, wallet=wallet)
 
         else:
-            response = client.fetchOrders()
+            response = client.fetchOrders(params=params)
             for dic in response:
                 create_update(dic)
 
