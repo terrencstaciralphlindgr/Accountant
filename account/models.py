@@ -58,7 +58,7 @@ class Order(TimestampedModel):
     cost = models.FloatField(null=True)
     action = models.CharField(max_length=20, null=True)
     average, price, stop_price = [models.FloatField(null=True, blank=True) for i in range(3)]
-    fee, params, response, event, trades = [models.JSONField(null=True, default=dict) for i in range(5)]
+    fee, trades, fees, info = [models.JSONField(null=True, default=dict) for i in range(4)]
     datetime = models.DateTimeField(null=True)
     timestamp, last_trade_timestamp = [models.BigIntegerField(null=True) for i in range(2)]
 
