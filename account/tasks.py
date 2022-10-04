@@ -43,7 +43,7 @@ def fetch_orders(self, pk):
             type=dic['type'],
         )
 
-        Order.objects.create_or_update(orderid=dic['id'],
+        Order.objects.update_or_create(orderid=dic['id'],
                                        account=account,
                                        exchange=account.exchange,
                                        defaults=defaults
