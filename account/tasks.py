@@ -23,7 +23,7 @@ def fetch_orders(self, pk):
 
     def create_update(dic, wallet=None):
 
-        market = get_market(account.exchange, wallet=wallet, symbol=dic['symbol'])
+        market, flipped = get_market(account.exchange, wallet=wallet, symbol=dic['symbol'])
 
         defaults = dict(
             amount=dic['amount'],
