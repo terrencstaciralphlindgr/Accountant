@@ -28,8 +28,10 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('orderid', 'account', 'market', 'clientid', )
-    readonly_fields = ('orderid', 'account', 'market', 'clientid', )
+    list_display = ('orderid', 'account', 'market', 'clientid', 'status', 'type', 'amount', 'remaining', 'filled',
+                    'side', 'cost', 'average', 'price', 'datetime')
+    readonly_fields = ('orderid', 'account', 'market', 'clientid', 'status', 'type', 'amount', 'remaining', 'filled',
+                    'side', 'cost', 'average', 'price', 'datetime')
     ordering = ('orderid',)
 
 
