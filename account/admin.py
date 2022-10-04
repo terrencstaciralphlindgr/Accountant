@@ -1,5 +1,5 @@
 from django.contrib import admin
-from account.models import Account
+from account.models import Account, Order, Trade
 from account.tasks import fetch_orders, fetch_trades
 
 admin.autodiscover()
@@ -24,3 +24,17 @@ class CustomerAdmin(admin.ModelAdmin):
             fetch_trades.delay(obj.pk)
 
     fetch_trades.short_description = 'Async Fetch Trades'
+
+
+@admin.register(Order)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'account', 'market', 'clientid', )
+    readonly_fields = ('pk', 'account', 'market', 'clientid', )
+    ordering = ('pk',)
+
+
+@admin.register(Trade)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'account', 'market', 'tradeid', )
+    readonly_fields = ('pk', 'account', 'market', 'tradeid', )
+    ordering = ('pk',)
