@@ -26,7 +26,7 @@ def fetch_orders(self, pk):
     # Determine start datetime
     qs = Order.objects.filter(account=account)
     start_datetime = qs.latest('datetime').datetime if qs else account.dt_created
-    params = dict(start_datetime=int(start_datetime.timestamp))
+    params = dict(start_datetime=int(start_datetime.timestamp()))
 
     log.bind(start_datetime=start_datetime)
     log.info('Fetch orders')
