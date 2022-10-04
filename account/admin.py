@@ -10,12 +10,8 @@ admin.site.enable_nav_sidebar = False
 
 @admin.register(Account)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'exchange', 'quote', 'production', 'collateral_ratio',
-                    'leverage', 'limit_price_tolerance', 'trading_mode', 'price_source',)
-    readonly_fields = ('pk', 'name', 'exchange', 'quote', 'production', 'trading_mode',
-                       'price_source',
-                       'collateral_ratio', 'leverage', 'limit_price_tolerance', 'api_key', 'api_secret', 'password',
-                       'response', 'dt_created', 'dt_modified',)
+    list_display = ('pk', 'name', 'exchange', 'quote', )
+    readonly_fields = ('pk', 'name', 'exchange', 'quote', )
     ordering = ('pk',)
     actions = ['fetch_balance', 'fetch_position', ]
 
