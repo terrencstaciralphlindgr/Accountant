@@ -28,13 +28,13 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'account', 'market', 'clientid', )
-    readonly_fields = ('pk', 'account', 'market', 'clientid', )
-    ordering = ('pk',)
+    list_display = ('orderid', 'account', 'market', 'clientid', )
+    readonly_fields = ('orderid', 'account', 'market', 'clientid', )
+    ordering = ('orderid',)
 
 
 @admin.register(Trade)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'account', 'order', 'tradeid', )
-    readonly_fields = ('pk', 'account', 'order', 'tradeid', )
-    ordering = ('pk',)
+    list_display = ('tradeid', 'account', 'order', )
+    readonly_fields = ('tradeid', 'account', 'order', )
+    ordering = ('tradeid',)
