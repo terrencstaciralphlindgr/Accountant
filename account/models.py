@@ -50,14 +50,12 @@ class Order(TimestampedModel):
     market = models.ForeignKey(Market, on_delete=models.CASCADE, related_name='order', null=True, db_index=True)
     orderid = models.CharField(max_length=150, null=True, db_index=True)
     clientid = models.CharField(max_length=150, null=True, db_index=True)
-    status, type, time_in_force = [models.CharField(max_length=150, null=True) for i in range(3)]
+    status, type = [models.CharField(max_length=150, null=True) for i in range(2)]
     amount, remaining = [models.FloatField(max_length=10, null=True) for i in range(2)]
     filled = models.FloatField(max_length=10, null=True, default=0)
-    post_only = models.BooleanField(null=True, blank=True)
     side = models.CharField(max_length=10, null=True, choices=(('buy', 'buy'), ('sell', 'sell')))
     cost = models.FloatField(null=True)
-    action = models.CharField(max_length=20, null=True)
-    average, price, stop_price = [models.FloatField(null=True, blank=True) for i in range(3)]
+    average, price = [models.FloatField(null=True, blank=True) for i in range(2)]
     fee, trades, fees, info = [models.JSONField(null=True, default=dict) for i in range(4)]
     datetime = models.DateTimeField(null=True)
     timestamp, last_trade_timestamp = [models.BigIntegerField(null=True) for i in range(2)]
