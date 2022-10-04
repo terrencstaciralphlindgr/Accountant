@@ -32,11 +32,11 @@ class CustomerAdmin(admin.ModelAdmin):
                     'side', 'cost', 'average', 'price', 'datetime')
     readonly_fields = ('orderid', 'account', 'market', 'clientid', 'status', 'type', 'amount', 'remaining', 'filled',
                        'side', 'cost', 'average', 'price', 'datetime')
-    ordering = ('orderid',)
+    ordering = ('-datetime',)
 
 
 @admin.register(Trade)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('tradeid', 'account', 'order',)
     readonly_fields = ('tradeid', 'account', 'order',)
-    ordering = ('tradeid',)
+    ordering = ('-datetime',)
