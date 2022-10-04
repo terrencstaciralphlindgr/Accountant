@@ -1,9 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 from billiard.process import current_process
-from pprint import pprint
 from accountant.celery import app
+from account.models import Account, Order, Trade
 from market.methods import get_market
-from account.models import Account
 import structlog
 import ccxt
 
@@ -22,8 +21,33 @@ def fetch_orders(self, pk):
 
     log.info('Fetch orders')
 
-    def create_update_delete(wallet=None):
-        pass
+    def create_update(dic, wallet=None):
+
+        market = get_market(account.exchange, wallet=wallet, symbol=dic['symbol'])
+
+        defaults = dict(
+            amount=dic['amount'],
+            average=dic['average'],
+            clientid=dic['clientOrderId'],
+            cost=dic['cost'],
+            fee=dic['fee'],
+            fees=dic['fees'],
+            filled=dic['filled'],
+            info=dic['info'],
+            market=market,
+            price=dic['price'],
+            remaining=dic['remaining'],
+            side=dic['side'],
+            status=dic['status'],
+            trades=dic['trades'],
+            type=dic['type'],
+        )
+
+        Order.objects.create_or_update(orderid=dic['id'],
+                                       account=account,
+                                       exchange=account.exchange,
+                                       defaults=defaults
+                                       )
 
     try:
 
@@ -34,22 +58,24 @@ def fetch_orders(self, pk):
             for wallet in wallets:
                 client.options['defaultType'] = wallet
                 response = client.fetchOrders()
-                create_update_delete(wallet=wallet)
+                for dic in response:
+                    create_update(dic, wallet=wallet)
 
         else:
             response = client.fetchOrders()
-            create_update_delete()
+            for dic in response:
+                create_update(dic)
 
     except ccxt.RequestTimeout as e:
-        log.error('Timeout while fetching positions...')
+        log.error('Fetch orders failure', cause='timeout')
         raise self.retry(exc=e)
 
     except ccxt.NetworkError as e:
-        log.error('Network error while fetching positions...')
+        log.error('Fetch orders failure', cause=str(e))
         raise self.retry(exc=e)
 
     except Exception as e:
-        log.exception('Fetch orders error', cause=str(e))
+        log.exception('Fetch orders failure', cause=str(e))
 
     else:
         log.info('Fetch orders complete')

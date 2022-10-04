@@ -9,7 +9,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MaxValueValidator, MinValueValidator
 from accountant.models import TimestampedModel
 from accountant.methods import datetime_directive_ccxt
-from market.models import Market, Exchange, Currency 
+from market.models import Market, Exchange, Currency
 import structlog
 
 log = structlog.get_logger(__name__)

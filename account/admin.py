@@ -15,7 +15,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
     def fetch_orders(self, request, queryset):
         for obj in queryset:
-            fetch_trades.delay(obj.pk)
+            fetch_orders.delay(obj.pk)
 
     fetch_orders.short_description = 'Async Fetch Orders'
 
