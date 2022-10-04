@@ -22,7 +22,8 @@ def fetch_orders(self, pk):
     log.info('Fetch orders')
 
     def create_update(dic, wallet=None):
-
+        
+        print(account.exchange, dic['symbol'])
         market, flipped = get_market(account.exchange, wallet=wallet, symbol=dic['symbol'])
 
         defaults = dict(
