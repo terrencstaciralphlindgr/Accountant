@@ -31,7 +31,7 @@ def fetch_orders(self, pk):
             pass
 
         else:
-            
+
             defaults = dict(
                 amount=dic['amount'],
                 average=dic['average'],
