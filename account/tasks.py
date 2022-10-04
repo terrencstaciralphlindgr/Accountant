@@ -45,7 +45,6 @@ def fetch_orders(self, pk):
 
         Order.objects.update_or_create(orderid=dic['id'],
                                        account=account,
-                                       exchange=account.exchange,
                                        defaults=defaults
                                        )
 
