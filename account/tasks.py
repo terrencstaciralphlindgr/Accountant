@@ -1,6 +1,9 @@
 from __future__ import absolute_import, unicode_literals
+import pytz
+from datetime import datetime
 from billiard.process import current_process
 from django.core.exceptions import ObjectDoesNotExist
+from accountant.methods import datetime_directive_ccxt
 from accountant.celery import app
 from account.models import Account, Order, Trade
 from market.models import Market
@@ -32,11 +35,17 @@ def fetch_orders(self, pk):
 
         else:
 
+            if dic['datetime']:
+                dt = datetime.strptime(dic['datetime'], datetime_directive_ccxt).replace(tzinfo=pytz.UTC)
+            else:
+                dt = None
+
             defaults = dict(
                 amount=dic['amount'],
                 average=dic['average'],
                 clientid=dic['clientOrderId'],
                 cost=dic['cost'],
+                datetime=dt,
                 fee=dic['fee'],
                 fees=dic['fees'],
                 filled=dic['filled'],

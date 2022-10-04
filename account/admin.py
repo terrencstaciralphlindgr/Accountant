@@ -8,8 +8,8 @@ admin.site.enable_nav_sidebar = False
 
 @admin.register(Account)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'exchange', 'quote', )
-    readonly_fields = ('pk', 'name', 'exchange', 'quote', )
+    list_display = ('pk', 'name', 'exchange', 'quote',)
+    readonly_fields = ('pk', 'name', 'exchange', 'quote',)
     ordering = ('pk',)
     actions = ['fetch_orders', 'fetch_trades', ]
 
@@ -31,12 +31,12 @@ class CustomerAdmin(admin.ModelAdmin):
     list_display = ('orderid', 'account', 'market', 'clientid', 'status', 'type', 'amount', 'remaining', 'filled',
                     'side', 'cost', 'average', 'price', 'datetime')
     readonly_fields = ('orderid', 'account', 'market', 'clientid', 'status', 'type', 'amount', 'remaining', 'filled',
-                    'side', 'cost', 'average', 'price', 'datetime')
+                       'side', 'cost', 'average', 'price', 'datetime')
     ordering = ('orderid',)
 
 
 @admin.register(Trade)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('tradeid', 'account', 'order', )
-    readonly_fields = ('tradeid', 'account', 'order', )
+    list_display = ('tradeid', 'account', 'order',)
+    readonly_fields = ('tradeid', 'account', 'order',)
     ordering = ('tradeid',)
