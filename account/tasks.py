@@ -1,8 +1,9 @@
 from __future__ import absolute_import, unicode_literals
 from billiard.process import current_process
+from django.core.exceptions import ObjectDoesNotExist
 from accountant.celery import app
 from account.models import Account, Order, Trade
-from market.methods import get_market
+from market.models import Market
 import structlog
 import ccxt
 
@@ -22,32 +23,37 @@ def fetch_orders(self, pk):
     log.info('Fetch orders')
 
     def create_update(dic, wallet=None):
-        
-        print(account.exchange, dic['symbol'])
-        market, flipped = get_market(account.exchange, wallet=wallet, symbol=dic['symbol'])
 
-        defaults = dict(
-            amount=dic['amount'],
-            average=dic['average'],
-            clientid=dic['clientOrderId'],
-            cost=dic['cost'],
-            fee=dic['fee'],
-            fees=dic['fees'],
-            filled=dic['filled'],
-            info=dic['info'],
-            market=market,
-            price=dic['price'],
-            remaining=dic['remaining'],
-            side=dic['side'],
-            status=dic['status'],
-            trades=dic['trades'],
-            type=dic['type'],
-        )
+        try:
+            market = Market.objects.get(exchange=account.exchange, symbol=dic['symbol'])
 
-        Order.objects.update_or_create(orderid=dic['id'],
-                                       account=account,
-                                       defaults=defaults
-                                       )
+        except ObjectDoesNotExist:
+            pass
+
+        else:
+            
+            defaults = dict(
+                amount=dic['amount'],
+                average=dic['average'],
+                clientid=dic['clientOrderId'],
+                cost=dic['cost'],
+                fee=dic['fee'],
+                fees=dic['fees'],
+                filled=dic['filled'],
+                info=dic['info'],
+                market=market,
+                price=dic['price'],
+                remaining=dic['remaining'],
+                side=dic['side'],
+                status=dic['status'],
+                trades=dic['trades'],
+                type=dic['type'],
+            )
+
+            Order.objects.update_or_create(orderid=dic['id'],
+                                           account=account,
+                                           defaults=defaults
+                                           )
 
     try:
 
