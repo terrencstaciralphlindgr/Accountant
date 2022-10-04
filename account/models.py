@@ -10,7 +10,6 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from accountant.models import TimestampedModel
 from accountant.methods import datetime_directive_ccxt
 from market.models import Market, Exchange, Currency
-from pnl.models import Inventory, AssetPnl, ContractPnL
 import structlog
 
 log = structlog.get_logger(__name__)
@@ -138,6 +137,7 @@ class Trade(TimestampedModel):
         total cost and average cost (after a new trade)
         """
 
+        from pnl.models import Inventory
         market = self.order.market
 
         query = dict(
@@ -256,6 +256,7 @@ class Trade(TimestampedModel):
         Create new AssetPnL object after an asset is sold.
         """
 
+        from pnl.models import Inventory, AssetPnl
         market = self.order.market
 
         if self.order.side == 'sell':
@@ -299,6 +300,7 @@ class Trade(TimestampedModel):
         Create new ContractPnL object after a position is close
         """
 
+        from pnl.models import Inventory, ContractPnL
         market = self.order.market
 
         if self.order.action in ['close_long', 'close_short']:
