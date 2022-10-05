@@ -12,7 +12,7 @@ from market.models import Exchange, Market, Currency
 log = structlog.get_logger(__name__)
 
 
-@app.task(name='PnL_____Update_asset_inventory')
+@app.task(bind=True, name='PnL_____Update_asset_inventory')
 def update_asset_inventory(self, pk):
     """
     Update inventory
