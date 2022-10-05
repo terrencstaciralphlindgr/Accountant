@@ -138,6 +138,8 @@ def fetch_trades(self, pk):
             info=dic['info'],
             price=dic['price'],
             side=dic['side'],
+            taker_or_maker=dic['takerOrMaker'],
+            timestamp=dic['timestamp'],
             type=dic['type']
         )
 
