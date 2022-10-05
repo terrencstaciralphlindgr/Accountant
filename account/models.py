@@ -112,11 +112,9 @@ class Trade(TimestampedModel):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='trade', blank=True, null=True)
     tradeid = models.CharField(max_length=200)
     symbol = models.CharField(max_length=20)
-    side = models.CharField(max_length=20)
-    type = models.CharField(max_length=20)
+    side, type, taker_or_maker = [models.CharField(max_length=20, blank=True, null=True) for i in range(3)]
     datetime = models.DateTimeField()
     timestamp = models.BigIntegerField()
-    taker_or_maker = models.CharField(max_length=20, blank=True, null=True)
     price = models.FloatField()
     amount = models.FloatField()
     cost = models.FloatField()
