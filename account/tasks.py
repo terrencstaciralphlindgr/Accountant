@@ -130,7 +130,6 @@ def fetch_trades(self, pk):
 
         defaults = dict(
             amount=dic['amount'],
-            average=dic['average'],
             cost=dic['cost'],
             datetime=dt,
             fee=dic['fee'],
