@@ -134,7 +134,6 @@ def fetch_trades(self, pk):
             datetime=dt,
             fee=dic['fee'],
             fees=dic['fees'],
-            filled=dic['filled'],
             info=dic['info'],
             price=dic['price'],
             remaining=dic['remaining'],
