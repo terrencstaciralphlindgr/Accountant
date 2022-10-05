@@ -34,7 +34,7 @@ def update_asset_inventory(self, pk):
     # Select trades and iterate
     trades = Trade.objects.filter(account=account,
                                   order__market__type='spot',
-                                  datetime__gte=start_datetime
+                                  datetime__gt=start_datetime
                                   ).order_by('datetime')
     if trades.exists():
 
@@ -120,7 +120,7 @@ def update_contract_inventory(self, pk):
     # Select trades and iterate
     trades = Trade.objects.filter(account=account,
                                   order__market__type='perpetual',
-                                  datetime__gte=start_datetime
+                                  datetime__gt=start_datetime
                                   ).order_by('datetime')
     if trades.exists():
 
