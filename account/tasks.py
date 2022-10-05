@@ -127,7 +127,7 @@ def fetch_trades(self, pk):
             dt = datetime.strptime(dic['datetime'], datetime_directive_ccxt).replace(tzinfo=pytz.UTC)
         else:
             dt = None
-        
+
         pprint(dic)
 
         defaults = dict(
