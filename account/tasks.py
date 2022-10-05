@@ -117,7 +117,6 @@ def fetch_trades(self, pk):
     qs = Trade.objects.filter(account=account)
     start_datetime = qs.latest('datetime').datetime if qs else account.dt_created
     start_datetime = int(start_datetime.timestamp())
-    params = dict(start_datetime=start_datetime)
 
     log.bind(start_datetime=start_datetime)
     log.info('Fetch trades')
@@ -171,17 +170,18 @@ def fetch_trades(self, pk):
 
             for wallet in wallets:
                 client.options['defaultType'] = wallet
-                symbol = (qs.filter(wallet=wallet))
-
-                response = client.fetchTrades(symbol, params=params)
-                for dic in response:
-                    create_trade(dic)
+                symbols = (qs.filter(wallet=wallet))
+                for symbol in symbols:
+                    response = client.fetchTrades(symbol, since=start_datetime)
+                    for dic in response:
+                        create_trade(dic)
 
         else:
-            symbol = list(qs)
-            response = client.fetchTrades(symbol, params=params)
-            for dic in response:
-                create_trade(dic)
+            symbols = list(qs)
+            for symbol in symbols:
+                response = client.fetchTrades(symbol, since=start_datetime)
+                for dic in response:
+                    create_trade(dic)
 
     except ccxt.RequestTimeout as e:
         log.error('Fetch trades failure', cause='timeout')
