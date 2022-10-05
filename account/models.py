@@ -118,7 +118,7 @@ class Trade(TimestampedModel):
     price = models.FloatField()
     amount = models.FloatField()
     cost = models.FloatField()
-    fee, info = [models.JSONField(default=dict, null=True, blank=True) for i in range(2)]
+    fee, fees, info = [models.JSONField(default=dict, null=True, blank=True) for i in range(3)]
 
     class Meta:
         verbose_name_plural = "Trades"

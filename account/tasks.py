@@ -130,6 +130,9 @@ def fetch_trades(self, pk):
                 order = None
         else:
             order = None
+        
+        # if dic['fees']:
+        #     fees = dict(fees=dic['fees'])
 
         if dic['datetime']:
             dt = datetime.strptime(dic['datetime'], datetime_directive_ccxt).replace(tzinfo=pytz.UTC)
@@ -141,6 +144,7 @@ def fetch_trades(self, pk):
             cost=dic['cost'],
             datetime=dt,
             fee=dic['fee'],
+            fees=fees,
             info=dic['info'],
             order=order,
             price=dic['price'],
