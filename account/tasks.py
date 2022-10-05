@@ -127,10 +127,10 @@ def fetch_trades(self, pk):
         pprint(dic)
 
         try:
-            order = Order.objects.get(account=account, orderid=dic['orderid'])
+            order = Order.objects.get(account=account, orderid=dic['id'])
 
         except ObjectDoesNotExist:
-            log.error('Fetch trades failure', cause='order not found', orderid=dic['orderid'])
+            log.error('Fetch trades failure', cause='order not found', orderid=dic['id'])
 
         else:
 
