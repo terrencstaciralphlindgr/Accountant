@@ -28,8 +28,8 @@ def update_asset_inventory(self, pk):
     else:
         start_datetime = account.dt_created
 
-    dt_start = start_datetime.strftime(datetime_directive_ISO_8601)
-    log.info('Update assets inventory', start_datetime=dt_start)
+    log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
+    log.info('Update assets inventory')
 
     # Select trades and iterate
     trades = Trade.objects.filter(account=account,
@@ -96,6 +96,12 @@ def update_asset_inventory(self, pk):
 
             entry.save()
 
+    else:
+        log.info('Update assets inventory no required')
+        return
+
+    log.info('Update assets inventory complete')
+
 
 @app.task(bind=True, name='PnL_____Update_contract_inventory')
 def update_contract_inventory(self, pk):
@@ -114,8 +120,8 @@ def update_contract_inventory(self, pk):
     else:
         start_datetime = account.dt_created
 
-    dt_start = start_datetime.strftime(datetime_directive_ISO_8601)
-    log.info('Update contracts inventory', start_datetime=dt_start)
+    log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
+    log.info('Update contracts inventory')
 
     # Select trades and iterate
     trades = Trade.objects.filter(account=account,
@@ -214,7 +220,7 @@ def update_contract_inventory(self, pk):
             entry.save()
 
     else:
-        log.info('Update contracts inventory no required', start_datetime=dt_start)
+        log.info('Update contracts inventory no required')
         return
 
-    log.info('Update contracts inventory complete', start_datetime=dt_start)
+    log.info('Update contracts inventory complete')
