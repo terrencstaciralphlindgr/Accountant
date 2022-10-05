@@ -8,7 +8,7 @@ admin.site.enable_nav_sidebar = False
 
 @admin.register(Account)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'name', 'exchange', 'quote',)
+    list_display = ('name', 'exchange', 'quote',)
     readonly_fields = ('pk', 'name', 'exchange', 'quote',)
     ordering = ('pk',)
     actions = ['fetch_orders', 'fetch_trades', ]
