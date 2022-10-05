@@ -1,7 +1,7 @@
 from django.contrib import admin
 from account.models import Account, Order, Trade
 from account.tasks import fetch_orders, fetch_trades
-from pnl.tasks import update_asset_inventory
+from pnl.tasks import update_asset_inventory, update_contract_inventory
 
 admin.autodiscover()
 admin.site.enable_nav_sidebar = False
@@ -18,19 +18,25 @@ class CustomerAdmin(admin.ModelAdmin):
         for obj in queryset:
             fetch_orders.delay(obj.pk)
 
-    fetch_orders.short_description = 'Async fetch orders'
+    fetch_orders.short_description = 'Fetch orders'
 
     def fetch_trades(self, request, queryset):
         for obj in queryset:
             fetch_trades.delay(obj.pk)
 
-    fetch_trades.short_description = 'Async fetch trades'
+    fetch_trades.short_description = 'Fetch trades'
 
     def asset_inventory(self, request, queryset):
         for obj in queryset:
             update_asset_inventory.delay(obj.pk)
 
-    asset_inventory.short_description = 'Async update asset inventory'
+    asset_inventory.short_description = 'Update inventory of assets'
+
+    def contract_inventory(self, request, queryset):
+        for obj in queryset:
+            update_contract_inventory.delay(obj.pk)
+
+    contract_inventory.short_description = 'Update inventory of contracts'
 
 
 @admin.register(Order)
