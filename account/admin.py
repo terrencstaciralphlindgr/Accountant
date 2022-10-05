@@ -12,7 +12,7 @@ class CustomerAdmin(admin.ModelAdmin):
     list_display = ('name', 'exchange', 'quote',)
     readonly_fields = ('pk', 'name', 'exchange', 'quote',)
     ordering = ('pk',)
-    actions = ['fetch_orders', 'fetch_trades', 'asset_inventory']
+    actions = ['fetch_orders', 'fetch_trades', 'asset_inventory', 'contract_inventory']
 
     def fetch_orders(self, request, queryset):
         for obj in queryset:
