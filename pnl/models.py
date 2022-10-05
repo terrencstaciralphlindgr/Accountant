@@ -19,11 +19,11 @@ class Inventory(TimestampedModel):
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name='inventory', null=True)
     trade = models.ForeignKey(Trade, on_delete=models.CASCADE, related_name='inventory', null=True)
     instrument = models.IntegerField(choices=Type.choices)
-    stock = models.FloatField(default=0)
-    total_cost = models.FloatField(default=0)
-    average_cost = models.FloatField(default=0)
-    realized_pnl = models.FloatField()
-    unrealized_pnl = models.FloatField()
+    stock = models.FloatField(null=True)
+    total_cost = models.FloatField(null=True)
+    average_cost = models.FloatField(null=True)
+    realized_pnl = models.FloatField(null=True)
+    unrealized_pnl = models.FloatField(null=True)
     datetime = models.DateTimeField(null=True)
 
     class Meta:
