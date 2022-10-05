@@ -139,7 +139,8 @@ LOGGING = {
             '()': structlog.stdlib.ProcessorFormatter,
             'processor': structlog.processors.KeyValueRenderer(key_order=['level',
                                                                           'logger',
-                                                                          'event'],  # 'timestamp',
+                                                                          'event',
+                                                                          'timestamp'],
                                                                sort_keys=False
                                                                ),
         },
@@ -197,7 +198,7 @@ LOGGING = {
 structlog.configure(
     processors=[
         structlog.stdlib.filter_by_level,
-        # structlog.processors.TimeStamper(fmt='iso'), # (fmt='%Y-%m-%d %H:%M:%S.%f'),  # (fmt='iso'),
+        structlog.processors.TimeStamper(fmt='%Y-%m-%d %H:%M:%S.%f'),  # (fmt='iso'),
         structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
         structlog.stdlib.PositionalArgumentsFormatter(),

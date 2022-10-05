@@ -6,6 +6,7 @@ from kombu import Queue
 import logging
 import structlog
 from django_structlog.celery.steps import DjangoStructLogInitStep
+import django_structlog.celery.signals
 from django_structlog.signals import bind_extra_request_metadata
 from django.dispatch import receiver
 from celery.signals import setup_logging
@@ -48,7 +49,8 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
                     "()": structlog.stdlib.ProcessorFormatter,
                     "processor": structlog.processors.KeyValueRenderer(sort_keys=False,
                                                                        key_order=['level',
-                                                                                  'logger',  # 'timestamp',
+                                                                                  'logger',
+                                                                                  'timestamp',
                                                                                   'event']),
                 },
             },
@@ -106,7 +108,7 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
     structlog.configure(
         processors=[
             structlog.stdlib.filter_by_level,
-            # structlog.processors.TimeStamper(fmt="iso"), # (fmt="%Y-%m-%d %H:%M:%S.%f"),  # (fmt="iso"),
+            structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S.%f"),  # (fmt="iso"),
             structlog.stdlib.add_logger_name,
             structlog.stdlib.add_log_level,
             structlog.stdlib.PositionalArgumentsFormatter(),
@@ -126,4 +128,9 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
 @receiver(bind_extra_request_metadata)
 def bind_unbind_metadata(request, logger, **kwargs):
     logger.unbind('request_id', 'ip', 'user_id')
+
+
+@receiver(signals.bind_extra_task_metadata)
+def receiver_bind_extra_request_metadata(sender, signal, task=None, logger=None, **kwargs):
+    logger.unbind('task_id')
 

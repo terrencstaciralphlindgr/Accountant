@@ -16,7 +16,7 @@ log = structlog.get_logger(__name__)
 @app.task(bind=True, name='Account______Fetch orders')
 def fetch_orders(self, pk):
     """
-    Fetch an account asset balance
+    Fetch orders history
     """
     account = Account.objects.get(pk=pk)
     log.bind(account=account.name)
@@ -32,10 +32,10 @@ def fetch_orders(self, pk):
     log.bind(start_datetime=start_datetime)
     log.info('Fetch orders')
 
-    def create_update(dic, wallet=None):
+    def create_update_order(dic, wallet=None):
 
         try:
-            market = Market.objects.get(exchange=account.exchange, symbol=dic['symbol'])
+            market = Market.objects.get(exchange=account.exchange, wallet=wallet, symbol=dic['symbol'])
 
         except ObjectDoesNotExist:
             pass
@@ -81,12 +81,12 @@ def fetch_orders(self, pk):
                 client.options['defaultType'] = wallet
                 response = client.fetchOrders(params=params)
                 for dic in response:
-                    create_update(dic, wallet=wallet)
+                    create_update_order(dic, wallet=wallet)
 
         else:
             response = client.fetchOrders(params=params)
             for dic in response:
-                create_update(dic)
+                create_update_order(dic)
 
     except ccxt.RequestTimeout as e:
         log.error('Fetch orders failure', cause='timeout')
@@ -106,15 +106,60 @@ def fetch_orders(self, pk):
 @app.task(bind=True, name='Account______Fetch trades')
 def fetch_trades(self, pk):
     """
-    Fetch trades
+    Fetch trades history
     """
     account = Account.objects.get(pk=pk)
     log.bind(account=account.name)
     if self.request.id:
         log.bind(worker=current_process().index, task=self.request.id[:3])
 
-    def create_update_delete(wallet=None):
-        pass
+    # Determine start datetime
+    qs = Trade.objects.filter(account=account)
+    start_datetime = qs.latest('datetime').datetime if qs else account.dt_created
+    start_datetime = int(start_datetime.timestamp())
+    params = dict(start_datetime=start_datetime)
+
+    log.bind(start_datetime=start_datetime)
+    log.info('Fetch trades')
+
+    def create_trade(dic):
+
+        try:
+            order = Order.objects.get(account=account, orderid=dic['orderid'])
+
+        except ObjectDoesNotExist:
+            log.error('Fetch trades failure', cause='order not found', orderid=dic['orderid'])
+
+        else:
+
+            if dic['datetime']:
+                dt = datetime.strptime(dic['datetime'], datetime_directive_ccxt).replace(tzinfo=pytz.UTC)
+            else:
+                dt = None
+
+            defaults = dict(
+                amount=dic['amount'],
+                average=dic['average'],
+                clientid=dic['clientOrderId'],
+                cost=dic['cost'],
+                datetime=dt,
+                fee=dic['fee'],
+                fees=dic['fees'],
+                filled=dic['filled'],
+                info=dic['info'],
+                order=order,
+                price=dic['price'],
+                remaining=dic['remaining'],
+                side=dic['side'],
+                status=dic['status'],
+                trades=dic['trades'],
+                type=dic['type'],
+            )
+
+            Order.objects.update_or_create(orderid=dic['id'],
+                                           account=account,
+                                           defaults=defaults
+                                           )
 
     try:
 
@@ -124,23 +169,25 @@ def fetch_trades(self, pk):
 
             for wallet in wallets:
                 client.options['defaultType'] = wallet
-                response = client.fetchTrades()
-                create_update_delete(wallet=wallet)
+                response = client.fetchTrades(params=params)
+                for dic in response:
+                    create_trade(dic, wallet=wallet)
 
         else:
-            response = client.fetchTrades()
-            create_update_delete()
+            response = client.fetchTrades(params=params)
+            for dic in response:
+                create_trade(dic)
 
     except ccxt.RequestTimeout as e:
-        log.error('Timeout while fetching trades...')
+        log.error('Fetch trades failure', cause='timeout')
         raise self.retry(exc=e)
 
     except ccxt.NetworkError as e:
-        log.error('Network error while fetching trades...')
+        log.error('Fetch trades failure', cause=str(e))
         raise self.retry(exc=e)
 
     except Exception as e:
-        log.exception('Fetch trades error', cause=str(e))
+        log.exception('Fetch trades failure', cause=str(e))
 
     else:
         log.info('Fetch trades complete')
