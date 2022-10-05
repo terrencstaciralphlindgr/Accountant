@@ -24,7 +24,7 @@ class Inventory(TimestampedModel):
     average_cost = models.FloatField(default=0)
     realized_pnl = models.FloatField()
     unrealized_pnl = models.FloatField()
-    datetime = models.DateTimeField()
+    datetime = models.DateTimeField(null=True)
 
     class Meta:
         verbose_name_plural = "Inventory"
