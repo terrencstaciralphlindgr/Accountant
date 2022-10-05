@@ -1,9 +1,8 @@
 from __future__ import absolute_import, unicode_literals
-from _datetime import datetime, timezone
 import structlog
 from billiard.process import current_process
-from django.core.exceptions import ObjectDoesNotExist
 from account.models import Account, Trade
+from accountant.methods import datetime_directive_ISO_8601
 from accountant.celery import app
 from pnl.models import Inventory
 
@@ -29,7 +28,8 @@ def update_asset_inventory(self, pk):
     else:
         start_datetime = account.dt_created
 
-    log.info('Update assets inventory', start_datetime=start_datetime)
+    dt_start = start_datetime.strftime(datetime_directive_ISO_8601)
+    log.info('Update assets inventory', start_datetime=dt_start)
 
     # Select trades and iterate
     trades = Trade.objects.filter(account=account,
@@ -114,7 +114,8 @@ def update_contract_inventory(self, pk):
     else:
         start_datetime = account.dt_created
 
-    log.info('Update contracts inventory', start_datetime=start_datetime)
+    dt_start = start_datetime.strftime(datetime_directive_ISO_8601)
+    log.info('Update contracts inventory', start_datetime=dt_start)
 
     # Select trades and iterate
     trades = Trade.objects.filter(account=account,
@@ -213,7 +214,7 @@ def update_contract_inventory(self, pk):
             entry.save()
 
     else:
-        log.info('Update contracts inventory no required', start_datetime=start_datetime)
+        log.info('Update contracts inventory no required', start_datetime=dt_start)
         return
 
-    log.info('Update contracts inventory complete', start_datetime=start_datetime)
+    log.info('Update contracts inventory complete', start_datetime=dt_start)
