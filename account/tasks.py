@@ -173,13 +173,13 @@ def fetch_trades(self, pk):
                 client.options['defaultType'] = wallet
                 symbol = (qs.filter(wallet=wallet))
 
-                response = client.fetchTrades(symbol=symbol, params=params)
+                response = client.fetchTrades(symbol, params=params)
                 for dic in response:
                     create_trade(dic)
 
         else:
             symbol = list(qs)
-            response = client.fetchTrades(symbol=symbol, params=params)
+            response = client.fetchTrades(symbol, params=params)
             for dic in response:
                 create_trade(dic)
 
