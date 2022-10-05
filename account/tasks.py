@@ -137,7 +137,7 @@ def fetch_trades(self, pk):
             dt = None
 
         pprint(dic)
-        
+
         defaults = dict(
             amount=dic['amount'],
             cost=dic['cost'],

@@ -17,13 +17,13 @@ class CustomerAdmin(admin.ModelAdmin):
         for obj in queryset:
             fetch_orders.delay(obj.pk)
 
-    fetch_orders.short_description = 'Async Fetch Orders'
+    fetch_orders.short_description = 'Async fetch orders'
 
     def fetch_trades(self, request, queryset):
         for obj in queryset:
             fetch_trades.delay(obj.pk)
 
-    fetch_trades.short_description = 'Async Fetch Trades'
+    fetch_trades.short_description = 'Async fetch trades'
 
 
 @admin.register(Order)
