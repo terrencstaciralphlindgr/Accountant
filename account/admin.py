@@ -33,6 +33,10 @@ class CustomerAdmin(admin.ModelAdmin):
     readonly_fields = ('orderid', 'account', 'market', 'clientid', 'status', 'type', 'amount', 'remaining', 'filled',
                        'side', 'cost', 'average', 'price', 'datetime')
     ordering = ('-datetime',)
+    list_filter = (
+        ('account', admin.RelatedOnlyFieldListFilter),
+        ('market', admin.RelatedOnlyFieldListFilter)
+    )
 
 
 @admin.register(Trade)
@@ -41,3 +45,7 @@ class CustomerAdmin(admin.ModelAdmin):
     readonly_fields = ('tradeid', 'id', 'account', 'order', 'symbol', 'side', 'type', 'taker_or_maker', 'price',
                        'amount', 'cost', 'datetime', 'timestamp', 'fee', 'info', )
     ordering = ('-datetime',)
+    list_filter = (
+        ('account', admin.RelatedOnlyFieldListFilter),
+        'symbol', 'side', 'taker_or_maker', 'type',
+    )
