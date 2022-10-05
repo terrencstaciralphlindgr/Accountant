@@ -15,7 +15,7 @@ log = structlog.get_logger(__name__)
 @app.task(bind=True, name='PnL_____Update_asset_inventory')
 def update_asset_inventory(self, pk):
     """
-    Update inventory
+    Update asset inventory
     """
     account = Account.objects.get(pk=pk)
     log.bind(account=account.name)
@@ -29,7 +29,7 @@ def update_asset_inventory(self, pk):
     else:
         start_datetime = account.dt_created
 
-    log.info('Update inventory', start_datetime=start_datetime)
+    log.info('Update assets inventory', start_datetime=start_datetime)
 
     # Select trades and iterate
     trades = Trade.objects.filter(account=account,
@@ -63,7 +63,7 @@ def update_asset_inventory(self, pk):
             else:
                 prev_stock, prev_total_cost, prev_average_cost = [0 for i in range(3)]
 
-            # Determine new stock, total and average costs
+            # Determine stock, total and average costs
 
             if trade.side == 'buy':
                 entry.stock = prev_stock + trade.amount
@@ -95,3 +95,125 @@ def update_asset_inventory(self, pk):
                 entry.unrealized_pnl = stock_value_current_price - stock_value_purchase_price
 
             entry.save()
+
+
+@app.task(bind=True, name='PnL_____Update_contract_inventory')
+def update_contract_inventory(self, pk):
+    """
+    Update contract inventory
+    """
+    account = Account.objects.get(pk=pk)
+    log.bind(account=account.name)
+    if self.request.id:
+        log.bind(worker=current_process().index, task=self.request.id[:3])
+
+    # Determine start datetime
+    entries = Inventory.objects.filter(account=account, instrument=1)
+    if entries.exists():
+        start_datetime = entries.latest('datetime').datetime
+    else:
+        start_datetime = account.dt_created
+
+    log.info('Update contracts inventory', start_datetime=start_datetime)
+
+    # Select trades and iterate
+    trades = Trade.objects.filter(account=account,
+                                  order__market__type='perpetual',
+                                  datetime__gte=start_datetime
+                                  ).order_by('datetime')
+    if trades.exists():
+
+        for index, trade in enumerate(trades):
+
+            log.bind(trade=trade.tradeid,
+                     amount=trade.amount,
+                     side=trade.side)
+
+            log.info('Create new entry')
+            entry = Inventory.objects.create(account=account,
+                                             exchange=account.exchange,
+                                             currency=trade.order.market.base,
+                                             trade=trade,
+                                             instrument=1,
+                                             datetime=trade.datetime)
+
+            # Determine stock, total and average costs from previous inventory entry
+
+            if index > 0:
+                prev = Inventory.objects.get(account=account, datetime=trades[index-1].datetime)
+                prev_stock = prev.stock
+                prev_total_cost = prev.total_cost
+                prev_average_cost = prev.average_cost
+
+            else:
+                prev_stock, prev_total_cost, prev_average_cost = [0 for i in range(3)]
+
+            if trade.side == 'buy':
+
+                # Close short
+                if prev_stock < 0:
+
+                    entry.stock = prev_stock + trade.amount
+                    entry.total_cost = entry.stock * prev_average_cost  # decrease
+                    entry.average_cost = prev_average_cost
+
+                    # Determine realized and unrealized profit and loss for USDⓈ-margined contracts
+                    # https://www.binance.com/en/support/faq/3a55a23768cb416fb404f06ffedde4b2
+
+                    # Directives
+                    position_size = trade.cost
+                    exit_price = trade.price
+                    mark_price = trade.price
+                    entry_price = entry.average_cost
+
+                    realized_pnl_base = ((1 / entry_price) - (1 / exit_price)) * (position_size * -1)
+                    entry.realized_pnl = realized_pnl_base * exit_price
+                    entry.unrealized_pnl = position_size * -1 * (mark_price - entry_price)
+
+                # Open long
+                elif prev_stock > 0:
+
+                    entry.stock = prev_stock + trade.amount
+                    entry.total_cost = prev_total_cost + trade.cost  # increase
+                    entry.average_cost = entry.total_cost / entry.stock
+
+                    # No PnL calculation
+
+            elif trade.side == 'sell':
+
+                # Open short
+                if prev_stock < 0:
+
+                    entry.stock = prev_stock - trade.amount  # allow negative stock to distinguish open and close
+                    entry.total_cost = prev_total_cost + trade.cost  # increase
+                    entry.average_cost = entry.total_cost / abs(entry.stock)
+
+                    # No PnL calculation
+
+                # Close long
+                elif prev_stock > 0:
+
+                    entry.stock = prev_stock - trade.amount
+                    entry.total_cost = entry.stock * prev_average_cost  # decrease
+                    entry.average_cost = prev_average_cost
+
+                    # Determine realized and unrealized profit and loss for USDⓈ-margined contracts
+                    # https://www.binance.com/en/support/faq/3a55a23768cb416fb404f06ffedde4b2
+
+                    # Directives
+                    position_size = trade.cost
+                    exit_price = trade.price
+                    mark_price = trade.price
+                    entry_price = entry.average_cost
+
+                    realized_pnl_base = ((1 / entry_price) - (1 / exit_price)) * position_size
+                    entry.realized_pnl = realized_pnl_base * exit_price
+                    entry.unrealized_pnl = position_size * 1 * (mark_price - entry_price)
+
+            entry.save()
+
+    else:
+        log.info('Update contracts inventory no required', start_datetime=start_datetime)
+        return
+
+    log.info('Update contracts inventory complete', start_datetime=start_datetime)
