@@ -127,13 +127,14 @@ def fetch_trades(self, pk):
             dt = datetime.strptime(dic['datetime'], datetime_directive_ccxt).replace(tzinfo=pytz.UTC)
         else:
             dt = None
+        
+        pprint(dic)
 
         defaults = dict(
             amount=dic['amount'],
             cost=dic['cost'],
             datetime=dt,
             fee=dic['fee'],
-            fees=dic['fees'],
             info=dic['info'],
             price=dic['price'],
             side=dic['side'],
