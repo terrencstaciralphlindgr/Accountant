@@ -26,12 +26,12 @@ class CustomerAdmin(admin.ModelAdmin):
 
     def get_realized_pnl(self, obj):
         if obj.realized_pnl:
-            return obj.realized_pnl
+            return round(obj.realized_pnl, 2)
 
     get_realized_pnl.short_description = 'Realized PnL'
 
     def get_unrealized_pnl(self, obj):
         if obj.unrealized_pnl:
-            return obj.unrealized_pnl
+            return round(obj.unrealized_pnl, 2)
 
     get_unrealized_pnl.short_description = 'Unrealized PnL'
