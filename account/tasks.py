@@ -120,7 +120,6 @@ def fetch_trades(self, pk):
     start_datetime = int(start_datetime.timestamp())
 
     log.bind(start_datetime=start_datetime)
-    log.info('Fetch trades')
 
     def create_trade(dic):
 
@@ -158,7 +157,7 @@ def fetch_trades(self, pk):
                 type=dic['type'],
             )
 
-            Order.objects.update_or_create(orderid=dic['id'],
+            Trade.objects.update_or_create(orderid=dic['id'],
                                            account=account,
                                            defaults=defaults
                                            )
@@ -176,6 +175,7 @@ def fetch_trades(self, pk):
                 symbols = (qs.filter(wallet=wallet))
                 for symbol in symbols:
                     response = client.fetchTrades(symbol, since=start_datetime)
+                    log.info('Fetch trades', length=len(response), wallet=wallet, symbol=symbol)
                     for dic in response:
                         create_trade(dic)
 
@@ -183,6 +183,7 @@ def fetch_trades(self, pk):
             symbols = list(qs)
             for symbol in symbols:
                 response = client.fetchTrades(symbol, since=start_datetime)
+                log.info('Fetch trades', length=len(response), symbol=symbol)
                 for dic in response:
                     create_trade(dic)
 
