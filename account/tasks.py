@@ -165,16 +165,21 @@ def fetch_trades(self, pk):
 
         client = account.exchange.get_ccxt_client(account)
         wallets = account.exchange.get_wallets()
+        qs = Market.objects.filter(exchange=account.exchange).values_list('symbol', flat=True)
+
         if wallets:
 
             for wallet in wallets:
                 client.options['defaultType'] = wallet
-                response = client.fetchTrades(params=params)
+                symbol = (qs.filter(wallet=wallet))
+
+                response = client.fetchTrades(symbol=symbol, params=params)
                 for dic in response:
-                    create_trade(dic, wallet=wallet)
+                    create_trade(dic)
 
         else:
-            response = client.fetchTrades(params=params)
+            symbol = list(qs)
+            response = client.fetchTrades(symbol=symbol, params=params)
             for dic in response:
                 create_trade(dic)
 
