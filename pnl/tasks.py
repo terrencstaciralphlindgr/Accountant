@@ -29,6 +29,8 @@ def update_asset_inventory(self, pk):
     else:
         start_datetime = account.dt_created
 
+    log.info('Update inventory', start_datetime=start_datetime)
+
     # Select trades and iterate
     trades = Trade.objects.filter(account=account, datetime__gte=start_datetime).order_by('datetime')
     if trades.exists():
@@ -39,8 +41,11 @@ def update_asset_inventory(self, pk):
                      amount=trade.amount,
                      side=trade.side)
 
-            log.info('Create inventory entry')
+            log.info('Create new entry')
             entry = Inventory.objects.create(account=account,
+                                             exchange=account.exchange,
+                                             currency=trade.order.market.base,
+                                             trade=trade,
                                              instrument=0,
                                              datetime=trade.datetime)
 
