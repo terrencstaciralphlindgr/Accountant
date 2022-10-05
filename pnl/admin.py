@@ -34,7 +34,7 @@ class CustomerAdmin(admin.ModelAdmin):
         if obj.unrealized_pnl:
             return round(obj.unrealized_pnl, 2)
 
-    get_unrealized_pnl.short_description = 'Stock'
+    get_unrealized_pnl.short_description = 'Unrealized PnL'
 
     def get_stock(self, obj):
         if obj.stock:
