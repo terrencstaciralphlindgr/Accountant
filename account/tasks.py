@@ -136,8 +136,6 @@ def fetch_trades(self, pk):
         else:
             dt = None
 
-        pprint(dic)
-
         defaults = dict(
             amount=dic['amount'],
             cost=dic['cost'],
@@ -147,6 +145,7 @@ def fetch_trades(self, pk):
             order=order,
             price=dic['price'],
             side=dic['side'],
+            symbol=dic['symbol'],
             taker_or_maker=dic['takerOrMaker'],
             timestamp=dic['timestamp'],
             type=dic['type']
