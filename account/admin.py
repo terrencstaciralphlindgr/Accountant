@@ -37,6 +37,6 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(Trade)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('tradeid', 'account', 'order',)
-    readonly_fields = ('tradeid', 'account', 'order',)
+    list_display = ('tradeid', 'account', )
+    readonly_fields = ('tradeid', 'account', )
     ordering = ('-datetime',)
