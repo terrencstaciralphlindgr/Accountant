@@ -123,38 +123,39 @@ def fetch_trades(self, pk):
 
     def create_trade(dic):
 
-        try:
-            order = Order.objects.get(orderid=dic['order'])
-        except ObjectDoesNotExist:
+        if dic['order']:
+            try:
+                order = Order.objects.get(orderid=dic['order'])
+            except ObjectDoesNotExist:
+                order = None
+        else:
             order = None
 
-        finally:
+        if dic['datetime']:
+            dt = datetime.strptime(dic['datetime'], datetime_directive_ccxt).replace(tzinfo=pytz.UTC)
+        else:
+            dt = None
 
-            if dic['datetime']:
-                dt = datetime.strptime(dic['datetime'], datetime_directive_ccxt).replace(tzinfo=pytz.UTC)
-            else:
-                dt = None
+        pprint(dic)
 
-            pprint(dic)
+        defaults = dict(
+            amount=dic['amount'],
+            cost=dic['cost'],
+            datetime=dt,
+            fee=dic['fee'],
+            info=dic['info'],
+            order=order,
+            price=dic['price'],
+            side=dic['side'],
+            taker_or_maker=dic['takerOrMaker'],
+            timestamp=dic['timestamp'],
+            type=dic['type']
+        )
 
-            defaults = dict(
-                amount=dic['amount'],
-                cost=dic['cost'],
-                datetime=dt,
-                fee=dic['fee'],
-                info=dic['info'],
-                order=order,
-                price=dic['price'],
-                side=dic['side'],
-                taker_or_maker=dic['takerOrMaker'],
-                timestamp=dic['timestamp'],
-                type=dic['type']
-            )
-
-            Trade.objects.update_or_create(tradeid=dic['id'],
-                                           account=account,
-                                           defaults=defaults
-                                           )
+        Trade.objects.update_or_create(tradeid=dic['id'],
+                                       account=account,
+                                       defaults=defaults
+                                       )
 
     try:
 
