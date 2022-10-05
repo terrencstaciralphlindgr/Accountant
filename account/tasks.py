@@ -136,11 +136,8 @@ def fetch_trades(self, pk):
             fees=dic['fees'],
             info=dic['info'],
             price=dic['price'],
-            remaining=dic['remaining'],
             side=dic['side'],
-            status=dic['status'],
-            trades=dic['trades'],
-            type=dic['type'],
+            type=dic['type']
         )
 
         Trade.objects.update_or_create(tradeid=dic['id'],
