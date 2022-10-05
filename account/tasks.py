@@ -123,8 +123,6 @@ def fetch_trades(self, pk):
 
     def create_trade(dic):
 
-        pprint(dic)
-
         try:
             order = Order.objects.get(account=account, orderid=dic['id'])
 
@@ -132,6 +130,8 @@ def fetch_trades(self, pk):
             log.error('Fetch trades failure', cause='order not found', orderid=dic['id'])
 
         else:
+
+            pprint(dic)
 
             if dic['datetime']:
                 dt = datetime.strptime(dic['datetime'], datetime_directive_ccxt).replace(tzinfo=pytz.UTC)
