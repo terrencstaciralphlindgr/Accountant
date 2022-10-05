@@ -32,7 +32,10 @@ def update_asset_inventory(self, pk):
     log.info('Update inventory', start_datetime=start_datetime)
 
     # Select trades and iterate
-    trades = Trade.objects.filter(account=account, datetime__gte=start_datetime).order_by('datetime')
+    trades = Trade.objects.filter(account=account,
+                                  order__market__type='spot',
+                                  datetime__gte=start_datetime
+                                  ).order_by('datetime')
     if trades.exists():
 
         for index, trade in enumerate(trades):
