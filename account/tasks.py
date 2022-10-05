@@ -117,7 +117,7 @@ def fetch_trades(self, pk):
     # Determine start datetime
     qs = Trade.objects.filter(account=account)
     start_datetime = qs.latest('datetime').datetime if qs else account.dt_created
-    start_datetime = int(start_datetime.timestamp())
+    start_datetime = int(start_datetime.timestamp() * 1000)
 
     log.bind(start_datetime=start_datetime)
 
