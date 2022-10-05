@@ -109,7 +109,6 @@ class Order(TimestampedModel):
 class Trade(TimestampedModel):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='trade', null=True, db_index=True)
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='trade', db_index=True)
     tradeid = models.CharField(max_length=200)
     symbol = models.CharField(max_length=20)
     datetime = models.DateTimeField()

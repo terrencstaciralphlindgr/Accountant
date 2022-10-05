@@ -123,44 +123,32 @@ def fetch_trades(self, pk):
 
     def create_trade(dic):
 
-        pprint(dic)
-
-        try:
-            order = Order.objects.get(account=account, orderid=dic['id'])
-
-        except ObjectDoesNotExist:
-            log.error('Fetch trades failure', cause='order not found', orderid=dic['id'])
-
+        if dic['datetime']:
+            dt = datetime.strptime(dic['datetime'], datetime_directive_ccxt).replace(tzinfo=pytz.UTC)
         else:
+            dt = None
 
-            if dic['datetime']:
-                dt = datetime.strptime(dic['datetime'], datetime_directive_ccxt).replace(tzinfo=pytz.UTC)
-            else:
-                dt = None
+        defaults = dict(
+            amount=dic['amount'],
+            average=dic['average'],
+            cost=dic['cost'],
+            datetime=dt,
+            fee=dic['fee'],
+            fees=dic['fees'],
+            filled=dic['filled'],
+            info=dic['info'],
+            price=dic['price'],
+            remaining=dic['remaining'],
+            side=dic['side'],
+            status=dic['status'],
+            trades=dic['trades'],
+            type=dic['type'],
+        )
 
-            defaults = dict(
-                amount=dic['amount'],
-                average=dic['average'],
-                clientid=dic['clientOrderId'],
-                cost=dic['cost'],
-                datetime=dt,
-                fee=dic['fee'],
-                fees=dic['fees'],
-                filled=dic['filled'],
-                info=dic['info'],
-                order=order,
-                price=dic['price'],
-                remaining=dic['remaining'],
-                side=dic['side'],
-                status=dic['status'],
-                trades=dic['trades'],
-                type=dic['type'],
-            )
-
-            Trade.objects.update_or_create(orderid=dic['id'],
-                                           account=account,
-                                           defaults=defaults
-                                           )
+        Trade.objects.update_or_create(tradeid=dic['id'],
+                                       account=account,
+                                       defaults=defaults
+                                       )
 
     try:
 
