@@ -1,12 +1,8 @@
 import uuid
-import pytz
-from datetime import datetime
 from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
 from accountant.models import TimestampedModel
-from accountant.methods import datetime_directive_ISO_8601, datetime_directive_ccxt
-from market.models import Exchange, Market, Currency
-from account.models import Account
+from market.models import Exchange, Currency
+from account.models import Account, Trade
 import structlog
 
 log = structlog.get_logger(__name__)
@@ -21,10 +17,14 @@ class Inventory(TimestampedModel):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='inventory', null=True)
     exchange = models.ForeignKey(Exchange, on_delete=models.CASCADE, related_name='inventory', null=True)
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE, related_name='inventory', null=True)
+    trade = models.ForeignKey(Trade, on_delete=models.CASCADE, related_name='inventory', null=True)
     instrument = models.IntegerField(choices=Type.choices)
-    stock = models.FloatField()
-    total_cost = models.FloatField()
-    average_cost = models.FloatField()
+    stock = models.FloatField(default=0)
+    total_cost = models.FloatField(default=0)
+    average_cost = models.FloatField(default=0)
+    realized_pnl = models.FloatField()
+    unrealized_pnl = models.FloatField()
+    datetime = models.DateTimeField()
 
     class Meta:
         verbose_name_plural = "Inventory"
