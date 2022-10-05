@@ -79,6 +79,8 @@ def update_asset_inventory(self, pk):
                     entry.stock = prev_stock - trade.amount
                     entry.total_cost = entry.stock * prev_average_cost
 
+                entry.average_cost = prev_average_cost
+
                 # Calculate realized PnL
 
                 purchase_price = prev_average_cost
