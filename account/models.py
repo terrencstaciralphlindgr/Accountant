@@ -116,7 +116,7 @@ class Trade(TimestampedModel):
     type = models.CharField(max_length=20)
     datetime = models.DateTimeField()
     timestamp = models.BigIntegerField()
-    taker_or_maker = models.CharField(max_length=20)
+    taker_or_maker = models.CharField(max_length=20, blank=True, null=True)
     price = models.FloatField()
     amount = models.FloatField()
     cost = models.FloatField()
