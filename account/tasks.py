@@ -130,7 +130,7 @@ def fetch_trades(self, pk):
                 order = None
         else:
             order = None
-        
+
         # if dic['fees']:
         #     fees = dict(fees=dic['fees'])
 
@@ -144,7 +144,7 @@ def fetch_trades(self, pk):
             cost=dic['cost'],
             datetime=dt,
             fee=dic['fee'],
-            fees=fees,
+            fees=dic['fees'],
             info=dic['info'],
             order=order,
             price=dic['price'],
