@@ -1,5 +1,6 @@
 from __future__ import absolute_import, unicode_literals
 import pytz
+from pprint import pprint
 from datetime import datetime
 from billiard.process import current_process
 from django.core.exceptions import ObjectDoesNotExist
@@ -122,6 +123,8 @@ def fetch_trades(self, pk):
     log.info('Fetch trades')
 
     def create_trade(dic):
+
+        pprint(dic)
 
         try:
             order = Order.objects.get(account=account, orderid=dic['orderid'])
