@@ -38,7 +38,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
     def get_stock(self, obj):
         if obj.stock:
-            return round(obj.stock, 2)
+            return round(obj.stock, 4)
 
     get_stock.short_description = 'Stock'
 
