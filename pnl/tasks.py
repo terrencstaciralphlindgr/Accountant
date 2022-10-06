@@ -27,6 +27,7 @@ def update_asset_inventory(self, pk):
         prev_entries = True
         start_datetime = entries.latest('datetime').datetime
     else:
+        prev_entries = False
         start_datetime = account.dt_created
 
     log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
@@ -121,6 +122,7 @@ def update_contract_inventory(self, pk):
         prev_entries = True
         start_datetime = entries.latest('datetime').datetime
     else:
+        prev_entries = False
         start_datetime = account.dt_created
 
     log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
