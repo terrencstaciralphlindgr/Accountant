@@ -184,7 +184,7 @@ def update_contract_inventory(self, pk):
                     entry.unrealized_pnl = position_size * -1 * (mark_price - entry_price)
 
                 # Open long
-                elif prev_stock > 0:
+                elif prev_stock >= 0:
 
                     entry.stock = prev_stock + trade.amount
                     entry.total_cost = prev_total_cost + trade.cost  # increase
@@ -195,7 +195,7 @@ def update_contract_inventory(self, pk):
             elif trade.side == 'sell':
 
                 # Open short
-                if prev_stock < 0:
+                if prev_stock <= 0:
 
                     entry.stock = prev_stock - trade.amount  # allow negative stock to distinguish open and close
                     entry.total_cost = prev_total_cost + trade.cost  # increase
