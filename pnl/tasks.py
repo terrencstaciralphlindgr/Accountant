@@ -145,8 +145,8 @@ def update_contract_inventory(self, pk):
                                              instrument=1,
                                              datetime=trade.datetime)
 
-            # Determine stock, total and average costs from previous inventory entry
-            
+            # Determine stock, total and average costs from previous inventory entry 
+
             print(trade, entries.exists(), index)
 
             if entries.exists() or index > 0:
