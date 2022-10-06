@@ -8,8 +8,7 @@ admin.site.enable_nav_sidebar = False
 @admin.register(Inventory)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('trade', 'get_side', 'get_amount', 'account', 'exchange', 'currency', 'instrument', 'get_stock',
-                    'get_total_cost',
-                    'average_cost', 'get_realized_pnl', 'get_unrealized_pnl', 'datetime')
+                    'get_total_cost', 'get_average_cost', 'get_realized_pnl', 'get_unrealized_pnl', 'datetime')
     readonly_fields = ('trade', 'id', 'account', 'exchange', 'currency', 'instrument', 'stock', 'total_cost',
                        'average_cost', 'realized_pnl', 'unrealized_pnl', 'datetime')
     ordering = ('-datetime',)
@@ -53,3 +52,9 @@ class CustomerAdmin(admin.ModelAdmin):
             return round(obj.total_cost, 2)
 
     get_total_cost.short_description = 'Total cost'
+
+    def get_average_cost(self, obj):
+        if obj.average_cost:
+            return round(obj.average_cost, 2)
+
+    get_average_cost.short_description = 'Average cost'
