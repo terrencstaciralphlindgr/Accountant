@@ -146,6 +146,8 @@ def update_contract_inventory(self, pk):
                                              datetime=trade.datetime)
 
             # Determine stock, total and average costs from previous inventory entry
+            
+            print(trade, entries.exists(), index)
 
             if entries.exists() or index > 0:
                 prev_dt = trades[index-1].datetime if index > 0 else start_datetime
