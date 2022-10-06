@@ -117,6 +117,7 @@ def update_contract_inventory(self, pk):
     # Determine start datetime
     entries = Inventory.objects.filter(account=account, instrument=1)
     if entries.exists():
+        print(entries)
         start_datetime = entries.latest('datetime').datetime
     else:
         start_datetime = account.dt_created
@@ -145,7 +146,7 @@ def update_contract_inventory(self, pk):
                                              instrument=1,
                                              datetime=trade.datetime)
 
-            # Determine stock, total and average costs from previous inventory entry 
+            # Determine stock, total and average costs from previous inventory entry
 
             print(trade, entries.exists(), index)
 
