@@ -54,6 +54,9 @@ def update_asset_inventory(self, pk):
 
             # Determine stock, total and average costs from previous inventory entry
 
+            log.info(index)
+            log.info(trade)
+            
             if index > 0:
                 prev = Inventory.objects.get(account=account, datetime=trades[index-1].datetime)
                 prev_stock = prev.stock
