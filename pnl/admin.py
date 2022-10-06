@@ -7,7 +7,8 @@ admin.site.enable_nav_sidebar = False
 
 @admin.register(Inventory)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('trade', 'get_side', 'account', 'exchange', 'currency', 'instrument', 'get_stock', 'get_total_cost',
+    list_display = ('trade', 'get_side', 'get_amount', 'account', 'exchange', 'currency', 'instrument', 'get_stock',
+                    'get_total_cost',
                     'average_cost', 'get_realized_pnl', 'get_unrealized_pnl', 'datetime')
     readonly_fields = ('trade', 'id', 'account', 'exchange', 'currency', 'instrument', 'stock', 'total_cost',
                        'average_cost', 'realized_pnl', 'unrealized_pnl', 'datetime')
@@ -23,6 +24,11 @@ class CustomerAdmin(admin.ModelAdmin):
         return obj.trade.side
 
     get_side.short_description = 'Side'
+
+    def get_amount(self, obj):
+        return obj.trade.amount
+
+    get_amount.short_description = 'Amount'
 
     def get_realized_pnl(self, obj):
         if obj.realized_pnl:
