@@ -20,10 +20,9 @@ class BalanceSerializer(serializers.ModelSerializer):
             pprint(validated_data)
 
             # Select data from dictionary
-            dt = validated_data['response']['dt']
-            account_id = validated_data['response']['foreign_keys']['account_id']
+            dt = validated_data['dt']
+            account_id = validated_data['account_id']
             account = get_object_or_404(Account, id=account_id)
-            del validated_data['response']['foreign_keys']
 
             try:
                 obj, created = Balance.objects.update_or_create(dt=dt,
