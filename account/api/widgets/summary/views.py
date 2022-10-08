@@ -15,6 +15,6 @@ class AssetValueViewSet(APIView):
     permission_classes = [permissions.IsAdminUser]
 
     def get(self, request, account_id):
+        log.info('Return asset value')
         asset_value = Balance.objects.filter(account__id=account_id).latest('dt').assets_total_value
-        print(asset_value)
-        Response(dict(asset_value=asset_value, growth=0))
+        Response(dict(asset_value=asset_value, growth='0'))
