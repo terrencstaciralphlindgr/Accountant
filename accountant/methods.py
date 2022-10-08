@@ -37,7 +37,7 @@ def dt_aware_now(interval=None):
         return dt
 
 
-def get_start_datetime(period):
+def get_start_datetime(account, period):
 
     if period == '7D':
         dt = datetime.utcnow() - timedelta(days=7)
@@ -47,7 +47,7 @@ def get_start_datetime(period):
         dt = datetime.utcnow() - timedelta(days=30*6)
     elif period == 'YTD':
         dt = datetime.utcnow().replace(month=1, day=1)
-    elif period == 'all':
-        return
+    else:
+        dt = account.dt_created
 
     return dt.replace(hour=0, minute=0, second=0, microsecond=0)

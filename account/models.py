@@ -39,13 +39,14 @@ class Account(TimestampedModel):
 
     def realized_pnl(self, period):
         from pnl.models import Inventory
-        dt = get_start_datetime(period)
+        dt = get_start_datetime(self, period)
         qs = Inventory.objects.filter(account=self, datetime__gte=dt)
         return qs.aggregate(models.Sum('realized_pnl'))['realized_pnl__sum']
 
     def growth(self, period):
+        dt = get_start_datetime(self, period)
         try:
-            asset_value = Balance.objects.get(dt=get_start_datetime(period))
+            asset_value = Balance.objects.get(dt=dt)
         except ObjectDoesNotExist:
             return 'Not enough data'
         else:
