@@ -19,7 +19,7 @@ class BalanceSerializer(serializers.ModelSerializer):
 
             # Select account
             try:
-                account = get_object_or_404(Account, id=validated_data['id'])
+                account = get_object_or_404(Account, pk=validated_data['pk'])
             except Exception as e:
                 pprint(validated_data)
                 log.error('Balance creation error', cause=str(e))
@@ -32,7 +32,7 @@ class BalanceSerializer(serializers.ModelSerializer):
                 except ValidationError:
                     pprint(validated_data)
                     log.error('Balance creation error')
-    
+
                 else:
                     log.info('Balance created')
                     return obj
