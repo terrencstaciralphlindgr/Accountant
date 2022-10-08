@@ -17,4 +17,4 @@ class AssetValueViewSet(APIView):
     def get(self, request, account_id):
         log.info('Return asset value')
         asset_value = Balance.objects.filter(account__id=account_id).latest('dt').assets_total_value
-        Response(dict(asset_value=asset_value, growth='0'))
+        return Response(dict(asset_value=asset_value, growth=0))
