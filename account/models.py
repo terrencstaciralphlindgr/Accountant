@@ -357,4 +357,4 @@ class Balance(TimestampedModel):
     total = models.FloatField(default=0)
     assets = models.JSONField(default=dict)
     open_positions = models.JSONField(default=dict)
-    dt = models.DateTimeField
+    dt = models.DateTimeField()
