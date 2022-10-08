@@ -38,13 +38,16 @@ def dt_aware_now(interval=None):
 
 
 def get_start_datetime(period):
+
     if period == '7D':
-        return datetime.utcnow() - timedelta(days=7)
+        dt = datetime.utcnow() - timedelta(days=7)
     elif period == '30D':
-        return datetime.utcnow() - timedelta(days=30)
+        dt = datetime.utcnow() - timedelta(days=30)
     elif period == '6M':
-        return datetime.utcnow() - timedelta(days=30*6)
+        dt = datetime.utcnow() - timedelta(days=30*6)
     elif period == 'YTD':
-        return datetime.utcnow().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+        dt = datetime.utcnow().replace(month=1, day=1)
     elif period == 'all':
         return
+
+    return dt.replace(hour=0, minute=0, second=0, microsecond=0)

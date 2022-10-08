@@ -36,10 +36,14 @@ class Account(TimestampedModel):
             return self.name
         return str(self.pk)
 
-    def growth(self, period):
+    def realized_pnl(self, period):
         from pnl.models import Inventory
         qs = Inventory.objects.filter(account=self, datetime__gte=get_start_datetime(period))
         return qs.aggregate(models.Sum('realized_pnl'))['realized_pnl__sum']
+
+    def growth(self, period):
+        asset_value = Balance.objects.get(dt=get_start_datetime(period))
+        return self.realized_pnl(period) / asset_value
 
 
 class Order(TimestampedModel):
