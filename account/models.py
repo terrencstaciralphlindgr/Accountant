@@ -355,5 +355,12 @@ class Balance(TimestampedModel):
     open_positions = models.JSONField(default=dict)
     dt = models.DateTimeField()
 
+    class Meta:
+        verbose_name_plural = "Balances"
+        unique_together = ('dt', 'account',)
+
+    def save(self, *args, **kwargs):
+        return super(Balance, self).save(*args, **kwargs)
+
     def __str__(self):
         return str(self.dt.strftime(datetime_directive_ISO_8601))
