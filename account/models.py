@@ -48,7 +48,7 @@ class Account(TimestampedModel):
         try:
             asset_value = Balance.objects.get(dt=dt)
         except ObjectDoesNotExist:
-            return 'Not enough data'
+            return 'Not data'
         else:
             return self.realized_pnl(period) / asset_value
 
