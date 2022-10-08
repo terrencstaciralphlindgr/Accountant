@@ -66,6 +66,6 @@ class CustomerAdmin(admin.ModelAdmin):
 
 @admin.register(Balance)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ('dt', 'account', 'total_value',)
-    readonly_fields = ('dt', 'account', 'total_value', 'assets', 'open_positions')
+    list_display = ('dt', 'account', 'assets_total_value',)
+    readonly_fields = ('dt', 'account', 'assets_total_value', 'assets', 'open_positions')
     ordering = ('-dt',)
