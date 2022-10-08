@@ -69,7 +69,7 @@ class CustomerAdmin(admin.ModelAdmin):
 @admin.register(Balance)
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('dt', 'account', 'assets_total_value',)
-    readonly_fields = ('dt', 'account', 'assets_total_value',)
+    readonly_fields = ('assets_total_value', 'dt', 'account',)
     ordering = ('-dt',)
 
     formfield_overrides = {
