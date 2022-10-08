@@ -20,13 +20,14 @@ class BalanceSerializer(serializers.ModelSerializer):
 
             # Select account
             try:
-                account = get_object_or_404(Account, id=validated_data['id'])
+                pass
+                # account = get_object_or_404(Account, id=validated_data['id'])
             except Exception as e:
                 pprint(validated_data)
                 log.error('Balance creation error', cause=str(e))
             else:
                 try:
-                    obj, created = Balance.objects.update_or_create(account=account,
+                    obj, created = Balance.objects.update_or_create(account__id=validated_data['id'],
                                                                     defaults=validated_data,
                                                                     dt=validated_data['dt']
                                                                     )
