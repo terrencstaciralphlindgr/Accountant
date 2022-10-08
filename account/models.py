@@ -1,10 +1,7 @@
 import uuid
-import pytz
-from datetime import datetime
 from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
 from accountant.models import TimestampedModel
-from accountant.methods import datetime_directive_ccxt, datetime_directive_ISO_8601
+from accountant.methods import datetime_directive_ISO_8601, get_start_datetime
 from market.models import Market, Exchange, Currency
 import structlog
 
@@ -39,6 +36,11 @@ class Account(TimestampedModel):
             return self.name
         return str(self.pk)
 
+    def growth(self, period):
+        from pnl.models import Inventory
+        qs = Inventory.objects.filter(account=self, datetime__gte=get_start_datetime(period))
+        return qs.aggregate(models.Sum('realized_pnl'))['realized_pnl__sum']
+
 
 class Order(TimestampedModel):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
@@ -71,36 +73,6 @@ class Order(TimestampedModel):
         else:
             return str(self.id)
 
-    def update(self, dic):
-        """
-        Update object with exchange's response after an order has been placed
-        """
-
-        if dic['datetime']:
-            dt = datetime.strptime(dic['datetime'], datetime_directive_ccxt).replace(tzinfo=pytz.UTC)
-        else:
-            dt = None
-
-        self.orderid = dic['id']
-        self.status = dic['status']
-        self.cost = dic['cost']
-        self.filled = dic['filled']
-        self.remaining = float(dic['remaining'])
-        self.average = dic['average']
-        self.fee = dic['fee']
-        self.order_type = dic['type']
-        self.time_in_force = dic['timeInForce']
-        self.post_only = dic['postOnly']
-        self.stop_price = dic['stopPrice']
-        self.timestamp = dic['timestamp']
-        self.last_trade_timestamp = dic['lastTradeTimestamp']
-        self.trades = dic['trades']  # Only for spot orders
-        self.datetime = dt
-        self.response = dic
-        self.save()
-
-        log.info('Order {0} updated ({1})'.format(self.clientid, self.orderid[-4:]), account=self.account.name)
-
 
 class Trade(TimestampedModel):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
@@ -125,226 +97,6 @@ class Trade(TimestampedModel):
 
     def __str__(self):
         return self.tradeid
-
-    def update_inventory(self):
-        """
-        Create new inventory object with the latest stock,
-        total cost and average cost (after a new trade)
-        """
-
-        from pnl.models import Inventory
-        market = self.order.market
-
-        query = dict(
-            exchange=market.exchange,
-            strategy=self.order.account.strategy,
-            account=self.order.account
-        )
-
-        log.bind(account=self.order.account.name, trade=self.tradeid, order=self.order.clientid)
-        log.info('Update inventory')
-
-        if market.type == 'spot':
-
-            query['currency'] = market.base
-            query['instrument'] = 0  # ASSET
-
-            try:
-                Inventory.objects.get(**query, trade=self)
-
-            except ObjectDoesNotExist:
-
-                # Select stock, purchase price and
-                # total cost from the latest record
-                qs = Inventory.objects.filter(**query)
-
-                if qs.exists():
-                    stock = qs.last().stock
-                    average_cost = qs.last().average_cost
-                    total_cost = qs.last().total_cost
-
-                else:
-                    stock = 0
-                    total_cost = 0
-                    average_cost = 0
-
-                if self.order.side == 'buy':
-
-                    # Calculate total_cost and new average_cost
-                    stock_new = stock + self.amount  # number of items
-                    total_cost_new = total_cost + self.cost  # total cost
-                    average_cost_new = total_cost_new / stock_new  # cost per unit
-
-                elif self.order.side == 'sell':
-
-                    # Calculate total_cost and new stock
-                    stock_new = max(0, stock - self.amount)
-                    total_cost_new = stock_new * average_cost
-                    average_cost_new = average_cost
-
-                log.info('Total stock    {0} {1}'.format(round(stock_new, 4), market.base.code))
-                log.info('Total cost     {0} {1}'.format(round(total_cost_new, 4), market.quote.code))
-                log.info('Average cost   {0} {1}'.format(round(average_cost_new, 4), market.quote.code))
-
-                Inventory.objects.create(**query,
-                                         trade=self,
-                                         stock=stock_new,
-                                         total_cost=total_cost_new,
-                                         average_cost=average_cost_new
-                                         )
-
-            else:
-                log.warning('Inventory object is already created')
-
-        elif market.type == 'perpetual':
-
-            query['currency'] = market.margined
-            query['instrument'] = 1  # CONTRACT
-
-            try:
-                Inventory.objects.get(**query, trade=self)
-
-            except ObjectDoesNotExist:
-
-                qs = Inventory.objects.filter(**query)
-
-                if qs.exists():
-                    stock = qs.last().stock
-                    average_cost = qs.last().average_cost
-                    total_cost = qs.last().total_cost
-
-                else:
-                    stock = 0
-                    total_cost = 0
-
-                if self.order.action in ['open_long', 'open_short']:
-
-                    # Calculate total_cost and new average_cost
-                    stock_new = stock + self.amount  # number of items
-                    total_cost_new = total_cost + self.cost  # total cost
-                    average_cost_new = total_cost_new / stock_new  # cost per unit
-
-                elif self.order.action in ['close_long', 'close_short']:
-
-                    # Calculate total_cost and new stock
-                    stock_new = max(0, stock - self.amount)
-                    total_cost_new = stock_new * average_cost
-                    average_cost_new = average_cost
-
-                log.info('Total stock    {0} {1}'.format(round(stock_new, 4), market.base.code))
-                log.info('Total cost     {0} {1}'.format(round(total_cost_new, 4), market.quote.code))
-                log.info('Average cost   {0} {1}'.format(round(average_cost_new, 4), market.quote.code))
-
-                Inventory.objects.create(**query,
-                                         trade=self,
-                                         stock=stock_new,
-                                         total_cost=total_cost_new,
-                                         average_cost=average_cost_new
-                                         )
-            else:
-                log.warning('Inventory object is already created')
-
-        log.unbind('account', 'trade', 'order')
-
-    def calculate_asset_pnl(self):
-        """
-        Create new AssetPnL object after an asset is sold.
-        """
-
-        from pnl.models import Inventory, AssetPnl
-        market = self.order.market
-
-        if self.order.side == 'sell':
-            if market.type == 'spot':
-
-                try:
-                    AssetPnl.objects.get(trade=self)
-
-                except ObjectDoesNotExist:
-
-                    # Select purchase price from the inventory
-                    # and calculate realized an unrealized pnl.
-                    obj = Inventory.objects.get(trade=self)
-                    purchase_price = obj.average_cost
-                    sale_proceeds = self.cost  # amount_sold * price
-                    realized_pnl = sale_proceeds - (self.amount * purchase_price)
-                    unrealized_pnl = (obj.stock * self.price) - (obj.stock * purchase_price)
-
-                    log.info('Sale proceeds {0} {1}'.format(round(sale_proceeds, 1), market.quote.code))
-                    log.info('Sale price    {0} {1}'.format(round(self.price, 1), market.quote.code))
-                    log.info('Realized PnL           {0} {1}'.format(round(realized_pnl, 1), market.quote.code))
-
-                    AssetPnl.objects.create(
-                        currency=market.base,
-                        exchange=market.exchange,
-                        strategy=self.order.account.strategy,
-                        account=self.order.account,
-                        trade=self,
-                        inventory=obj,
-                        sale_proceeds=sale_proceeds,
-                        sale_price=self.price,
-                        realized_pnl=realized_pnl,
-                        unrealized_pnl=unrealized_pnl
-                    )
-
-                else:
-                    log.warning('Asset Pnl already created')
-
-    def calculate_contract_pnl(self, position_size):
-        """
-        Create new ContractPnL object after a position is close
-        """
-
-        from pnl.models import Inventory, ContractPnL
-        market = self.order.market
-
-        if self.order.action in ['close_long', 'close_short']:
-            if market.type == 'perpetual':
-
-                try:
-                    ContractPnL.objects.get(trade=self)
-
-                except ObjectDoesNotExist:
-
-                    # Select average purchase price
-                    obj = Inventory.objects.get(trade=self)
-                    entry_price = obj.average_cost
-
-                    exit_price = self.price
-                    contracts_size = self.cost
-
-                    if self.order.action in ['close_long']:
-                        realized_pnl_base = ((1 / entry_price) - (1 / exit_price)) * contracts_size
-                        realized_pnl = realized_pnl_base * exit_price
-                        unrealized_pnl = position_size * (market.ticker['last'] - entry_price)
-
-                    elif self.order.action in ['close_short']:
-                        realized_pnl_base = ((1 / entry_price) - (1 / exit_price)) * (contracts_size * -1)
-                        realized_pnl = realized_pnl_base * exit_price
-                        unrealized_pnl = position_size * -1 * (market.ticker['last'] - entry_price)
-
-                    log.info('Position size   {0} {1}'.format(round(contracts_size, 1), market.quote.code))
-                    log.info('Entry price     {0} {1}'.format(round(entry_price, 1), market.quote.code))
-                    log.info('Exit price      {0} {1}'.format(round(exit_price, 1), market.quote.code))
-                    log.info('Realized PnL    {0} {1}'.format(round(realized_pnl, 1), market.quote.code))
-                    log.info('Unrealized PnL  {0} {1}'.format(round(unrealized_pnl, 1), market.quote.code))
-
-                    ContractPnL.objects.create(
-                        currency=market.margined,
-                        exchange=market.exchange,
-                        strategy=self.order.account.strategy,
-                        account=self.order.account,
-                        trade=self,
-                        inventory=obj,
-                        entry_price=entry_price,
-                        exit_price=exit_price,
-                        realized_pnl=realized_pnl,
-                        unrealized_pnl=unrealized_pnl,
-                        contracts_size=contracts_size
-                    )
-
-                else:
-                    log.warning('Contract Pnl already created')
 
 
 class Balance(TimestampedModel):

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import os, environ, pytz
 import structlog
 
@@ -35,3 +35,16 @@ def dt_aware_now(interval=None):
     else:
         dt = dt.replace(hour=0, minute=0, second=0, microsecond=0)
         return dt
+
+
+def get_start_datetime(period):
+    if period == '7D':
+        return datetime.utcnow() - timedelta(days=7)
+    elif period == '30D':
+        return datetime.utcnow() - timedelta(days=30)
+    elif period == '6M':
+        return datetime.utcnow() - timedelta(days=30*6)
+    elif period == 'YTD':
+        return datetime.utcnow().replace(month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
+    elif period == 'all':
+        return
