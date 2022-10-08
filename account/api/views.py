@@ -15,9 +15,3 @@ class AccountViewSet(viewsets.ModelViewSet):
 class BalanceViewSet(viewsets.ModelViewSet):
     serializer_class = BalanceSerializer
     http_method_names = ['post']
-
-
-@permission_classes([IsAdminUser])
-class BalanceViewSet(viewsets.ModelViewSet):
-    serializer_class = WidgetSummaryAssetValueSerializer
-    http_method_names = ['get']
