@@ -1,5 +1,5 @@
 from django.contrib import admin
-from account.models import Account, Order, Trade
+from account.models import Account, Order, Trade, Balance
 from account.tasks import fetch_orders, fetch_trades
 from pnl.tasks import update_asset_inventory, update_contract_inventory
 
@@ -62,3 +62,10 @@ class CustomerAdmin(admin.ModelAdmin):
         ('account', admin.RelatedOnlyFieldListFilter),
         'symbol', 'side', 'taker_or_maker', 'type',
     )
+
+
+@admin.register(Balance)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('dt', 'account', 'total',)
+    readonly_fields = ('dt', 'account', 'total', 'assets', 'open_positions')
+    ordering = ('-dt',)
