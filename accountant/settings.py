@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'pnl.apps.PnLConfig',
     'statistic.apps.StatisticConfig',
     'market.apps.MarketConfig',
+    'widget.apps.WidgetConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -120,7 +121,7 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
-CELERY_IMPORTS = ('authentication.tasks', 'pnl.tasks', 'statistic.tasks', 'account.tasks',)
+CELERY_IMPORTS = ('authentication.tasks', 'pnl.tasks', 'statistic.tasks', 'account.tasks', 'widget.tasks',)
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
@@ -190,6 +191,11 @@ LOGGING = {
             'propagate': False,
         },
         'market': {
+            'handlers': ['console', 'flat_line_file', 'json_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'widget': {
             'handlers': ['console', 'flat_line_file', 'json_file'],
             'level': 'INFO',
             'propagate': False,

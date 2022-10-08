@@ -100,6 +100,11 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
                     "handlers": ["console", "flat_line_file", "json_file"],
                     "level": "INFO",
                     'propagate': False,
+                },
+                "widget": {
+                    "handlers": ["console", "flat_line_file", "json_file"],
+                    "level": "INFO",
+                    'propagate': False,
                 }
             }
         }
