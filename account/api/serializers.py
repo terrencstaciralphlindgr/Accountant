@@ -17,16 +17,21 @@ class BalanceSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         if self.is_valid():
-            log.bind(account=validated_data['id'])
             try:
                 obj, created = Balance.objects.update_or_create(dt=validated_data['dt'],
                                                                 defaults=validated_data,
                                                                 account__id=validated_data['id'])
             except ValidationError:
+
                 pprint(validated_data)
-                log.error('Balance creation error')
+                log.error('Balance creation error', account=validated_data['id'])
+
             else:
-                log.info('Balance creation success')
+                log.bind(account=obj.account.name)
+                if created:
+                    log.info('Balance creation success')
+                else:
+                    log.info('Balance update success')
                 return obj
 
 
