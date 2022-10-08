@@ -5,7 +5,7 @@ from account.api.widgets.summary.views import AssetValueViewSet
 
 
 router = routers.DefaultRouter()
-router.register('account', AccountViewSet, basename="accounts-list")
+router.register('accounts', AccountViewSet, basename="accounts-list")
 router.register('balance', BalanceViewSet, basename="balances-list")
 
 urlpatterns = [
