@@ -34,6 +34,10 @@ class BalanceSerializer(serializers.ModelSerializer):
                     log.info('Balance update success')
                 return obj
 
+        else:
+            for item in self.errors.items:
+                log.error('Validation error', error=item)
+
 
 class AccountSerializer(serializers.ModelSerializer):
 
