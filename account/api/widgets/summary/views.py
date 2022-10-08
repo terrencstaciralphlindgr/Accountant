@@ -11,5 +11,5 @@ log = structlog.get_logger(__name__)
 @permission_classes([IsAdminUser])
 class AssetValueViewSet(APIView):
     def get(self, request, account_id):
-        asset_value = Balance.objects.filter(account__id=account_id).latest('dt')
+        asset_value = Balance.objects.filter(account__id=account_id).latest('dt').assets_total_value
         Response(dict(asset_value=asset_value, growth=0))
