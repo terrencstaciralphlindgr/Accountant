@@ -9,26 +9,26 @@ log = structlog.get_logger(__name__)
 
 
 class BalanceSerializer(serializers.ModelSerializer):
+    pk = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Balance
-        fields = '__all__'
+        fields = ('pk', 'dt', 'assets_total_value', 'assets', 'open_positions',)
 
     def create(self, validated_data):
         if self.is_valid():
 
             # Select account
             try:
-                pass
-                # account = get_object_or_404(Account, pk=validated_data['pk'])
+                account = get_object_or_404(Account, pk=validated_data['pk'])
             except Exception as e:
                 pprint(validated_data)
                 log.error('Balance creation error', cause=str(e))
             else:
                 try:
-                    obj, created = Balance.objects.update_or_create(dt=validated_data['dt'],
-                                                                    account__id=validated_data['account__id'],
-                                                                    defaults=validated_data
+                    obj, created = Balance.objects.update_or_create(account=account,
+                                                                    defaults=validated_data,
+                                                                    dt=validated_data['dt']
                                                                     )
                 except ValidationError:
                     pprint(validated_data)
