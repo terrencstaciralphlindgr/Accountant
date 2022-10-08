@@ -10,5 +10,5 @@ router.register('balance', BalanceViewSet, basename="balances-list")
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('widget/summary/asset_value/<int:account_id>/', AssetValueViewSet.as_view(), name='asset_value'),
+    path('account/<int:account_id>/summary/asset_value/', AssetValueViewSet.as_view(), name='asset_value'),
 ]
