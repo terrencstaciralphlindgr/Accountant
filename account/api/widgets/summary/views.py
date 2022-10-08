@@ -14,9 +14,13 @@ class AssetValueViewSet(APIView):
     def get(self, request, account_id):
 
         period = request.GET.get('period')
-        log.info('Return asset value', period=period)
+        if period:
 
-        asset_value = Balance.objects.filter(account__id=account_id).latest('dt').assets_total_value
-        growth = Account.objects.get(id=account_id)
+            log.info('Return asset value', period=period)
 
-        return Response(dict(asset_value=asset_value, growth=0))
+            asset_value = Balance.objects.filter(account__id=account_id).latest('dt').assets_total_value
+            growth = Account.objects.get(id=account_id).growth(period)
+            return Response(dict(asset_value=asset_value, growth=growth))
+
+        else:
+            log.error('Parameter str:period is required')

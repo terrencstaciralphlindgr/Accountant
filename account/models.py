@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 from accountant.models import TimestampedModel
 from accountant.methods import datetime_directive_ISO_8601, get_start_datetime
 from market.models import Market, Exchange, Currency
@@ -38,12 +39,17 @@ class Account(TimestampedModel):
 
     def realized_pnl(self, period):
         from pnl.models import Inventory
-        qs = Inventory.objects.filter(account=self, datetime__gte=get_start_datetime(period))
+        dt = get_start_datetime(period)
+        qs = Inventory.objects.filter(account=self, datetime__gte=dt)
         return qs.aggregate(models.Sum('realized_pnl'))['realized_pnl__sum']
 
     def growth(self, period):
-        asset_value = Balance.objects.get(dt=get_start_datetime(period))
-        return self.realized_pnl(period) / asset_value
+        try:
+            asset_value = Balance.objects.get(dt=get_start_datetime(period))
+        except ObjectDoesNotExist:
+            return 'Not enough data'
+        else:
+            return self.realized_pnl(period) / asset_value
 
 
 class Order(TimestampedModel):
