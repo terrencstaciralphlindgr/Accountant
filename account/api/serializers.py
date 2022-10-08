@@ -18,37 +18,32 @@ class BalanceSerializer(serializers.ModelSerializer):
         if self.is_valid():
 
             pprint(validated_data)
-            id = validated_data['response']['id']
 
-            # Select Foreign Keys
-            exid = validated_data['response']['foreign_keys']['exchange_exid']
-            code_quote = validated_data['response']['foreign_keys']['code_quote']
-
+            # Select data from dictionary
+            dt = validated_data['response']['dt']
+            account_id = validated_data['response']['foreign_keys']['account_id']
+            account = get_object_or_404(Account, id=account_id)
             del validated_data['response']['foreign_keys']
 
-            validated_data['exchange'] = get_object_or_404(Exchange, exid=exid)
-            validated_data['quote'] = get_object_or_404(Currency, code=code_quote)
-
             try:
-                obj, created = Account.objects.update_or_create(pk=id, defaults=validated_data)
+                obj, created = Balance.objects.update_or_create(dt=dt,
+                                                                account=account,
+                                                                defaults=validated_data
+                                                                )
 
             except ValidationError:
                 pprint(validated_data)
-                log.error('Account update_or_create failure')
+                log.error('Balance creation error')
 
             else:
 
-                if created:
-                    log.info('Account created')
-                else:
-                    log.info('Account updated')
+                log.info('Balance created')
 
                 # print(created)
                 # pprint(validated_data)
                 # pprint(model_to_dict(obj))
 
                 return obj
-
 
 
 class AccountSerializer(serializers.ModelSerializer):

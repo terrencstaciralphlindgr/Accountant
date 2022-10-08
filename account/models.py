@@ -354,7 +354,7 @@ class Trade(TimestampedModel):
 class Balance(TimestampedModel):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='balance', null=True)
-    total = models.FloatField(default=0)
+    assets_total_value = models.FloatField(default=0)
     assets = models.JSONField(default=dict)
     open_positions = models.JSONField(default=dict)
     dt = models.DateTimeField()
