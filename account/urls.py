@@ -4,7 +4,8 @@ from account.api.views import AccountViewSet
 
 
 router = routers.DefaultRouter()
-router.register("", AccountViewSet, basename="accounts-list")
+router.register('account', AccountViewSet, basename="accounts-list")
+router.register('balance', AccountViewSet, basename="balances-list")
 
 urlpatterns = [
     path('', include(router.urls)),

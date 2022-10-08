@@ -4,7 +4,7 @@ from authentication.api.views import SignUpView, LogInView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path("api/accounts/", include("account.urls")),
+    path("api/", include("account.urls")),
 
     path("auth/", include("authentication.urls")),
     path('users/api/sign_up/', SignUpView.as_view(), name='sign_up'),
