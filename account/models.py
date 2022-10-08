@@ -1,14 +1,10 @@
 import uuid
 import pytz
-import random
-from datetime import datetime, timezone
-import ccxt
-import pandas as pd
+from datetime import datetime
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import MaxValueValidator, MinValueValidator
 from accountant.models import TimestampedModel
-from accountant.methods import datetime_directive_ccxt
+from accountant.methods import datetime_directive_ccxt, datetime_directive_ISO_8601
 from market.models import Market, Exchange, Currency
 import structlog
 
@@ -358,3 +354,6 @@ class Balance(TimestampedModel):
     assets = models.JSONField(default=dict)
     open_positions = models.JSONField(default=dict)
     dt = models.DateTimeField()
+
+    def __str__(self):
+        return str(self.dt.strftime(datetime_directive_ISO_8601))
