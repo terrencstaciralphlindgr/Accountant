@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import os
 from celery import Celery
+from pprint import pprint
 from django.conf import settings
 from kombu import Queue
 import logging
@@ -98,8 +99,9 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
     )
 
 
-@receiver(signals.modify_context_before_task_publish) 
+@receiver(signals.modify_context_before_task_publish)
 def receiver_modify_context_before_task_publish(sender, signal, context, **kwargs):
+    pprint(context)
     keys_to_keep = {"request_id", "parent_task_id"}
     new_dict = {key_to_keep: context[key_to_keep] for key_to_keep in keys_to_keep if key_to_keep in context}
     context.clear()
