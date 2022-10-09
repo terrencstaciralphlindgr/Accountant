@@ -9,7 +9,7 @@ from django_structlog.celery.steps import DjangoStructLogInitStep
 from django_structlog.celery import signals
 from django_structlog.signals import bind_extra_request_metadata
 from django.dispatch import receiver
-from celery.signals import setup_logging
+from celery.signals import setup_logging, after_setup_logger
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'accountant.settings')
 
@@ -138,4 +138,10 @@ def bind_unbind_metadata(request, logger, **kwargs):
 @receiver(signals.bind_extra_task_metadata)
 def receiver_bind_extra_request_metadata(sender, signal, task=None, logger=None, **kwargs):
     logger.unbind('task_id')
+
+
+@after_setup_logger.connect
+def setup_loggers(*args, **kwargs):
+    logger = structlog.getLogger()
+    return logger
 
