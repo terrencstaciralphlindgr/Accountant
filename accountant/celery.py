@@ -27,8 +27,8 @@ CELERY_TASK_QUEUES = (
 )
 
 # Logging
-app.conf.worker_log_format = "[%(message)s"
-app.conf.worker_task_log_format = "[%(asctime)s:"
+app.conf.worker_redirect_stdouts = False
+
 
 # A step to initialize django-structlog
 app.steps['worker'].add(DjangoStructLogInitStep)
