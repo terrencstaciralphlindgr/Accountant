@@ -211,7 +211,6 @@ def update_inventory(self):
         fetch_orders(account.id)
         fetch_trades(account.id)
         update_inventories(account.id)
-        break
 
         # chord(fetch_orders.si(account.id),
         #       fetch_trades.si(account.id)
