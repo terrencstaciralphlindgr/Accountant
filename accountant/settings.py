@@ -216,7 +216,7 @@ structlog.configure(
         structlog.processors.UnicodeDecoder(),
         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
     ],
-    # wrapper_class=structlog.stdlib.BoundLogger,
+    wrapper_class=structlog.stdlib.BoundLogger,
     context_class=dict,
     logger_factory=structlog.stdlib.LoggerFactory(),
     cache_logger_on_first_use=True,
