@@ -11,7 +11,8 @@ from celery.app.log import Logging
 
 logger = structlog.get_logger(__name__)
 
-Logging.supports_color(True)
+Logging.supports_color(logger, colorize=True)
+Logging.colored(True)
 
 
 @app.task(bind=True, name='PnL_____Update_asset_inventory')
