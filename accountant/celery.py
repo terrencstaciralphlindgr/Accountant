@@ -121,5 +121,5 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
 
 @receiver(bind_extra_request_metadata)
 def bind_unbind_metadata(request, logger, **kwargs):
-    logger.unbind('request_id', 'ip', 'user_id')
+    logger.unbind('ip', 'user_id')  # 'request_id',
 
