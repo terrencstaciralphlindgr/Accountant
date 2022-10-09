@@ -99,15 +99,6 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
     )
 
 
-@receiver(signals.modify_context_before_task_publish)
-def receiver_modify_context_before_task_publish(sender, signal, context, **kwargs):
-    pprint(context)
-    keys_to_keep = {"request_id", "parent_task_id"}
-    new_dict = {key_to_keep: context[key_to_keep] for key_to_keep in keys_to_keep if key_to_keep in context}
-    context.clear()
-    context.update(new_dict)
-
-
 # @receiver(bind_extra_request_metadata)
 # def bind_unbind_metadata(request, logger, **kwargs):
 #     logger.unbind('request_id', 'ip', 'user_id')

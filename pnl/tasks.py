@@ -5,7 +5,7 @@ from account.models import Account, Trade
 from accountant.methods import datetime_directive_ISO_8601
 from accountant.celery import app
 from pnl.models import Inventory
-from structlog.contextvars import clear_contextvars, reset_contextvars
+from structlog.contextvars import clear_contextvars, reset_contextvars, get_contextvars
 from celery.utils.log import current_process_index, current_process
 from celery.app.log import Logging
 
@@ -17,13 +17,14 @@ def update_asset_inventory(self, pk):
     """
     Update asset inventory
     """
-    clear_contextvars()
-    reset_contextvars()
+    print(get_contextvars())
 
     account = Account.objects.get(pk=pk)
     log_asset = logger.bind(account=account.name)
     if self.request.id:
         log_asset.bind(worker=current_process().index, task=self.request.id[:3])
+
+    print(get_contextvars())
 
     # Determine start datetime
     entries = Inventory.objects.filter(account=account, instrument=0)
@@ -115,8 +116,6 @@ def update_contract_inventory(self, pk):
     """
     Update contract inventory
     """
-    clear_contextvars()
-    reset_contextvars()
 
     account = Account.objects.get(pk=pk)
     log_cont = logger.bind(account=account.name)
