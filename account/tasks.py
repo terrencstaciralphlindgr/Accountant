@@ -210,6 +210,4 @@ def update_inventory(self):
     for account in Account.objects.all():
         chord(fetch_orders.si(account.id),
               fetch_trades.si(account.id)
-              )(
-                update_inventories.delay(account.id)
-            )
+              )(update_inventories.si(account.id))
