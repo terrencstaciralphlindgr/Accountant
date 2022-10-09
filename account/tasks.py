@@ -22,7 +22,6 @@ def fetch_orders(self, pk):
     """
     Fetch orders history
     """
-    clear_contextvars()
     account = Account.objects.get(pk=pk)
     log = logger.bind(account=account.name)
     if self.request.id:
@@ -113,7 +112,6 @@ def fetch_trades(self, pk):
     """
     Fetch trades history
     """
-    clear_contextvars()
     account = Account.objects.get(pk=pk)
     log = logger.bind(account=account.name)
     if self.request.id:
