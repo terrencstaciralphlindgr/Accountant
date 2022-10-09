@@ -10,7 +10,7 @@ from django_structlog.celery.steps import DjangoStructLogInitStep
 from django_structlog.celery import signals
 from django_structlog.signals import bind_extra_request_metadata
 from django.dispatch import receiver
-from celery.signals import setup_logging, after_setup_logger
+from celery.signals import setup_logging
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'accountant.settings')
 
