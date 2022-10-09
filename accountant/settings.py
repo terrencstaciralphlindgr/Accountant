@@ -175,17 +175,27 @@ LOGGING = {
             "level": "INFO",
             'propagate': False,
         },
-        "strategy": {
-            "handlers": ["console", "flat_line_file", "json_file"],
-            "level": "INFO",
-            'propagate': False,
-        },
-        "trading": {
+        "pnl": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "INFO",
             'propagate': False,
         },
         "market": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "INFO",
+            'propagate': False,
+        },
+        "account": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "INFO",
+            'propagate': False,
+        },
+        "statistics": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "INFO",
+            'propagate': False,
+        },
+        "widget": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "INFO",
             'propagate': False,
