@@ -180,7 +180,7 @@ LOGGING = {
         "pnl": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "DEBUG",
-            'propagate': True,
+            'propagate': False,
         },
         "market": {
             "handlers": ["console", "flat_line_file", "json_file"],
@@ -209,8 +209,8 @@ structlog.configure(
     processors=[
         # structlog.contextvars.merge_contextvars,
         # structlog.stdlib.filter_by_level,
-        # structlog.processors.TimeStamper(fmt="iso"),
-        # structlog.stdlib.add_logger_name,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.stdlib.add_logger_name,
         # structlog.processors.add_log_level,  # ***
         # structlog.stdlib.PositionalArgumentsFormatter(),
         # structlog.processors.StackInfoRenderer(),
