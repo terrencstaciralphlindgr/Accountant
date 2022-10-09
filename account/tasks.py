@@ -25,6 +25,7 @@ def fetch_orders(self, pk):
     account = Account.objects.get(pk=pk)
     log = logger.bind(account=account.name)
     if self.request.id:
+        log.info(self.request.id)
         log.bind(worker=current_process().index, task=self.request.id[:3])
 
     # Determine start datetime
