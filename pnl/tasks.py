@@ -17,8 +17,7 @@ def update_asset_inventory(self, pk):
     Update asset inventory
     """
     clear_contextvars()
-    reset_contextvars()
-    ConsoleRenderer(pad_event=48)
+    # reset_contextvars()
 
     account = Account.objects.get(pk=pk)
     log_asset = logg.bind(account=account.name)
@@ -116,8 +115,7 @@ def update_contract_inventory(self, pk):
     Update contract inventory
     """
     clear_contextvars()
-    reset_contextvars()
-    ConsoleRenderer(pad_event=4)
+    # reset_contextvars()
 
     account = Account.objects.get(pk=pk)
     log_cont = logg.bind(account=account.name)
