@@ -207,7 +207,7 @@ LOGGING = {
 
 structlog.configure(
     processors=[
-        structlog.contextvars.merge_contextvars,
+        # structlog.contextvars.merge_contextvars,
         structlog.stdlib.filter_by_level,
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.stdlib.add_logger_name,
