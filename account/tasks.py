@@ -13,7 +13,7 @@ from celery import chord
 import structlog
 import ccxt
 
-logger = structlog.get_logger("foo")
+logger = structlog.get_logger(__name__)
 logger.try_unbind('task_id', 'parent_task_id', 'request_id', 'user_id', 'ip',)
 
 
