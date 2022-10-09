@@ -219,8 +219,8 @@ structlog.configure(
         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
     ],
     # context_class=dict,
-    wrapper_class=structlog.stdlib.BoundLogger,
-    # logger_factory=structlog.stdlib.LoggerFactory(),
+    # wrapper_class=structlog.stdlib.BoundLogger,
+    logger_factory=structlog.stdlib.LoggerFactory(),
     cache_logger_on_first_use=True,
 )
 
