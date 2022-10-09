@@ -31,7 +31,8 @@ def update_asset_inventory(self, pk):
     else:
         prev_entries = False
         start_datetime = account.dt_created
-
+    
+    log.info(start_datetime.strftime(datetime_directive_ISO_8601))
     log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
     # log.info('Update assets inventory')
 
