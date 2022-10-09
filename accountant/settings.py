@@ -212,7 +212,7 @@ structlog.configure(
         structlog.processors.ExceptionPrettyPrinter()
     ],
     context_class=structlog.threadlocal.wrap_dict(dict),
-    # logger_factory=structlog.LoggerFactory(), 
+    # logger_factory=structlog.LoggerFactory(),
     wrapper_class=structlog.BoundLogger,
     cache_logger_on_first_use=True,
 
