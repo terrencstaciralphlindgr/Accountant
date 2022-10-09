@@ -9,9 +9,10 @@ from accountant.celery import app
 from account.models import Account, Order, Trade
 from market.models import Market
 import structlog
+from structlog.contextvars import clear_contextvars
 import ccxt
 
-log = structlog.get_logger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 @app.task(bind=True, name='Account______Fetch orders')
@@ -19,8 +20,9 @@ def fetch_orders(self, pk):
     """
     Fetch orders history
     """
+    clear_contextvars()
     account = Account.objects.get(pk=pk)
-    log.bind(account=account.name)
+    log = logger.bind(account=account.name)
     if self.request.id:
         log.bind(worker=current_process().index, task=self.request.id[:3])
 
@@ -109,8 +111,9 @@ def fetch_trades(self, pk):
     """
     Fetch trades history
     """
+    clear_contextvars()
     account = Account.objects.get(pk=pk)
-    log.bind(account=account.name)
+    log = logger.bind(account=account.name)
     if self.request.id:
         log.bind(worker=current_process().index, task=self.request.id[:3])
 
@@ -152,11 +155,13 @@ def fetch_trades(self, pk):
             type=dic['type']
         )
 
-        Trade.objects.update_or_create(tradeid=dic['id'],
-                                       account=account,
-                                       symbol=dic['symbol'],
-                                       defaults=defaults
-                                       )
+        obj, created = Trade.objects.update_or_create(tradeid=dic['id'],
+                                                      account=account,
+                                                      symbol=dic['symbol'],
+                                                      defaults=defaults
+                                                      )
+        if created:
+            log.info('')
 
     try:
 
