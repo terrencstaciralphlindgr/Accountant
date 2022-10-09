@@ -116,6 +116,7 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
             structlog.processors.UnicodeDecoder(),
             structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
         ],
+        context_class=structlog.threadlocal.wrap_dict(dict),
         logger_factory=structlog.stdlib.LoggerFactory(),
         cache_logger_on_first_use=True,
     )
