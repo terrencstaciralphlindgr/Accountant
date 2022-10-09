@@ -33,7 +33,7 @@ def update_asset_inventory(self, pk):
         start_datetime = account.dt_created
 
     log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
-    # log.info('Update assets inventory')
+    log.warning('Update assets inventory')
 
     # Select trades and iterate
     trades = Trade.objects.filter(account=account,
@@ -102,7 +102,7 @@ def update_asset_inventory(self, pk):
             entry.save()
 
     else:
-        log.info('Update assets inventory no required')
+        log.warning('Update assets inventory no required')
         return
 
     log.info('Update assets inventory complete')
