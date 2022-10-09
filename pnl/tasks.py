@@ -237,5 +237,5 @@ def update_inventories(pk):
     """
     Update inventories
     """
-    update_asset_inventory(pk)
-    update_contract_inventory(pk)
+    update_asset_inventory.delay(pk)
+    update_contract_inventory.delay(pk)
