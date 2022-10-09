@@ -127,111 +127,89 @@ en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'json_formatter': {
-            '()': structlog.stdlib.ProcessorFormatter,
-            'processor': structlog.processors.JSONRenderer(sort_keys=False),
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json_formatter": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.processors.JSONRenderer(sort_keys=False),
         },
-        'plain_console': {
-            '()': structlog.stdlib.ProcessorFormatter,
-            'processor': structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True, sort_keys=False),
+        "plain_console": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True),
         },
-        'key_value': {
-            '()': structlog.stdlib.ProcessorFormatter,
-            'processor': structlog.processors.KeyValueRenderer(key_order=['level',
+        "key_value": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.processors.KeyValueRenderer(key_order=['level',
                                                                           'logger',
                                                                           'event',
                                                                           'timestamp'],
                                                                sort_keys=False
-                                                               ),
+            ),
         },
     },
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'plain_console',
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "plain_console",
         },
-        'json_file': {
-            'class': 'logging.handlers.WatchedFileHandler',
-            'filename': 'logs/json.log',
-            'formatter': 'json_formatter',
+        "json_file": {
+            "class": "logging.handlers.WatchedFileHandler",
+            "filename": "logs/json.log",
+            "formatter": "json_formatter",
         },
-        'flat_line_file': {
-            'class': 'logging.handlers.WatchedFileHandler',
-            'filename': 'logs/flat_line.log',
-            'formatter': 'key_value',
+        "flat_line_file": {
+            "class": "logging.handlers.WatchedFileHandler",
+            "filename": "logs/flat_line.log",
+            "formatter": "key_value",
         },
     },
-    'loggers': {
+    "loggers": {
         '': {
-            'handlers': ['console', 'flat_line_file', 'json_file'],
-            'level': 'WARNING',
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "WARNING",
             'propagate': False,
         },
-        'account': {
-            'handlers': ['console', 'flat_line_file', 'json_file'],
-            'level': 'INFO',
+        "authentication": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "INFO",
             'propagate': False,
         },
-        'authentication': {
-            'handlers': ['console', 'flat_line_file', 'json_file'],
-            'level': 'INFO',
+        "strategy": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "INFO",
             'propagate': False,
         },
-        'pnl': {
-            'handlers': ['console', 'flat_line_file', 'json_file'],
-            'level': 'INFO',
+        "trading": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "INFO",
             'propagate': False,
         },
-        'statistic': {
-            'handlers': ['console', 'flat_line_file', 'json_file'],
-            'level': 'INFO',
+        "market": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "INFO",
             'propagate': False,
         },
-        'market': {
-            'handlers': ['console', 'flat_line_file', 'json_file'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        'widget': {
-            'handlers': ['console', 'flat_line_file', 'json_file'],
-            'level': 'INFO',
-            'propagate': False,
-        }
     }
 }
 
 structlog.configure(
     processors=[
+        structlog.stdlib.filter_by_level,
         structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S.%f"),  # (fmt="iso"),
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
-        structlog.processors.ExceptionPrettyPrinter()
+        structlog.processors.ExceptionPrettyPrinter(),
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
     ],
     context_class=structlog.threadlocal.wrap_dict(dict),
-    # logger_factory=structlog.LoggerFactory(),
-    wrapper_class=structlog.BoundLogger,
+    logger_factory=structlog.stdlib.LoggerFactory(),
+    wrapper_class=structlog.stdlib.BoundLogger,
     cache_logger_on_first_use=True,
-
-    # processors=[
-    #     # structlog.contextvars.merge_contextvars,
-    #     structlog.stdlib.filter_by_level,
-    #     structlog.processors.TimeStamper(fmt="iso"),
-    #     structlog.stdlib.add_logger_name,
-    #     structlog.stdlib.add_log_level,
-    #     structlog.stdlib.PositionalArgumentsFormatter(),
-    #     structlog.processors.StackInfoRenderer(),
-    #     structlog.processors.format_exc_info,
-    #     structlog.processors.UnicodeDecoder(),
-    #     structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
-    # ],
-    # wrapper_class=structlog.stdlib.BoundLogger,
-    # context_class=dict,
-    # logger_factory=structlog.stdlib.LoggerFactory(),
-    # cache_logger_on_first_use=True,
 )
 
 AUTH_USER_MODEL = 'authentication.User'

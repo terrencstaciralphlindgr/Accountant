@@ -32,7 +32,7 @@ app.steps['worker'].add(DjangoStructLogInitStep)
 
 
 @setup_logging.connect
-def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
+def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pragma: no cover
     logging.config.dictConfig(
         {
             "version": 1,
@@ -40,17 +40,19 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
             "formatters": {
                 "json_formatter": {
                     "()": structlog.stdlib.ProcessorFormatter,
-                    "processor": structlog.processors.JSONRenderer(),
+                    "processor": structlog.processors.JSONRenderer(sort_keys=False),
                 },
                 "plain_console": {
                     "()": structlog.stdlib.ProcessorFormatter,
-                    "processor": structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True,
-                                                               sort_keys=True),
+                    "processor": structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True),
                 },
                 "key_value": {
                     "()": structlog.stdlib.ProcessorFormatter,
-                    "processor": structlog.processors.KeyValueRenderer(
-                        key_order=['timestamp', 'level', 'event', 'logger']),
+                    "processor": structlog.processors.KeyValueRenderer(sort_keys=False,
+                                                                       key_order=['level',
+                                                                                  'logger',
+                                                                                  'timestamp',
+                                                                                  'event']),
                 },
             },
             "handlers": {
@@ -58,25 +60,32 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
                     "class": "logging.StreamHandler",
                     "formatter": "plain_console",
                 },
-                "json_file": {
-                    "class": "logging.handlers.WatchedFileHandler",
-                    "filename": "logs/json.log",
-                    "formatter": "json_formatter",
-                },
-                "flat_line_file": {
-                    "class": "logging.handlers.WatchedFileHandler",
-                    "filename": "logs/flat_line.log",
-                    "formatter": "key_value",
-                },
             },
             "loggers": {
-                "django_structlog": {
+                '': {
                     "handlers": ["console", "flat_line_file", "json_file"],
                     "level": "WARNING",
+                    'propagate': False,
                 },
-                'pnl': {
-                    'handlers': ['console', 'flat_line_file', 'json_file'],
-                    'level': 'INFO',
+                "authentication": {
+                    "handlers": ["console", "flat_line_file", "json_file"],
+                    "level": "INFO",
+                    'propagate': False,
+                },
+                "strategy": {
+                    "handlers": ["console", "flat_line_file", "json_file"],
+                    "level": "INFO",
+                    'propagate': False,
+                },
+                "trading": {
+                    "handlers": ["console", "flat_line_file", "json_file"],
+                    "level": "INFO",
+                    'propagate': False,
+                },
+                "market": {
+                    "handlers": ["console", "flat_line_file", "json_file"],
+                    "level": "INFO",
+                    'propagate': False,
                 },
             }
         }
@@ -84,43 +93,25 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
 
     structlog.configure(
         processors=[
+            structlog.stdlib.filter_by_level,
             structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S.%f"),  # (fmt="iso"),
+            structlog.stdlib.add_logger_name,
+            structlog.stdlib.add_log_level,
+            structlog.stdlib.PositionalArgumentsFormatter(),
             structlog.processors.StackInfoRenderer(),
             structlog.processors.format_exc_info,
             structlog.processors.UnicodeDecoder(),
             structlog.processors.ExceptionPrettyPrinter(),
+            structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
         ],
         context_class=structlog.threadlocal.wrap_dict(dict),
-        wrapper_class=structlog.BoundLogger,
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        wrapper_class=structlog.stdlib.BoundLogger,
         cache_logger_on_first_use=True,
-
-        # processors=[
-        #     structlog.contextvars.merge_contextvars,
-        #     structlog.stdlib.filter_by_level,
-        #     structlog.processors.TimeStamper(fmt="iso"),
-        #     structlog.stdlib.add_logger_name,
-        #     structlog.stdlib.add_log_level,
-        #     structlog.stdlib.PositionalArgumentsFormatter(),
-        #     structlog.processors.StackInfoRenderer(),
-        #     structlog.processors.format_exc_info,
-        #     structlog.processors.UnicodeDecoder(),
-        #     structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
-        # ],
-        # logger_factory=structlog.stdlib.LoggerFactory(),
-        # cache_logger_on_first_use=True,
     )
 
 
-# @receiver(bind_extra_request_metadata)
-# def bind_unbind_metadata(request, logger, **kwargs):
-#     logger.unbind('request_id', 'ip', 'user_id')
+@receiver(bind_extra_request_metadata)
+def bind_unbind_metadata(request, logger, **kwargs):
+    logger.unbind('request_id', 'ip', 'user_id')
 
-@receiver(signals.bind_extra_task_metadata)
-def receiver_unbind_request_metadata(sender, signal, task=None, logger=None, **kwargs):
-    structlog.contextvars.unbind_contextvars('task_id',)
-
-
-# @after_setup_logger.connect
-# def setup_loggers(*args, **kwargs):
-#     logger = structlog.getLogger()
-#     return logger
