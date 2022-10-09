@@ -107,7 +107,7 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
         processors=[
             # structlog.contextvars.merge_contextvars,
             # structlog.stdlib.filter_by_level,
-            # structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.TimeStamper(fmt="iso"),
             # structlog.stdlib.add_logger_name,
             # structlog.stdlib.add_log_level,
             # structlog.stdlib.PositionalArgumentsFormatter(),
