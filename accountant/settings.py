@@ -207,7 +207,7 @@ LOGGING = {
 
 structlog.configure(
     processors=[
-        structlog.contextvars.merge_contextvars,
+        # structlog.contextvars.merge_contextvars,
         structlog.stdlib.filter_by_level,
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.stdlib.add_logger_name,
@@ -216,7 +216,7 @@ structlog.configure(
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
-        # structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
     ],
     context_class=dict,
     wrapper_class=structlog.stdlib.BoundLogger,
