@@ -6,7 +6,7 @@ from accountant.methods import datetime_directive_ISO_8601
 from accountant.celery import app
 from pnl.models import Inventory
 
-logger = structlog.get_logger()
+logger = structlog.get_logger("foo")
 logger.try_unbind('task_id', 'parent_task_id', 'request_id', 'user_id', 'ip',)
 
 
