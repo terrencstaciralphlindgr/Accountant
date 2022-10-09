@@ -5,9 +5,6 @@ from account.models import Account, Trade
 from accountant.methods import datetime_directive_ISO_8601
 from accountant.celery import app
 from pnl.models import Inventory
-from structlog.contextvars import clear_contextvars, reset_contextvars, get_contextvars
-from celery.utils.log import current_process_index, current_process
-from celery.app.log import Logging
 
 logger = structlog.get_logger(__name__)
 
