@@ -20,7 +20,7 @@ class BalanceSerializer(serializers.ModelSerializer):
 
             account = Account.objects.get(id=validated_data['id'])
             del validated_data['id']
-            
+
             try:
                 obj, created = Balance.objects.update_or_create(dt=validated_data['dt'],
                                                                 account=account,
