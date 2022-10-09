@@ -19,9 +19,9 @@ def update_asset_inventory(self, pk):
     """
 
     account = Account.objects.get(pk=pk)
-    log_asset = logger.bind(account=account.name)
+    log = logger.bind(account=account.name)
     if self.request.id:
-        log_asset.bind(worker=current_process().index, task=self.request.id[:3])
+        log.bind(worker=current_process().index, task=self.request.id[:3])
 
     # Determine start datetime
     entries = Inventory.objects.filter(account=account, instrument=0)
@@ -32,10 +32,8 @@ def update_asset_inventory(self, pk):
         prev_entries = False
         start_datetime = account.dt_created
 
-    log_asset.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
-    log_asset.info('Update assets inventory')
-
-    print(get_contextvars())
+    log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
+    log.info('Update assets inventory')
 
     # Select trades and iterate
     trades = Trade.objects.filter(account=account,
@@ -46,11 +44,11 @@ def update_asset_inventory(self, pk):
 
         for index, trade in enumerate(trades):
 
-            # log_asset.bind(trade=trade.tradeid,
+            # log.bind(trade=trade.tradeid,
             #          amount=trade.amount,
             #          side=trade.side)
 
-            log_asset.info('Create new entry')
+            log.info('Create new entry')
             entry = Inventory.objects.create(account=account,
                                              exchange=account.exchange,
                                              currency=trade.order.market.base,
@@ -79,7 +77,7 @@ def update_asset_inventory(self, pk):
 
             elif trade.side == 'sell':
                 if trade.amount > prev_stock:
-                    log_asset.warning('Non-inventoried asset sold')
+                    log.warning('Non-inventoried asset sold')
                     entry.stock = 0
                     entry.total_cost = 0
                 else:
@@ -104,10 +102,10 @@ def update_asset_inventory(self, pk):
             entry.save()
 
     else:
-        log_asset.info('Update assets inventory no required')
+        log.info('Update assets inventory no required')
         return
 
-    log_asset.info('Update assets inventory complete')
+    log.info('Update assets inventory complete')
 
 
 @app.task(bind=True, name='PnL_____Update_contract_inventory')
