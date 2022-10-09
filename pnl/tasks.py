@@ -5,10 +5,9 @@ from account.models import Account, Trade
 from accountant.methods import datetime_directive_ISO_8601
 from accountant.celery import app
 from pnl.models import Inventory
+from structlog.contextvars import clear_contextvars
 
-from market.models import Exchange, Market, Currency
-
-log = structlog.get_logger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 @app.task(bind=True, name='PnL_____Update_asset_inventory')
@@ -16,8 +15,9 @@ def update_asset_inventory(self, pk):
     """
     Update asset inventory
     """
+    clear_contextvars()
     account = Account.objects.get(pk=pk)
-    log.bind(account=account.name)
+    log = logger.bind(account=account.name)
     if self.request.id:
         log.bind(worker=current_process().index, task=self.request.id[:3])
 
@@ -111,8 +111,9 @@ def update_contract_inventory(self, pk):
     """
     Update contract inventory
     """
+    clear_contextvars()
     account = Account.objects.get(pk=pk)
-    log.bind(account=account.name)
+    log = logger.bind(account=account.name)
     if self.request.id:
         log.bind(worker=current_process().index, task=self.request.id[:3])
 
@@ -125,7 +126,7 @@ def update_contract_inventory(self, pk):
         prev_entries = False
         start_datetime = account.dt_created
 
-    log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
+    # log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
     log.info('Update contracts inventory')
 
     # Select trades and iterate
