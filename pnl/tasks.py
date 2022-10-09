@@ -6,10 +6,9 @@ from accountant.methods import datetime_directive_ISO_8601
 from accountant.celery import app
 from pnl.models import Inventory
 from structlog.contextvars import clear_contextvars, reset_contextvars
-from celery.utils.log import get_task_logger
+from celery.utils.log import current_process_index, current_process
 
-logger = get_task_logger(__name__)
-# logger = structlog.get_logger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 @app.task(bind=True, name='PnL_____Update_asset_inventory')

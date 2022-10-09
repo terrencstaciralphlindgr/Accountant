@@ -26,6 +26,9 @@ CELERY_TASK_QUEUES = (
     Queue('accountant_queue_2'),
 )
 
+# Logging
+app.conf.worker_hijack_root_logger = False
+
 # A step to initialize django-structlog
 app.steps['worker'].add(DjangoStructLogInitStep)
 
