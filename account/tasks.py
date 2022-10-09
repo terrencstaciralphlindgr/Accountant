@@ -9,12 +9,11 @@ from accountant.celery import app
 from account.models import Account, Order, Trade
 from market.models import Market
 from pnl.tasks import update_inventories
-from celery import chord, group
+from celery import chord
 import structlog
-from structlog.contextvars import clear_contextvars
 import ccxt
 
-logger = structlog.get_logger(__name__)
+logger = structlog.get_logger()
 
 
 @app.task(bind=True, name='Account______Fetch orders')
