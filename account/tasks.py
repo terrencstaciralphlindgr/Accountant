@@ -15,6 +15,7 @@ from structlog.contextvars import clear_contextvars
 import ccxt
 
 logger = structlog.get_logger(__name__)
+logger.try_unbind('task_id', 'parent_task_id')
 
 
 @app.task(bind=True, name='Account______Fetch orders')
@@ -25,7 +26,6 @@ def fetch_orders(self, pk):
     account = Account.objects.get(pk=pk)
     log = logger.bind(account=account.name)
     if self.request.id:
-        log.info(self.request.id)
         log.bind(worker=current_process().index, task=self.request.id[:3])
 
     # Determine start datetime
