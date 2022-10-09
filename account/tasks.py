@@ -9,7 +9,7 @@ from accountant.celery import app
 from account.models import Account, Order, Trade
 from market.models import Market
 from pnl.tasks import update_asset_inventory, update_contract_inventory
-from celery import chord, chain
+from celery import chord, group
 import structlog
 from structlog.contextvars import clear_contextvars
 import ccxt
@@ -210,8 +210,8 @@ def update_inventory(self):
 
     for account in Account.objects.all():
 
-        ch = chain(update_asset_inventory.si(account.id), update_contract_inventory.si(account.id))
+        gp = group(update_asset_inventory.si(account.id), update_contract_inventory.si(account.id))
 
         chord(fetch_orders.si(account.id),
-              fetch_trades.si(account.id))(ch())
+              fetch_trades.si(account.id))(gp())
 
