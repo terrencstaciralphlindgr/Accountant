@@ -17,14 +17,11 @@ def update_asset_inventory(self, pk):
     """
     Update asset inventory
     """
-    print(get_contextvars())
 
     account = Account.objects.get(pk=pk)
     log_asset = logger.bind(account=account.name)
     if self.request.id:
         log_asset.bind(worker=current_process().index, task=self.request.id[:3])
-
-    print(get_contextvars())
 
     # Determine start datetime
     entries = Inventory.objects.filter(account=account, instrument=0)
@@ -35,8 +32,10 @@ def update_asset_inventory(self, pk):
         prev_entries = False
         start_datetime = account.dt_created
 
-    # log_asset.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
+    log_asset.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
     log_asset.info('Update assets inventory')
+
+    print(get_contextvars())
 
     # Select trades and iterate
     trades = Trade.objects.filter(account=account,
