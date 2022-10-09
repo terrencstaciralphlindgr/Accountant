@@ -41,6 +41,13 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
                 "json_formatter": {
                     "()": structlog.stdlib.ProcessorFormatter,
                     "processor": structlog.processors.JSONRenderer(sort_keys=False),
+                    "foreign_pre_chain": [
+                        structlog.contextvars.merge_contextvars,
+                        structlog.processors.TimeStamper(fmt="iso"),
+                        structlog.stdlib.add_logger_name,
+                        structlog.stdlib.add_log_level,
+                        structlog.stdlib.PositionalArgumentsFormatter(),
+                    ],
                 },
                 "plain_console": {
                     "()": structlog.stdlib.ProcessorFormatter,
@@ -114,9 +121,10 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
     )
 
 
-# @receiver(bind_extra_request_metadata)
-# def bind_unbind_metadata(request, logger, **kwargs):
-#     logger.unbind('ip', 'user_id')  # 'request_id',
+@receiver(bind_extra_request_metadata)
+def bind_unbind_metadata(request, logger, **kwargs):
+    logger.unbind('task_id')  # , 'ip', 'user_id')  # 'request_id',
+
 
 @receiver(signals.modify_context_before_task_publish)
 def receiver_modify_context_before_task_publish(sender, signal, context, **kwargs):
