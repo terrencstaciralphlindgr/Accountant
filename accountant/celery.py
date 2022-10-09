@@ -26,7 +26,6 @@ CELERY_TASK_QUEUES = (
     Queue('accountant_queue_2'),
 )
 
-
 # A step to initialize django-structlog
 app.steps['worker'].add(DjangoStructLogInitStep)
 
@@ -73,9 +72,10 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
                     "handlers": ["console", "flat_line_file", "json_file"],
                     "level": "INFO",
                 },
-                "django_structlog_demo_project": {
-                    "handlers": ["console", "flat_line_file", "json_file"],
-                    "level": "INFO",
+                'pnl': {
+                    'handlers': ['console', 'flat_line_file', 'json_file'],
+                    'level': 'INFO',
+                    'propagate': False,
                 },
             }
         }
@@ -103,7 +103,6 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
 def bind_unbind_metadata(request, logger, **kwargs):
     logger.unbind('request_id', 'ip', 'user_id')
 
-
 # @receiver(signals.bind_extra_task_metadata)
 # def receiver_bind_extra_request_metadata(sender, signal, task=None, logger=None, **kwargs):
 #     logger.unbind('task_id')
@@ -113,4 +112,3 @@ def bind_unbind_metadata(request, logger, **kwargs):
 # def setup_loggers(*args, **kwargs):
 #     logger = structlog.getLogger()
 #     return logger
-
