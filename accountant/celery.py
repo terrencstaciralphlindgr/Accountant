@@ -124,7 +124,7 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
 @receiver(bind_extra_request_metadata)
 def bind_unbind_metadata(request, logger, **kwargs):
     structlog.contextvars.unbind_contextvars('task_id', 'parent_task_id', 'ip', 'user_id', 'request_id',)
-    # logger.unbind('task_id', 'parent_task_id')
+    logger.try_unbind('task_id', 'parent_task_id', 'ip', 'user_id', 'request_id',)
 
 
 @receiver(signals.modify_context_before_task_publish)
