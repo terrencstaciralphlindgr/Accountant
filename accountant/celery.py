@@ -28,6 +28,7 @@ CELERY_TASK_QUEUES = (
 
 # Logging
 app.conf.worker_redirect_stdouts = False
+app.conf.worker_redirect_stdouts_level = 'ERROR'
 
 
 # A step to initialize django-structlog
