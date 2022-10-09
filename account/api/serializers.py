@@ -17,9 +17,11 @@ class BalanceSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         if self.is_valid():
+
             account = Account.objects.get(id=validated_data['id'])
+            del validated_data['id']
+            
             try:
-                pprint(validated_data)
                 obj, created = Balance.objects.update_or_create(dt=validated_data['dt'],
                                                                 account=account,
                                                                 defaults=validated_data
