@@ -7,7 +7,7 @@ from accountant.celery import app
 from pnl.models import Inventory
 from structlog.contextvars import clear_contextvars, unbind_contextvars
 
-logger = structlog.get_logger(__name__)
+logg = structlog.get_logger(__name__)
 
 
 @app.task(bind=True, name='PnL_____Update_asset_inventory')
@@ -17,7 +17,7 @@ def update_asset_inventory(self, pk):
     """
     unbind_contextvars()
     account = Account.objects.get(pk=pk)
-    log_asset = logger.bind(account=account.name)
+    log_asset = logg.bind(account=account.name)
     if self.request.id:
         log_asset.bind(worker=current_process().index, task=self.request.id[:3])
 
@@ -113,7 +113,7 @@ def update_contract_inventory(self, pk):
     """
     unbind_contextvars()
     account = Account.objects.get(pk=pk)
-    log_cont = logger.bind(account=account.name)
+    log_cont = logg.bind(account=account.name)
     if self.request.id:
         log_cont.bind(worker=current_process().index, task=self.request.id[:3])
 
