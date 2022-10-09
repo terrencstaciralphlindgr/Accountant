@@ -75,7 +75,6 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
                 'pnl': {
                     'handlers': ['console', 'flat_line_file', 'json_file'],
                     'level': 'INFO',
-                    'propagate': False,
                 },
             }
         }
@@ -99,9 +98,9 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
     )
 
 
-@receiver(bind_extra_request_metadata)
-def bind_unbind_metadata(request, logger, **kwargs):
-    logger.unbind('request_id', 'ip', 'user_id')
+# @receiver(bind_extra_request_metadata)
+# def bind_unbind_metadata(request, logger, **kwargs):
+#     logger.unbind('request_id', 'ip', 'user_id')
 
 # @receiver(signals.bind_extra_task_metadata)
 # def receiver_bind_extra_request_metadata(sender, signal, task=None, logger=None, **kwargs):
