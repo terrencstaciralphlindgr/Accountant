@@ -7,6 +7,7 @@ from accountant.celery import app
 from pnl.models import Inventory
 
 logger = structlog.get_logger(__name__)
+logger.try_unbind('task_id', 'parent_task_id', 'request_id', 'user_id', 'ip',)
 
 
 @app.task(bind=True, name='PnL_____Update_asset_inventory')

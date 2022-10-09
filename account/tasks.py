@@ -15,7 +15,7 @@ from structlog.contextvars import clear_contextvars
 import ccxt
 
 logger = structlog.get_logger(__name__)
-logger.try_unbind('task_id', 'parent_task_id')
+logger.try_unbind('task_id', 'parent_task_id', 'request_id', 'user_id', 'ip',)
 
 
 @app.task(bind=True, name='Account______Fetch orders')
