@@ -68,10 +68,6 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
                 },
             },
             "loggers": {
-                "django_structlog": {
-                    "handlers": ["console", "flat_line_file", "json_file"],
-                    "level": "INFO",
-                },
                 'pnl': {
                     'handlers': ['console', 'flat_line_file', 'json_file'],
                     'level': 'INFO',
