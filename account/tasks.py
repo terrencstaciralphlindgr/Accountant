@@ -208,6 +208,10 @@ def fetch_trades(self, pk):
 @app.task(bind=True, name='Account______Update inventory')
 def update_inventory(self):
     for account in Account.objects.all():
-        chord(fetch_orders.si(account.id),
-              fetch_trades.si(account.id)
-              )(update_inventories.si(account.id))
+        fetch_orders(account.id)
+        fetch_trades(account.id)
+        update_inventories(account.id)
+
+        # chord(fetch_orders.si(account.id),
+        #       fetch_trades.si(account.id)
+        #       )(update_inventories.si(account.id))
