@@ -154,6 +154,7 @@ def fetch_trades(self, pk):
 
         Trade.objects.update_or_create(tradeid=dic['id'],
                                        account=account,
+                                       symbol=dic['symbol'],
                                        defaults=defaults
                                        )
 
