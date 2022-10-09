@@ -104,8 +104,8 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
 #     logger.unbind('request_id', 'ip', 'user_id')
 
 @receiver(signals.bind_extra_task_metadata)
-def receiver_bind_extra_request_metadata(sender, signal, task=None, logger=None, **kwargs):
-    logger.unbind('task_id')
+def receiver_unbind_request_metadata(sender, signal, task=None, logger=None, **kwargs):
+    structlog.contextvars.unbind_contextvars('task_id',)
 
 
 # @after_setup_logger.connect
