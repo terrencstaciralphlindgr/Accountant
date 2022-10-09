@@ -109,8 +109,8 @@ def bind_unbind_metadata(request, logger, **kwargs):
 #     logger.unbind('task_id')
 
 
-@after_setup_logger.connect
-def setup_loggers(*args, **kwargs):
-    logger = structlog.getLogger()
-    return logger
+# @after_setup_logger.connect
+# def setup_loggers(*args, **kwargs):
+#     logger = structlog.getLogger()
+#     return logger
 
