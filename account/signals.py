@@ -9,5 +9,5 @@ log = structlog.get_logger(__name__)
 
 @receiver(post_save, sender=Balance)
 def balance_saved(sender, instance, created, raw, using, **kwargs):
-    fetch_orders.delay(instance.account.id)
-    fetch_trades.delay(instance.account.id)
+    pass
+

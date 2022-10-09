@@ -8,6 +8,8 @@ from accountant.methods import datetime_directive_ccxt
 from accountant.celery import app
 from account.models import Account, Order, Trade
 from market.models import Market
+from pnl.tasks import update_asset_inventory, update_contract_inventory
+from celery import chord, chain
 import structlog
 from structlog.contextvars import clear_contextvars
 import ccxt
@@ -161,7 +163,7 @@ def fetch_trades(self, pk):
                                                       defaults=defaults
                                                       )
         if created:
-            log.info('')
+            log.info('Trade object created')
 
     try:
 
@@ -201,3 +203,15 @@ def fetch_trades(self, pk):
 
     else:
         log.info('Fetch trades complete')
+
+
+@app.task(bind=True, name='Account______Update inventory')
+def update_inventory(self):
+
+    for account in Account.objects.all():
+
+        ch = chain(update_asset_inventory.si(account.account.id), update_contract_inventory.si(account.account.id))
+
+        chord(fetch_orders.si(account.account.id),
+              fetch_trades.si(account.account.id))(ch())
+    
