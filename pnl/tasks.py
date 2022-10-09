@@ -33,7 +33,7 @@ def update_asset_inventory(self, pk):
         start_datetime = account.dt_created
 
     log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
-    log.info('Update assets inventory')
+    # log.info('Update assets inventory')
 
     # Select trades and iterate
     trades = Trade.objects.filter(account=account,
@@ -129,7 +129,7 @@ def update_contract_inventory(self, pk):
         start_datetime = account.dt_created
 
     # log_cont.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
-    log_cont.info('Update contracts inventory')
+    # log_cont.info('Update contracts inventory')
 
     # Select trades and iterate
     trades = Trade.objects.filter(account=account,
