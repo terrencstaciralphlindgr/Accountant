@@ -7,8 +7,11 @@ from accountant.celery import app
 from pnl.models import Inventory
 from structlog.contextvars import clear_contextvars, reset_contextvars
 from celery.utils.log import current_process_index, current_process
+from celery.app.log import Logging
 
 logger = structlog.get_logger(__name__)
+
+Logging.supports_color(True)
 
 
 @app.task(bind=True, name='PnL_____Update_asset_inventory')
