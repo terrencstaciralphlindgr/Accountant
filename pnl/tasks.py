@@ -5,7 +5,7 @@ from account.models import Account, Trade
 from accountant.methods import datetime_directive_ISO_8601
 from accountant.celery import app
 from pnl.models import Inventory
-from structlog.contextvars import clear_contextvars, unbind_contextvars
+from structlog.contextvars import clear_contextvars, unbind_contextvars, reset_contextvars
 from structlog.dev import ConsoleRenderer
 
 logg = structlog.get_logger(__name__)
@@ -17,6 +17,7 @@ def update_asset_inventory(self, pk):
     Update asset inventory
     """
     clear_contextvars()
+    reset_contextvars()
     ConsoleRenderer(pad_event=48)
 
     account = Account.objects.get(pk=pk)
@@ -115,6 +116,7 @@ def update_contract_inventory(self, pk):
     Update contract inventory
     """
     clear_contextvars()
+    reset_contextvars()
     ConsoleRenderer(pad_event=4)
 
     account = Account.objects.get(pk=pk)

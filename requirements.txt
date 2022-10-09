@@ -64,7 +64,6 @@ drf-spectacular==0.23.1
 drf-spectacular-sidecar==2022.8.1
 entrypoints==0.4
 environ==1.0
-fastapi==0.79.0
 ffn==0.3.6
 filelock==3.7.1
 flower==1.2.0
