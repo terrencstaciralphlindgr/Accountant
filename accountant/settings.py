@@ -136,7 +136,7 @@ LOGGING = {
         },
         'plain_console': {
             '()': structlog.stdlib.ProcessorFormatter,
-            'processor': structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True),
+            'processor': structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True, sort_keys=False),
         },
         'key_value': {
             '()': structlog.stdlib.ProcessorFormatter,
