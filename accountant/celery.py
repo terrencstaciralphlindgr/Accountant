@@ -43,7 +43,7 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):
                 },
                 "plain_console": {
                     "()": structlog.stdlib.ProcessorFormatter,
-                    "processor": structlog.dev.ConsoleRenderer(),
+                    "processor": structlog.dev.ConsoleRenderer(sort_keys=False),
                 },
                 "key_value": {
                     "()": structlog.stdlib.ProcessorFormatter,
