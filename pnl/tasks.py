@@ -30,7 +30,7 @@ def update_asset_inventory(self, pk):
         prev_entries = False
         start_datetime = account.dt_created
 
-    log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
+    # log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
     log.info('Update assets inventory')
 
     # Select trades and iterate
@@ -42,9 +42,9 @@ def update_asset_inventory(self, pk):
 
         for index, trade in enumerate(trades):
 
-            log.bind(trade=trade.tradeid,
-                     amount=trade.amount,
-                     side=trade.side)
+            # log.bind(trade=trade.tradeid,
+            #          amount=trade.amount,
+            #          side=trade.side)
 
             log.info('Create new entry')
             entry = Inventory.objects.create(account=account,
@@ -138,9 +138,9 @@ def update_contract_inventory(self, pk):
 
         for index, trade in enumerate(trades):
 
-            log.bind(trade=trade.tradeid,
-                     amount=trade.amount,
-                     side=trade.side)
+            # log.bind(trade=trade.tradeid,
+            #          amount=trade.amount,
+            #          side=trade.side)
 
             log.info('Create new entry')
             entry = Inventory.objects.create(account=account,
