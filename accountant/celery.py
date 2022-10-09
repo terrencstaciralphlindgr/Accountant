@@ -140,8 +140,8 @@ def receiver_bind_extra_request_metadata(sender, signal, task=None, logger=None,
     logger.unbind('task_id')
 
 
-@after_setup_logger.connect
-def setup_loggers(*args, **kwargs):
-    logger = structlog.getLogger()
-    return logger
+# @after_setup_logger.connect
+# def setup_loggers(*args, **kwargs):
+#     logger = structlog.getLogger()
+#     return logger
 
