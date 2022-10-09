@@ -211,7 +211,7 @@ structlog.configure(
         # structlog.stdlib.filter_by_level,
         # structlog.processors.TimeStamper(fmt="iso"),
         structlog.stdlib.add_logger_name,
-        structlog.processors.add_log_level,  # ***
+        # structlog.processors.add_log_level,  # ***
         # structlog.stdlib.PositionalArgumentsFormatter(),
         # structlog.processors.StackInfoRenderer(),
         # structlog.processors.format_exc_info,
