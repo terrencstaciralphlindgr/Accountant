@@ -180,6 +180,7 @@ LOGGING = {
         "pnl": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "DEBUG",
+            'propagate': True,
         },
         "market": {
             "handlers": ["console", "flat_line_file", "json_file"],
