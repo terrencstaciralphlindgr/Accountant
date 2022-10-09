@@ -9,11 +9,12 @@ from accountant.celery import app
 from account.models import Account, Order, Trade
 from market.models import Market
 from pnl.tasks import update_inventories
-from celery import chord
+from celery import chord, group
 import structlog
+from structlog.contextvars import clear_contextvars
 import ccxt
 
-logger = structlog.get_logger()
+logger = structlog.get_logger(__name__)
 
 
 @app.task(bind=True, name='Account______Fetch orders')
@@ -33,7 +34,7 @@ def fetch_orders(self, pk):
     params = dict(start_datetime=start_datetime)
 
     log.bind(start_datetime=start_datetime)
-    log.msg('Fetch orders')
+    log.info('Fetch orders')
 
     def create_update_order(dic, wallet=None):
 
@@ -92,18 +93,18 @@ def fetch_orders(self, pk):
                 create_update_order(dic)
 
     except ccxt.RequestTimeout as e:
-        log.msg('Fetch orders failure', cause='timeout')
+        log.error('Fetch orders failure', cause='timeout')
         raise self.retry(exc=e)
 
     except ccxt.NetworkError as e:
-        log.msg('Fetch orders failure', cause=str(e))
+        log.error('Fetch orders failure', cause=str(e))
         raise self.retry(exc=e)
 
     except Exception as e:
-        log.msg('Fetch orders failure', cause=str(e))
+        log.exception('Fetch orders failure', cause=str(e))
 
     else:
-        log.msg('Fetch orders complete')
+        log.info('Fetch orders complete')
 
 
 @app.task(bind=True, name='Account______Fetch trades')
@@ -160,7 +161,7 @@ def fetch_trades(self, pk):
                                                       defaults=defaults
                                                       )
         if created:
-            log.msg('Trade object created')
+            log.info('Trade object created')
 
     try:
 
@@ -175,7 +176,7 @@ def fetch_trades(self, pk):
                 symbols = (qs.filter(wallet=wallet))
                 for symbol in symbols:
                     response = client.fetchMyTrades(symbol, since=start_datetime)
-                    log.msg('Fetch trades', length=len(response), wallet=wallet, symbol=symbol)
+                    log.info('Fetch trades', length=len(response), wallet=wallet, symbol=symbol)
                     for dic in response:
                         create_trade(dic)
 
@@ -183,23 +184,23 @@ def fetch_trades(self, pk):
             symbols = list(qs)
             for symbol in symbols:
                 response = client.fetchMyTrades(symbol, since=start_datetime)
-                log.msg('Fetch trades', length=len(response), symbol=symbol)
+                log.info('Fetch trades', length=len(response), symbol=symbol)
                 for dic in response:
                     create_trade(dic)
 
     except ccxt.RequestTimeout as e:
-        log.msg('Fetch trades failure', cause='timeout')
+        log.error('Fetch trades failure', cause='timeout')
         raise self.retry(exc=e)
 
     except ccxt.NetworkError as e:
-        log.msg('Fetch trades failure', cause=str(e))
+        log.error('Fetch trades failure', cause=str(e))
         raise self.retry(exc=e)
 
     except Exception as e:
-        log.msg('Fetch trades failure', cause=str(e))
+        log.exception('Fetch trades failure', cause=str(e))
 
     else:
-        log.msg('Fetch trades complete')
+        log.info('Fetch trades complete')
 
 
 @app.task(bind=True, name='Account______Update inventory')
