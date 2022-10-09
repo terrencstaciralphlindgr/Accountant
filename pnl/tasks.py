@@ -5,8 +5,7 @@ from account.models import Account, Trade
 from accountant.methods import datetime_directive_ISO_8601
 from accountant.celery import app
 from pnl.models import Inventory
-from structlog.contextvars import clear_contextvars, unbind_contextvars, reset_contextvars
-from structlog.dev import ConsoleRenderer
+from structlog.contextvars import clear_contextvars, reset_contextvars
 
 logg = structlog.get_logger(__name__)
 
