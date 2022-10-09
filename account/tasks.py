@@ -8,7 +8,7 @@ from accountant.methods import datetime_directive_ccxt
 from accountant.celery import app
 from account.models import Account, Order, Trade
 from market.models import Market
-from pnl.tasks import update_asset_inventory, update_contract_inventory
+from pnl.tasks import update_inventories
 from celery import chord, group
 import structlog
 from structlog.contextvars import clear_contextvars
@@ -207,11 +207,9 @@ def fetch_trades(self, pk):
 
 @app.task(bind=True, name='Account______Update inventory')
 def update_inventory(self):
-
     for account in Account.objects.all():
-
-        gp = group(update_asset_inventory.si(account.id), update_contract_inventory.si(account.id))
-
         chord(fetch_orders.si(account.id),
-              fetch_trades.si(account.id))(gp())
-
+              fetch_trades.si(account.id)
+              )(
+                update_inventories.delay(account.id)
+            )

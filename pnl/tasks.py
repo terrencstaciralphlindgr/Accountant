@@ -230,3 +230,12 @@ def update_contract_inventory(self, pk):
         return
 
     log.info('Update contracts inventory complete')
+
+
+@app.task(name='PnL_____Update_inventories')
+def update_inventories(pk):
+    """
+    Update inventories
+    """
+    update_asset_inventory.delay(pk)
+    update_contract_inventory.delay(pk)
