@@ -210,8 +210,8 @@ def update_inventory(self):
 
     for account in Account.objects.all():
 
-        ch = chain(update_asset_inventory.si(account.account.id), update_contract_inventory.si(account.account.id))
+        ch = chain(update_asset_inventory.si(account.id), update_contract_inventory.si(account.id))
 
-        chord(fetch_orders.si(account.account.id),
-              fetch_trades.si(account.account.id))(ch())
-    
+        chord(fetch_orders.si(account.id),
+              fetch_trades.si(account.id))(ch())
+
