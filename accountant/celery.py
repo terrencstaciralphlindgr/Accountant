@@ -27,7 +27,7 @@ CELERY_TASK_QUEUES = (
 )
 
 # Logging
-app.conf.worker_hijack_root_logger = False
+app.conf.worker_log_format = "[%(message)s"
 
 # A step to initialize django-structlog
 app.steps['worker'].add(DjangoStructLogInitStep)
