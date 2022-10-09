@@ -221,7 +221,7 @@ structlog.configure(
     # context_class=dict,
     # wrapper_class=structlog.stdlib.BoundLogger,
     logger_factory=structlog.stdlib.LoggerFactory(),
-    cache_logger_on_first_use=True,
+    # cache_logger_on_first_use=True,
 )
 
 AUTH_USER_MODEL = 'authentication.User'
