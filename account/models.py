@@ -116,7 +116,7 @@ class Balance(TimestampedModel):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='balance', null=True)
     assets_total_value = models.FloatField(default=0)
     assets = models.JSONField(default=dict)
-    open_positions = models.JSONField(default=dict, null=True)
+    open_positions = models.JSONField(default=dict, blank=True, null=True)
     dt = models.DateTimeField()
 
     class Meta:
