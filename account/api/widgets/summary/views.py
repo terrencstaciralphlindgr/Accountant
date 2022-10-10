@@ -15,7 +15,6 @@ class AssetValueViewSet(APIView):
     def get(self, request, account_id):
 
         period = request.GET.get('period')
-
         log.info('Return asset value', period=period)
 
         asset_value = Balance.objects.filter(account__id=account_id).latest('dt').assets_total_value

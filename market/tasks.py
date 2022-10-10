@@ -2,17 +2,23 @@ from __future__ import absolute_import, unicode_literals
 from pprint import pprint
 from _datetime import datetime, timezone
 import ccxt
+import ccxt.pro
+import asyncio
+import subprocess
 import requests
 import urllib3
 import structlog
-from django.core.exceptions import ObjectDoesNotExist
+from billiard.process import current_process
+from django.db.utils import OperationalError
+from django.core.exceptions import ObjectDoesNotExist, SynchronousOnlyOperation
+from django.db import close_old_connections
 from celery import Task
 from accountant.settings import EXCHANGES
 from accountant.celery import app
-
 from market.models import Exchange, Market, Currency
+from market.methods import get_market
 
-log = structlog.get_logger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class BaseTaskWithRetry(Task):
@@ -278,3 +284,175 @@ def update_markets(exid):
 
     else:
         pass
+
+
+@app.task(bind=True, name='Market______Websocket loop')
+def ws_loops(self):
+    """
+    Establish websocket streams with exchanges and collect tickers price
+    """
+
+    if self.request.id:
+        log = logger.bind(worker=current_process().index, task=self.request.id[:3])
+
+    try:
+
+        async def method_loop(client, exid, wallet, method, private, args):
+
+            log = logger.bind()
+            if wallet:
+                log = log.bind(wallet=wallet)
+
+            if private:
+                account = args['account']
+                client.secret = account.api_secret
+                client.apiKey = account.api_key
+                log.info('Stream', account=account.name, method=method, exid=exid, key=client.apiKey[:4])
+
+            else:
+                symbol = args['symbol']
+                market = args['market']
+                log.info('Stream', symbol=symbol, method=method, exid=exid)
+
+            while True:
+
+                try:
+                    if private:
+
+                        response = await getattr(client, method)()
+
+                        if method == 'watchMyTrades':
+                            log.info('Trade event', account=account.name, key=client.apiKey[:4])
+                            insert_trade_event.delay(account.pk, response)
+
+                        elif method == 'watchOrders':
+                            log.info('Order event', account=account.name, key=client.apiKey[:4])
+                            insert_order_event.delay(account.pk, response)
+
+                    else:
+
+                        response = await getattr(client, method)(symbol)
+                        if method == 'watch_ticker':
+
+                            # log_ws.info(response['last'], symbol=response['symbol'])
+
+                            try:
+                                # Save ticker price every 5 sec.
+                                save_ticker_price(market, response, freq=5)
+
+                                if not market.is_updated():
+                                    log = log.bind(dt=dt_aware_now().strftime(datetime_directive_ISO_8601),
+                                                   market=market.type,
+                                                   last=response['last'])
+
+                                    Price.objects.create(market=market,
+                                                         response=response,
+                                                         dt=dt_aware_now(),
+                                                         last=response['last']
+                                                         )
+                                    log.info('Price object created')
+
+                            except Exception as e:
+                                log.error(traceback.format_exc())
+                                log.exception(str(e))
+
+                            else:
+                                pass
+
+                    if not private:
+                        await asyncio.sleep(2)
+
+                except ccxt.NetworkError as e:
+
+                    log.error('Stream disconnection', cause=str(e), method=method)
+
+                    log.warning('Revoke task', task_id=self.request.id)
+                    app.control.revoke(self.request.id, terminate=True, signal='SIGKILL')
+
+                    log.info('Restart containers...')
+                    cmd = '/usr/local/bin/docker-compose restart'
+                    subprocess.run(cmd, shell=True, check=True, stdout=subprocess.DEVNULL)
+
+                except Exception as e:
+                    log.error('Stream disconnection', cause=str(e))
+                    break
+
+            await client.close()
+
+        async def clients_loop(loop, dic):
+
+            exid, wallet, method, private, args = dic.values()
+
+            # Initialize exchange CCXT instance
+            exchange = Exchange.objects.get(exid=exid)
+            client = getattr(ccxt.pro, exchange.exid)
+            client = client(dict(enableRateLimit=True,
+                                 asyncio_loop=loop,
+                                 newUpdates=True
+                                 ))
+
+            if wallet:
+                if 'defaultType' in client.options:
+                    client.options['defaultType'] = wallet
+
+            # Close PostgreSQL connections
+            close_old_connections()
+
+            await asyncio.gather(method_loop(client, exid, wallet, method, private, args))
+            await client.close()
+
+        async def main(loop):
+
+            lst = []
+            exchanges = EXCHANGES.keys()
+
+            for exid in exchanges:
+                exchange = Exchange.objects.get(exid=exid)
+
+                for wallet_key in EXCHANGES[exid].keys():
+                    wallet = None if wallet_key == 'default' else wallet_key
+
+                    # Append markets loops
+                    for instrument in EXCHANGES[exid][wallet_key]['markets']['instruments']:
+                        for method in EXCHANGES[exid][wallet_key]['markets']['methods']:
+                            market = get_market(exchange,
+                                                base=instrument['base'],
+                                                quote=instrument['quote'],
+                                                tp=instrument['type']
+                                                )[0]
+
+                            lst.append(dict(exid=exid,
+                                            wallet=wallet,
+                                            method=method,
+                                            private=False,
+                                            args=dict(symbol=market.symbol,
+                                                      market=market
+                                                      )
+                                            )
+                                       )
+
+            # Close PostgreSQL connections
+            close_old_connections()
+
+            loops = [clients_loop(loop, dic) for dic in lst]
+
+            try:
+                await asyncio.gather(*loops)
+
+            except Exception as e:
+                log.exception(str(e))
+            else:
+                pass
+
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(main(loop))
+
+    except SynchronousOnlyOperation as e:
+        log.error('Stream establishment failed !', cause=str(e))
+
+    except OperationalError as e:
+        log.error('Operational error', cause=str(e))
+
+    except Exception as e:
+        log.error('Unknown exception', cause=str(e))
+

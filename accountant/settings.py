@@ -247,16 +247,25 @@ SIMPLE_JWT = {
     'USER_ID': 'user_id'
 }
 
-EXCHANGES = {
-    'binance': {
-        'supported_quote': ['USDT', 'BUSD'],
-        'supported_base': ['BTC']
-    },
-    'ftx': {
-        'supported_quote': ['USD'],
-        'supported_base': ['BTC']
-    }
-}
-
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
+EXCHANGES = {
+    'ftx': {
+        'default': {
+            'markets': {
+                'methods': ['watch_ticker'],
+                'private': False,
+                'instruments': [
+                    {'base': 'BTC',
+                     'quote': 'USD',
+                     'type': 'spot'
+                     },
+                    {'base': 'BTC',
+                     'quote': 'USD',
+                     'type': 'perpetual'
+                     }
+                ]
+            }
+        }
+    }
+}

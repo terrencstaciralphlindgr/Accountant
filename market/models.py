@@ -1,4 +1,4 @@
-import ccxt
+import ccxt.pro
 import structlog
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -70,7 +70,7 @@ class Exchange(TimestampedModel):
 
     def get_ccxt_client_pro(self, args=None):
 
-        client = getattr(ccxtpro, self.exid)
+        client = getattr(ccxt.pro, self.exid)
 
         if args:
             if 'account' in args:
