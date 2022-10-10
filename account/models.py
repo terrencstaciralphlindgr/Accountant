@@ -131,13 +131,18 @@ class Balance(TimestampedModel):
     def __str__(self):
         return str(self.dt.strftime(datetime_directive_ISO_8601))
 
-    def update_assets_value(self):
+    def calculate_assets_value(self):
 
         log = logger.bind()
         log.info('Update assets value', account=self.account.name)
 
+        dic = dict()
         quote = self.account.quote.code
         for code in self.assets.keys():
+
+            dic[code] = dict()
+            dic[code]['value'] = dict()
+
             if code != quote:
                 market, flip = get_market(self.account.exchange, base=code, quote=quote, tp='spot')
                 last = market.ticker['last']
@@ -146,8 +151,10 @@ class Balance(TimestampedModel):
                 last = 1
 
             for key in ['total', 'free', 'used']:
-                self.assets[code]['value'][key] = self.assets[code]['quantity'][key] * last
+                dic[code]['value'][key] = self.assets[code]['quantity'][key] * last
 
-        # Update total assets value
-        self.assets_total_value = sum([dic['total'] for dic in [k['value'] for k in [v for v in self.assets.values()]]])
-        self.assets['last_update'] = int(datetime.utcnow().timestamp())
+        # Calculate total assets value
+        dic['assets_total_value'] = sum([dic['total'] for dic in [k['value'] for k in [v for v in dic.values()]]])
+        dic['last_update'] = int(datetime.utcnow().timestamp())
+
+        return dic
