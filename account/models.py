@@ -125,13 +125,13 @@ class Balance(TimestampedModel):
         unique_together = ('dt', 'account',)
 
     def save(self, *args, **kwargs):
-        self.update_value()
+        self.update_assets_value()
         return super(Balance, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(self.dt.strftime(datetime_directive_ISO_8601))
 
-    def update_value(self):
+    def update_assets_value(self):
         quote = self.account.quote.code
         for code in self.assets.keys():
             if code != quote:
@@ -141,10 +141,9 @@ class Balance(TimestampedModel):
             else:
                 last = 1
 
-            self.assets[code]['total_value'] = self.assets[code]['total'] * last
-            self.assets[code]['free_value'] = self.assets[code]['free'] * last
-            self.assets[code]['used_value'] = self.assets[code]['used'] * last
+            for key in ['total', 'free', 'used']:
+                self.assets[code]['value'][key] = self.assets[code]['quantity'][key] * last
 
         # Update total assets value
-        self.assets_total_value = sum([k['total_value'] for k in [v for v in self.assets.values()]])
+        self.assets_total_value = sum([dic['total'] for dic in [k['value'] for k in [v for v in self.assets.values()]]])
         self.assets['last_update'] = int(datetime.utcnow().timestamp())
