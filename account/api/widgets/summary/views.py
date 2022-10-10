@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAdminUser
+from rest_framework.exceptions import ValidationError
 from account.models import Balance, Account
 import structlog
 
@@ -23,4 +24,5 @@ class AssetValueViewSet(APIView):
             return Response(dict(asset_value=asset_value, growth=growth))
 
         else:
-            log.error('Parameter str:period is required')
+            log.error('Parameter ?str:period is required')
+            raise ValidationError({'Please enter a valid ?str:period parameter.'})
