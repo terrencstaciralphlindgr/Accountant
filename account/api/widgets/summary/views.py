@@ -17,7 +17,10 @@ class AssetValueViewSet(APIView):
         period = request.GET.get('period')
         log.info('Return asset value', period=period)
 
-        asset_value = Balance.objects.filter(account__id=account_id).latest('dt').assets_total_value
+        dic = Balance.objects.filter(account__id=account_id).latest('dt').calculate_assets_value()
+        asset_value = dic['assets_total_value']
+
         growth = Account.objects.get(id=account_id).growth(period)
+        
         return Response(dict(asset_value=asset_value, growth=growth))
 
