@@ -116,7 +116,7 @@ class Balance(TimestampedModel):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='balance', null=True)
     assets_total_value = models.FloatField(default=0)
     assets = models.JSONField(default=dict)
-    open_positions = models.JSONField(default=dict)
+    open_positions = models.JSONField(default=dict, null=True)
     dt = models.DateTimeField()
 
     class Meta:
@@ -142,7 +142,7 @@ class Balance(TimestampedModel):
             self.assets[code]['total_value'] = self.assets[code]['total'] * last
             self.assets[code]['free_value'] = self.assets[code]['free'] * last
             self.assets[code]['used_value'] = self.assets[code]['used'] * last
-        
+
         # Update total assets value
         self.assets_total_value = sum([k['total_value'] for k in [v for v in self.assets.values()]])
         self.save()
