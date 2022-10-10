@@ -146,4 +146,3 @@ class Balance(TimestampedModel):
 
         # Update total assets value
         self.assets_total_value = sum([k['total_value'] for k in [v for v in self.assets.values()]])
-        self.save()
