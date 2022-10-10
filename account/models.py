@@ -134,6 +134,7 @@ class Balance(TimestampedModel):
         quote = self.account.quote.code
         for code in self.assets.keys():
 
+            print(self.account.exchange, code, quote)
             market, flip = get_market(self.account.exchange, base=code, quote=quote, tp='spot')
             last = market.ticker['last'] if code != quote else 1
 
