@@ -4,9 +4,9 @@ from pprint import pprint
 from datetime import datetime
 from billiard.process import current_process
 from django.core.exceptions import ObjectDoesNotExist
-from accountant.methods import datetime_directive_ccxt
+from accountant.methods import datetime_directive_ccxt, dt_aware_now
 from accountant.celery import app
-from account.models import Account, Order, Trade
+from account.models import Account, Order, Trade, Balance
 from market.models import Market
 from pnl.tasks import update_inventories
 from celery import chord
@@ -208,3 +208,11 @@ def update_inventory(self, pk):
     chord(fetch_orders.si(pk),
           fetch_trades.si(pk)
           )(update_inventories.si(pk))
+
+
+@app.task(bind=True, name='Account______Bulk update assets value')
+def bulk_update_assets_value(self, pk):
+    for account in Account.objects.all():
+        balance = Balance.object.get(account=account, dt=dt_aware_now())
+        balance.update_assets_value()
+        balance.save()
