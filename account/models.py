@@ -2,8 +2,9 @@ import uuid
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from accountant.models import TimestampedModel
-from accountant.methods import datetime_directive_ISO_8601, get_start_datetime
+from accountant.methods import datetime_directive_ISO_8601, get_start_datetime, dt_aware_now
 from market.models import Market, Exchange, Currency
+from market.methods import get_market
 import structlog
 
 log = structlog.get_logger(__name__)
@@ -123,7 +124,25 @@ class Balance(TimestampedModel):
         unique_together = ('dt', 'account',)
 
     def save(self, *args, **kwargs):
+        self.update_value()
         return super(Balance, self).save(*args, **kwargs)
 
     def __str__(self):
         return str(self.dt.strftime(datetime_directive_ISO_8601))
+
+    def update_value(self):
+        quote = self.account.quote.code
+        for code in self.assets.keys():
+            last, flip = get_market(self.account.exchange,
+                                    base=code,
+                                    quote=quote,
+                                    tp='spot'
+                                    ).last if code != quote else 1
+
+            self.assets[code]['total_value'] = self.assets[code]['total'] * last
+            self.assets[code]['free_value'] = self.assets[code]['free'] * last
+            self.assets[code]['used_value'] = self.assets[code]['used'] * last
+        
+        # Update total assets value
+        self.assets_total_value = sum([k['total_value'] for k in [v for v in self.assets.values()]])
+        self.save()

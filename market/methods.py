@@ -5,16 +5,9 @@ import structlog
 log = structlog.get_logger(__name__)
 
 
-def get_market(exchange, tp=None, base=None, quote=None, symbol=None, instrumentid=None, wallet=None):
+def get_market(exchange, tp=None, base=None, quote=None, symbol=None, wallet=None):
 
-    if instrumentid:
-        if wallet:
-            obj = Market.objects.get(exchange=exchange, instrument=instrumentid, wallet=wallet)
-        else:
-            obj = Market.objects.get(exchange=exchange, instrument=instrumentid)
-        return obj, False
-
-    elif symbol:
+    if symbol:
         if wallet:
             obj = Market.objects.get(exchange=exchange, symbol=symbol, wallet=wallet)
         else:
