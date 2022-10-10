@@ -318,7 +318,7 @@ def ws_loops(self):
                     response = await getattr(client, method)(symbol)
                     if method == 'watch_ticker':
 
-                        # log_ws.info(response['last'], symbol=response['symbol'])
+                        # log.info(response['last'], symbol=response['symbol'])
 
                         try:
                             # Save ticker price every 5 sec.
@@ -345,15 +345,7 @@ def ws_loops(self):
                     await asyncio.sleep(2)
 
                 except ccxt.NetworkError as e:
-
                     log.error('Stream disconnection', cause=str(e), method=method)
-
-                    log.warning('Revoke task', task_id=self.request.id)
-                    app.control.revoke(self.request.id, terminate=True, signal='SIGKILL')
-
-                    log.info('Restart containers...')
-                    cmd = '/usr/local/bin/docker-compose restart'
-                    subprocess.run(cmd, shell=True, check=True, stdout=subprocess.DEVNULL)
 
                 except Exception as e:
                     log.error('Stream disconnection', cause=str(e))

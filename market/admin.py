@@ -1,5 +1,5 @@
 from django.contrib import admin
-from market.models import Exchange, Market, Currency
+from market.models import Exchange, Market, Currency, Price
 
 admin.autodiscover()
 admin.site.enable_nav_sidebar = False
@@ -40,3 +40,9 @@ class CustomerAdmin(admin.ModelAdmin):
         ('exchange', admin.RelatedOnlyFieldListFilter),
     )
     ordering = ('code',)
+
+
+@admin.register(Price)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ('dt', 'market', 'dt_created',)
+    readonly_fields = ('dt', 'market', 'response', 'dt_created', 'dt_modified',)
