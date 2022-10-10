@@ -144,7 +144,7 @@ class Balance(TimestampedModel):
             self.assets[code]['total_value'] = self.assets[code]['total'] * last
             self.assets[code]['free_value'] = self.assets[code]['free'] * last
             self.assets[code]['used_value'] = self.assets[code]['used'] * last
-            self.assets[code]['timestamp'] = int(datetime.utcnow().timestamp())
 
         # Update total assets value
         self.assets_total_value = sum([k['total_value'] for k in [v for v in self.assets.values()]])
+        self.assets['last_update'] = int(datetime.utcnow().timestamp())
