@@ -133,12 +133,9 @@ class Balance(TimestampedModel):
     def update_value(self):
         quote = self.account.quote.code
         for code in self.assets.keys():
-            market, flip = get_market(self.account.exchange,
-                                      base=code,
-                                      quote=quote,
-                                      tp='spot'
-                                      )
-            last = market.last if code != quote else 1
+
+            market, flip = get_market(self.account.exchange, base=code, quote=quote, tp='spot')
+            last = market.ticker['last'] if code != quote else 1
 
             self.assets[code]['total_value'] = self.assets[code]['total'] * last
             self.assets[code]['free_value'] = self.assets[code]['free'] * last
