@@ -14,9 +14,10 @@ from django.core.exceptions import ObjectDoesNotExist, SynchronousOnlyOperation
 from django.db import close_old_connections
 from celery import Task
 from accountant.settings import EXCHANGES
+from accountant.methods import dt_aware_now, datetime_directive_ISO_8601
 from accountant.celery import app
-from market.models import Exchange, Market, Currency
-from market.methods import get_market
+from market.models import Exchange, Market, Currency, Price
+from market.methods import get_market, save_ticker_price
 
 logger = structlog.get_logger(__name__)
 
@@ -59,7 +60,8 @@ def update_status(exid):
     Fetch exchange status and update self.status dictionary
     """
 
-    log.info('Update status', exid=exid)
+    log = logger.bind(exid=exid)
+    log.info('Update status')
 
     try:
 
@@ -92,7 +94,9 @@ def update_currencies(exid):
     """
     Fetch currencies listed in the exchange and create/delete Currency
     """
-    log.info('Update currencies', exid=exid)
+
+    log = logger.bind(exid=exid)
+    log.info('Update currencies')
 
     try:
 
@@ -159,8 +163,8 @@ def update_markets(exid):
     """
     Fetch exchange markets and update Market
     """
-
-    log.info('Update market', exid=exid)
+    log = logger.bind(exid=exid)
+    log.info('Update market')
 
     try:
 
@@ -297,70 +301,48 @@ def ws_loops(self):
 
     try:
 
-        async def method_loop(client, exid, wallet, method, private, args):
+        async def method_loop(client, exid, wallet, method, args):
 
             log = logger.bind()
             if wallet:
                 log = log.bind(wallet=wallet)
 
-            if private:
-                account = args['account']
-                client.secret = account.api_secret
-                client.apiKey = account.api_key
-                log.info('Stream', account=account.name, method=method, exid=exid, key=client.apiKey[:4])
-
-            else:
-                symbol = args['symbol']
-                market = args['market']
-                log.info('Stream', symbol=symbol, method=method, exid=exid)
+            symbol = args['symbol']
+            market = args['market']
+            log.info('Stream', symbol=symbol, method=method, exid=exid)
 
             while True:
 
                 try:
-                    if private:
 
-                        response = await getattr(client, method)()
+                    response = await getattr(client, method)(symbol)
+                    if method == 'watch_ticker':
 
-                        if method == 'watchMyTrades':
-                            log.info('Trade event', account=account.name, key=client.apiKey[:4])
-                            insert_trade_event.delay(account.pk, response)
+                        # log_ws.info(response['last'], symbol=response['symbol'])
 
-                        elif method == 'watchOrders':
-                            log.info('Order event', account=account.name, key=client.apiKey[:4])
-                            insert_order_event.delay(account.pk, response)
+                        try:
+                            # Save ticker price every 5 sec.
+                            save_ticker_price(market, response, freq=5)
 
-                    else:
+                            if not market.is_updated():
+                                log = log.bind(dt=dt_aware_now().strftime(datetime_directive_ISO_8601),
+                                               market=market.type,
+                                               last=response['last'])
 
-                        response = await getattr(client, method)(symbol)
-                        if method == 'watch_ticker':
+                                Price.objects.create(market=market,
+                                                     response=response,
+                                                     dt=dt_aware_now(),
+                                                     last=response['last']
+                                                     )
+                                log.info('Price object created')
 
-                            # log_ws.info(response['last'], symbol=response['symbol'])
+                        except Exception as e:
+                            log.exception(str(e))
 
-                            try:
-                                # Save ticker price every 5 sec.
-                                save_ticker_price(market, response, freq=5)
+                        else:
+                            pass
 
-                                if not market.is_updated():
-                                    log = log.bind(dt=dt_aware_now().strftime(datetime_directive_ISO_8601),
-                                                   market=market.type,
-                                                   last=response['last'])
-
-                                    Price.objects.create(market=market,
-                                                         response=response,
-                                                         dt=dt_aware_now(),
-                                                         last=response['last']
-                                                         )
-                                    log.info('Price object created')
-
-                            except Exception as e:
-                                log.error(traceback.format_exc())
-                                log.exception(str(e))
-
-                            else:
-                                pass
-
-                    if not private:
-                        await asyncio.sleep(2)
+                    await asyncio.sleep(2)
 
                 except ccxt.NetworkError as e:
 
@@ -381,7 +363,7 @@ def ws_loops(self):
 
         async def clients_loop(loop, dic):
 
-            exid, wallet, method, private, args = dic.values()
+            exid, wallet, method, args = dic.values()
 
             # Initialize exchange CCXT instance
             exchange = Exchange.objects.get(exid=exid)
@@ -398,7 +380,7 @@ def ws_loops(self):
             # Close PostgreSQL connections
             close_old_connections()
 
-            await asyncio.gather(method_loop(client, exid, wallet, method, private, args))
+            await asyncio.gather(method_loop(client, exid, wallet, method, args))
             await client.close()
 
         async def main(loop):
@@ -424,7 +406,6 @@ def ws_loops(self):
                             lst.append(dict(exid=exid,
                                             wallet=wallet,
                                             method=method,
-                                            private=False,
                                             args=dict(symbol=market.symbol,
                                                       market=market
                                                       )

@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from datetime import datetime
 from market.models import Market
 import structlog
 log = structlog.get_logger(__name__)
@@ -49,3 +50,14 @@ def get_market(exchange, tp=None, base=None, quote=None, symbol=None, instrument
 
     else:
         log.error('Unable to select market')
+
+
+def save_ticker_price(market, response, freq):
+    ts = int(datetime.utcnow().timestamp())
+    if 'timestamp' in market.ticker:
+        if ts > market.ticker['timestamp'] + freq:
+            market.ticker = dict(timestamp=ts, last=response['last'])
+            market.save()
+    else:
+        market.ticker = dict(timestamp=ts, last=response['last'])
+        market.save()
