@@ -8,7 +8,7 @@ from market.models import Market, Exchange, Currency
 from market.methods import get_market
 import structlog
 
-log = structlog.get_logger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 class Account(TimestampedModel):
@@ -132,6 +132,10 @@ class Balance(TimestampedModel):
         return str(self.dt.strftime(datetime_directive_ISO_8601))
 
     def update_assets_value(self):
+
+        log = logger.bind()
+        log.info('Update assets value', account=self.account.name)
+
         quote = self.account.quote.code
         for code in self.assets.keys():
             if code != quote:
