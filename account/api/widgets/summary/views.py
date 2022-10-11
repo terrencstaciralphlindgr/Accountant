@@ -1,3 +1,5 @@
+from django.db.models.functions import Cast
+from django.db.models import DateTimeField
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
@@ -14,12 +16,11 @@ log = structlog.get_logger(__name__)
 class AssetValueViewSet(APIView):
 
     def get(self, request, account_id):
-
         dic = Balance.objects.filter(account__id=account_id).latest('dt').get_assets_value()
         return Response(dict(
             total_value=dic['assets_total_value'],
             last_update=dic['last_update'],
-            )
+        )
         )
 
 
@@ -48,16 +49,16 @@ class HistoricalValueViewSet(APIView):
         account = Account.objects.get(id=account_id)
         start_datetime = get_start_datetime(account, period)
 
-        price = Price.objects.filter(dt__gte=start_datetime, market__type='spot').order_by('-dt')
-        price = price.values('last', 'dt')
+        price = Price.objects.filter(dt__gte=start_datetime, market__type='spot').annotate(
+            date_only=Cast('dt', DateTimeField())).values("date_only", "last").order_by('-dt')
 
-        qs = Balance.objects.filter(account=account, dt__gte=start_datetime).order_by('-dt')
-        qs = qs.values('assets_total_value', 'dt')
+        qs = Balance.objects.filter(account=account, dt__gte=start_datetime).annotate(
+            date_only=Cast('dt', DateTimeField())).values("date_only", "assets_total_value").order_by('-dt')
 
         data = {}
         for (a, b) in zip(qs, price):
-            str_date = a['dt'].strftime(datetime_directive_ISO_8601)
-            if a['dt'] == b['dt']:
+            str_date = a['date_only'].strftime(datetime_directive_ISO_8601)
+            if a['date_only'] == b['date_only']:
                 data[str_date] = {}
                 data[str_date]['last'] = b['last']
                 data[str_date]['assets_total_value'] = a['assets_total_value']
