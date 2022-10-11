@@ -11,27 +11,9 @@ from market.models import Market
 from pnl.tasks import update_inventories
 from celery import chord
 import structlog
-import logging
 import ccxt
 
-structlog.configure(
-    processors=[
-        # Prepare event dict for `ProcessorFormatter`.
-        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
-    ],
-    logger_factory=structlog.stdlib.LoggerFactory(),
-)
-
-formatter = structlog.stdlib.ProcessorFormatter(
-    processors=[structlog.dev.ConsoleRenderer()],
-)
-
-handler = logging.StreamHandler()
-# Use OUR `ProcessorFormatter` to format all `logging` entries.
-handler.setFormatter(formatter)
-logger = logging.getLogger()
-logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+logger = structlog.getLogger(__name__)
 
 
 @app.task(bind=True, name='Account______Fetch orders')
