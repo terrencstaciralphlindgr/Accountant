@@ -21,7 +21,6 @@ logger = structlog.get_logger(__name__)
 
 handler = logging.StreamHandler(sys.stdout)
 # handler.setFormatter(structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True))
-logger = logging.getLogger()
 logger.addHandler(handler)
 
 
