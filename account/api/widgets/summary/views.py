@@ -14,11 +14,7 @@ class AssetValueViewSet(APIView):
 
     def get(self, request, account_id):
 
-        period = request.GET.get('period')
-        log.info('Return asset value', period=period)
-
-        dic = Balance.objects.filter(account__id=account_id).latest('dt').calculate_assets_value()
-
+        dic = Balance.objects.filter(account__id=account_id).latest('dt').get_assets_value()
         return Response(dict(
             total_value=dic['assets_total_value'],
             last_update=dic['last_update'],
@@ -30,10 +26,16 @@ class AssetValueViewSet(APIView):
 class AssetGrowthViewSet(APIView):
 
     def get(self, request, account_id):
-
         period = request.GET.get('period')
-        log.info('Return growth', period=period)
-
         growth = Account.objects.get(id=account_id).growth(period)
         return Response(growth)
+
+
+@permission_classes([IsAdminUser])
+class ExpositionViewSet(APIView):
+
+    def get(self, request, account_id):
+        growth = Account.objects.get(id=account_id)
+        return Response(growth)
+
 

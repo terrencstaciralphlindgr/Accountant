@@ -62,6 +62,22 @@ class Account(TimestampedModel):
                 growth_rate=cumulated_realized_pnl / initial_asset_value
             )
 
+    def current_exposition(self):
+
+        balance = Balance.objects.filter(account=self).latest('dt')
+
+        # Select asset value
+        asset = balance.get_assets_value()
+        assets_value_total = asset['assets_total_value']
+        exposition_value = asset['BTC']['value']['total']
+
+        # Select position value
+        pos = balance.get_position_value()
+        if 'position_value' in pos:
+            exposition_value += pos['position_value']
+
+        return exposition_value / assets_value_total
+
 
 class Order(TimestampedModel):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True, editable=False)
@@ -138,10 +154,12 @@ class Balance(TimestampedModel):
     def __str__(self):
         return str(self.dt.strftime(datetime_directive_ISO_8601))
 
-    def calculate_assets_value(self):
-
-        log = logger.bind()
-        log.info('Update assets value', account=self.account.name)
+    def get_assets_value(self):
+        """
+        Return assets value with the latest ticker price
+        """
+        log = logger.bind(account=self.account.name)
+        log.info('Get latest assets value')
 
         dic = dict()
         quote = self.account.quote.code
@@ -167,3 +185,32 @@ class Balance(TimestampedModel):
         dic['last_update'] = datetime.utcnow().strftime(datetime_directive_ISO_8601)
 
         return dic
+
+    def get_position_value(self):
+        """
+        Return notional value of open positions with the latest ticker price
+        """
+        log = logger.bind(account=self.account.name)
+        log.info('Get latest position value')
+
+        if 'side' in self.open_positions:
+
+            side = self.open_positions['side']
+            contacts = self.open_positions['contracts']
+            symbol = self.open_positions['market__symbol']
+
+            # Get last price
+            market, flip = get_market(self.account.exchange, symbol=symbol)
+            last = market.ticker['last']
+
+            position_value = contacts * last if side == 'buy' else -contacts * last
+
+            return dict(
+                side=self.open_positions['side'],
+                notional=self.open_positions['contracts'] * last,
+                position_value=position_value,
+                last_update=datetime.utcnow().strftime(datetime_directive_ISO_8601)
+            )
+
+        else:
+            return dict()
