@@ -17,6 +17,7 @@ import celery
 # logger = structlog.get_logger(__name__)
 # logger.try_unbind('task_id', 'parent_task_id', 'request_id', 'user_id', 'ip',)
 logger = structlog.wrap_logger(celery.utils.log.get_task_logger(__name__))
+print(logger)
 
 
 @app.task(bind=True, name='Account______Fetch orders')
