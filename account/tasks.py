@@ -11,17 +11,27 @@ from market.models import Market
 from pnl.tasks import update_inventories
 from celery import chord
 import structlog
-import sys
 import logging
 import ccxt
-import celery
 
-logger = structlog.get_logger(__name__)
-# logger.try_unbind('task_id', 'parent_task_id', 'request_id', 'user_id', 'ip',)
+structlog.configure(
+    processors=[
+        # Prepare event dict for `ProcessorFormatter`.
+        structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
+    ],
+    logger_factory=structlog.stdlib.LoggerFactory(),
+)
 
-handler = logging.StreamHandler(sys.stdout)
-# handler.setFormatter(structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True))
+formatter = structlog.stdlib.ProcessorFormatter(
+    processors=[structlog.dev.ConsoleRenderer()],
+)
+
+handler = logging.StreamHandler()
+# Use OUR `ProcessorFormatter` to format all `logging` entries.
+handler.setFormatter(formatter)
+logger = logging.getLogger()
 logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 
 @app.task(bind=True, name='Account______Fetch orders')
