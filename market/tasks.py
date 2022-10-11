@@ -64,7 +64,7 @@ def ws_loops(self):
 
             log.warning('Revoke task', task_id=self.request.id)
             app.control.revoke(self.request.id, terminate=True, signal='SIGKILL')
-            
+
             while True:
 
                 try:
