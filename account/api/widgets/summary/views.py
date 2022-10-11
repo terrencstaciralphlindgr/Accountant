@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAdminUser
-from rest_framework.exceptions import ValidationError
+from accountant.methods import get_start_datetime
 from account.models import Balance, Account
 import structlog
 
@@ -39,3 +39,11 @@ class ExpositionViewSet(APIView):
         return Response(exposition)
 
 
+@permission_classes([IsAdminUser])
+class HistoricalValueViewSet(APIView):
+
+    def get(self, request, account_id):
+        period = request.GET.get('period')
+
+        qs = Balance.objects.filter(account__id=account_id, datetime__gte=get_start_datetime(self, period))
+        return Response(qs.values('assets_total_value', 'dt'))
