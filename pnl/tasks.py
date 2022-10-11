@@ -7,8 +7,8 @@ from accountant.celery import app
 from pnl.models import Inventory
 import celery
 
-# logger = structlog.get_logger(__name__)
-logger = structlog.wrap_logger(celery.utils.log.get_task_logger(__name__))
+logger = structlog.get_logger(__name__)
+# logger = structlog.wrap_logger(celery.utils.log.get_task_logger(__name__))
 print(logger)
 
 
