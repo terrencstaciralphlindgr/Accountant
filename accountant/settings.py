@@ -121,7 +121,7 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
-CELERY_IMPORTS = ('authentication.tasks', 'pnl.tasks', 'statistic.tasks', 'account.tasks', 'widget.tasks',)
+CELERY_IMPORTS = ('authentication.tasks', 'pnl.tasks', 'statistic.tasks', 'account.tasks', 'market.tasks')
 
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
