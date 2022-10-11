@@ -89,9 +89,9 @@ def ws_loops(self):
                     await asyncio.sleep(2)
 
                 except ccxt.NetworkError as e:
-
                     log.error('Stream disconnection', cause=str(e), method=method)
                     log.info('Retry task...')
+
                     raise self.retry(exc=e, countdown=5)
 
                 except Exception as e:
