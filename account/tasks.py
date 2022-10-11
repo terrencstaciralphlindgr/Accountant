@@ -11,11 +11,18 @@ from market.models import Market
 from pnl.tasks import update_inventories
 from celery import chord
 import structlog
+import sys
+import logging
 import ccxt
 import celery
 
 logger = structlog.get_logger(__name__)
 # logger.try_unbind('task_id', 'parent_task_id', 'request_id', 'user_id', 'ip',)
+
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True))
+logger = logging.getLogger()
+logger.addHandler(handler)
 
 
 @app.task(bind=True, name='Account______Fetch orders')
