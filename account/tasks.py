@@ -27,7 +27,7 @@ logger = structlog.wrap_logger(
 )
 print(logger)
 
-logger.info('Fetch test')
+logger.msg('Fetch test')
 
 
 @app.task(bind=True, name='Account______Fetch orders')
