@@ -19,8 +19,6 @@ class AssetValueViewSet(APIView):
 
         dic = Balance.objects.filter(account__id=account_id).latest('dt').calculate_assets_value()
 
-        growth = Account.objects.get(id=account_id).growth(period)
-
         return Response(dict(
             total_value=dic['assets_total_value'],
             last_update=dic['last_update'],
