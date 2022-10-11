@@ -1,6 +1,7 @@
 from __future__ import absolute_import, unicode_literals
 from pprint import pprint
 from _datetime import datetime, timezone
+import os
 import ccxt
 import ccxt.pro
 import asyncio
@@ -309,6 +310,7 @@ def ws_loops(self):
 
             symbol = args['symbol']
             market = args['market']
+
             log.info('Stream', symbol=symbol, method=method, exid=exid)
 
             while True:
@@ -345,7 +347,10 @@ def ws_loops(self):
                     await asyncio.sleep(2)
 
                 except ccxt.NetworkError as e:
+
                     log.error('Stream disconnection', cause=str(e), method=method)
+                    log.info('Restart containers...')
+                    os.system("docker-compose restart")
 
                 except Exception as e:
                     log.error('Stream disconnection', cause=str(e))

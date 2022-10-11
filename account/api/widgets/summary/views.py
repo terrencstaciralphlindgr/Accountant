@@ -53,4 +53,9 @@ class HistoricalValueViewSet(APIView):
         qs = Balance.objects.filter(account=account, dt__gte=get_start_datetime(account, period)).order_by('-dt')
         qs = qs.values('assets_total_value', 'dt')
 
+        res = dict()
+        for dic in price:
+            res[dic['dt']] = dic['last']
+            res[dic['dt']] = dic['last']
+
         return Response(qs.values('assets_total_value', 'dt'))
