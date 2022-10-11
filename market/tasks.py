@@ -62,6 +62,9 @@ def ws_loops(self):
 
             log.info('Stream', symbol=symbol, method=method, exid=exid)
 
+            log.warning('Revoke task', task_id=self.request.id)
+            app.control.revoke(self.request.id, terminate=True, signal='SIGKILL')
+            
             while True:
 
                 try:
