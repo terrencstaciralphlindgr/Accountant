@@ -16,7 +16,20 @@ import celery
 
 # logger = structlog.get_logger(__name__)
 # logger.try_unbind('task_id', 'parent_task_id', 'request_id', 'user_id', 'ip',)
-logger = structlog.wrap_logger(celery.utils.log.get_task_logger(__name__))
+logger = structlog.wrap_logger(
+    celery.utils.log.get_task_logger(__name__),
+    processors=[
+        structlog.contextvars.merge_contextvars,
+        structlog.stdlib.filter_by_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder()
+    ]
+)
 print(logger)
 
 logger.info('Fetch test')
