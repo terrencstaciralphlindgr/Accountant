@@ -33,75 +33,79 @@ app.steps['worker'].add(DjangoStructLogInitStep)
 
 @setup_logging.connect
 def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pragma: no cover
-    logging.config.dictConfig(
-        {
-            "version": 1,
-            "disable_existing_loggers": False,
-            "formatters": {
-                "json_formatter": {
-                    "()": structlog.stdlib.ProcessorFormatter,
-                    "processor": structlog.processors.JSONRenderer(sort_keys=False),
-                    "foreign_pre_chain": [
-                        structlog.contextvars.merge_contextvars,
-                        structlog.processors.TimeStamper(fmt="iso"),
-                        structlog.stdlib.add_logger_name,
-                        structlog.stdlib.add_log_level,
-                        structlog.stdlib.PositionalArgumentsFormatter(),
-                    ],
-                },
-                "plain_console": {
-                    "()": structlog.stdlib.ProcessorFormatter,
-                    "processor": structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True),
-                },
-                "key_value": {
-                    "()": structlog.stdlib.ProcessorFormatter,
-                    "processor": structlog.processors.KeyValueRenderer(sort_keys=False,
-                                                                       key_order=['level',
-                                                                                  'logger',
-                                                                                  'timestamp',
-                                                                                  'event']),
-                },
-            },
-            "handlers": {
-                "console": {
-                    "class": "logging.StreamHandler",
-                    "formatter": "plain_console",
-                },
-            },
-            "loggers": {
-                "authentication": {
-                    "handlers": ["console", "flat_line_file", "json_file"],
-                    "level": "INFO",
-                    'propagate': False,
-                },
-                "pnl": {
-                    "handlers": ["console", "flat_line_file", "json_file"],
-                    "level": "INFO",
-                    'propagate': False,
-                },
-                "market": {
-                    "handlers": ["console", "flat_line_file", "json_file"],
-                    "level": "INFO",
-                    'propagate': False,
-                },
-                "account": {
-                    "handlers": ["console", "flat_line_file", "json_file"],
-                    "level": "INFO",
-                    'propagate': False,
-                },
-                "statistics": {
-                    "handlers": ["console", "flat_line_file", "json_file"],
-                    "level": "INFO",
-                    'propagate': False,
-                },
-                "widget": {
-                    "handlers": ["console", "flat_line_file", "json_file"],
-                    "level": "INFO",
-                    'propagate': False,
-                },
-            }
-        }
-    )
+    from logging.config import dictConfig
+    from django.conf import settings
+    dictConfig(settings.LOGGING)
+
+    # logging.config.dictConfig(
+    #     {
+    #         "version": 1,
+    #         "disable_existing_loggers": False,
+    #         "formatters": {
+    #             "json_formatter": {
+    #                 "()": structlog.stdlib.ProcessorFormatter,
+    #                 "processor": structlog.processors.JSONRenderer(sort_keys=False),
+    #                 "foreign_pre_chain": [
+    #                     structlog.contextvars.merge_contextvars,
+    #                     structlog.processors.TimeStamper(fmt="iso"),
+    #                     structlog.stdlib.add_logger_name,
+    #                     structlog.stdlib.add_log_level,
+    #                     structlog.stdlib.PositionalArgumentsFormatter(),
+    #                 ],
+    #             },
+    #             "plain_console": {
+    #                 "()": structlog.stdlib.ProcessorFormatter,
+    #                 "processor": structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True),
+    #             },
+    #             "key_value": {
+    #                 "()": structlog.stdlib.ProcessorFormatter,
+    #                 "processor": structlog.processors.KeyValueRenderer(sort_keys=False,
+    #                                                                    key_order=['level',
+    #                                                                               'logger',
+    #                                                                               'timestamp',
+    #                                                                               'event']),
+    #             },
+    #         },
+    #         "handlers": {
+    #             "console": {
+    #                 "class": "logging.StreamHandler",
+    #                 "formatter": "plain_console",
+    #             },
+    #         },
+    #         "loggers": {
+    #             "authentication": {
+    #                 "handlers": ["console", "flat_line_file", "json_file"],
+    #                 "level": "INFO",
+    #                 'propagate': False,
+    #             },
+    #             "pnl": {
+    #                 "handlers": ["console", "flat_line_file", "json_file"],
+    #                 "level": "INFO",
+    #                 'propagate': False,
+    #             },
+    #             "market": {
+    #                 "handlers": ["console", "flat_line_file", "json_file"],
+    #                 "level": "INFO",
+    #                 'propagate': False,
+    #             },
+    #             "account": {
+    #                 "handlers": ["console", "flat_line_file", "json_file"],
+    #                 "level": "INFO",
+    #                 'propagate': False,
+    #             },
+    #             "statistics": {
+    #                 "handlers": ["console", "flat_line_file", "json_file"],
+    #                 "level": "INFO",
+    #                 'propagate': False,
+    #             },
+    #             "widget": {
+    #                 "handlers": ["console", "flat_line_file", "json_file"],
+    #                 "level": "INFO",
+    #                 'propagate': False,
+    #             },
+    #         }
+    #     }
+    # )
 #
 #     structlog.configure(
 #         processors=[

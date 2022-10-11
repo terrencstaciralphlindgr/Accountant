@@ -175,33 +175,23 @@ LOGGING = {
         "authentication": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "INFO",
-            'propagate': False,
         },
         "pnl": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "DEBUG",
-            'propagate': False,
         },
         "market": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "INFO",
-            'propagate': False,
         },
         "account": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "INFO",
-            'propagate': False,
         },
         "statistics": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "INFO",
-            'propagate': False,
-        },
-        "widget": {
-            "handlers": ["console", "flat_line_file", "json_file"],
-            "level": "INFO",
-            'propagate': False,
-        },
+        }
     }
 }
 
@@ -211,15 +201,13 @@ structlog.configure(
         structlog.stdlib.filter_by_level,
         structlog.processors.TimeStamper(fmt="iso"),
         structlog.stdlib.add_logger_name,
-        structlog.processors.add_log_level,  # ***
+        structlog.stdlib.add_log_level,
         structlog.stdlib.PositionalArgumentsFormatter(),
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
         structlog.processors.UnicodeDecoder(),
         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
     ],
-    # context_class=dict,
-    # wrapper_class=structlog.stdlib.BoundLogger,
     logger_factory=structlog.stdlib.LoggerFactory(),
     cache_logger_on_first_use=True,
 )
