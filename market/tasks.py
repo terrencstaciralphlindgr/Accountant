@@ -62,12 +62,6 @@ def ws_loops(self):
 
             log.info('Stream', symbol=symbol, method=method, exid=exid)
 
-            try:
-                p = 1/market
-            except Exception as e:
-                log.info('Restart after 5s')
-                raise self.retry(exc=e, countdown=5)
-
             while True:
 
                 try:
@@ -97,8 +91,8 @@ def ws_loops(self):
                 except ccxt.NetworkError as e:
 
                     log.error('Stream disconnection', cause=str(e), method=method)
-                    log.info('Restart containers...')
-                    os.system("docker-compose restart")
+                    log.info('Retry task...')
+                    raise self.retry(exc=e, countdown=5)
 
                 except Exception as e:
                     log.error('Stream disconnection', cause=str(e))
