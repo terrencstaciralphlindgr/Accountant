@@ -37,6 +37,144 @@ class BaseTaskWithRetry(Task):
     retry_jitter = False
 
 
+@app.task(bind=True, name='Market______Websocket loop')
+def ws_loops(self):
+    """
+    Establish websocket streams with exchanges and collect tickers price
+    """
+
+    log = logger.bind(start=True)
+    if self.request.id:
+        log = logger.bind(worker=current_process().index, task=self.request.id[:3])
+
+    try:
+
+        async def method_loop(client, exid, wallet, method, args):
+
+            log = logger.bind()
+            if wallet:
+                log = log.bind(wallet=wallet)
+
+            symbol = args['symbol']
+            market = args['market']
+
+            log.info('Stream', symbol=symbol, method=method, exid=exid)
+
+            while True:
+
+                try:
+
+                    response = await getattr(client, method)(symbol)
+                    if method == 'watch_ticker':
+
+                        # log.info(response['last'], symbol=response['symbol'])
+
+                        # Save ticker price every 5 sec.
+                        save_ticker_price(market, response, freq=5)
+
+                        if not market.is_updated():
+                            log = log.bind(dt=dt_aware_now().strftime(datetime_directive_ISO_8601),
+                                           market=market.type,
+                                           last=response['last'])
+
+                            Price.objects.create(market=market,
+                                                 response=response,
+                                                 dt=dt_aware_now(),
+                                                 last=response['last']
+                                                 )
+                            log.info('Price object created')
+
+                    await asyncio.sleep(2)
+
+                except ccxt.NetworkError as e:
+
+                    log.error('Stream disconnection', cause=str(e), method=method)
+                    log.info('Restart containers...')
+                    os.system("docker-compose restart")
+
+                except Exception as e:
+                    log.error('Stream disconnection', cause=str(e))
+                    break
+
+            await client.close()
+
+        async def clients_loop(loop, dic):
+
+            exid, wallet, method, args = dic.values()
+
+            # Initialize exchange CCXT instance
+            exchange = Exchange.objects.get(exid=exid)
+            client = getattr(ccxt.pro, exchange.exid)
+            client = client(dict(enableRateLimit=True,
+                                 asyncio_loop=loop,
+                                 newUpdates=True
+                                 ))
+
+            if wallet:
+                if 'defaultType' in client.options:
+                    client.options['defaultType'] = wallet
+
+            # Close PostgreSQL connections
+            close_old_connections()
+
+            await asyncio.gather(method_loop(client, exid, wallet, method, args))
+            await client.close()
+
+        async def main(loop):
+
+            lst = []
+            exchanges = EXCHANGES.keys()
+
+            for exid in exchanges:
+                exchange = Exchange.objects.get(exid=exid)
+
+                for wallet_key in EXCHANGES[exid].keys():
+                    wallet = None if wallet_key == 'default' else wallet_key
+
+                    # Append markets loops
+                    for instrument in EXCHANGES[exid][wallet_key]['markets']['instruments']:
+                        for method in EXCHANGES[exid][wallet_key]['markets']['methods']:
+                            market = get_market(exchange,
+                                                base=instrument['base'],
+                                                quote=instrument['quote'],
+                                                tp=instrument['type']
+                                                )[0]
+
+                            lst.append(dict(exid=exid,
+                                            wallet=wallet,
+                                            method=method,
+                                            args=dict(symbol=market.symbol,
+                                                      market=market
+                                                      )
+                                            )
+                                       )
+
+            # Close PostgreSQL connections
+            close_old_connections()
+
+            loops = [clients_loop(loop, dic) for dic in lst]
+
+            try:
+                await asyncio.gather(*loops)
+
+            except Exception as e:
+                log.exception(str(e))
+            else:
+                pass
+
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(main(loop))
+
+    except SynchronousOnlyOperation as e:
+        log.error('Stream establishment failed !', cause=str(e))
+
+    except OperationalError as e:
+        log.error('Operational error', cause=str(e))
+
+    except Exception as e:
+        log.error('Unknown exception', cause=str(e))
+
+
 @app.task(name='Markets_____Update_exchange_currencies')
 def bulk_update_currencies():
     for exid in EXCHANGES.keys():
@@ -289,141 +427,3 @@ def update_markets(exid):
 
     else:
         pass
-
-
-@app.task(bind=True, name='Market______Websocket loop')
-def ws_loops(self):
-    """
-    Establish websocket streams with exchanges and collect tickers price
-    """
-
-    if self.request.id:
-        log = logger.bind(worker=current_process().index, task=self.request.id[:3])
-
-    try:
-
-        async def method_loop(client, exid, wallet, method, args):
-
-            log = logger.bind()
-            if wallet:
-                log = log.bind(wallet=wallet)
-
-            symbol = args['symbol']
-            market = args['market']
-
-            log.info('Stream', symbol=symbol, method=method, exid=exid)
-
-            while True:
-
-                try:
-
-                    response = await getattr(client, method)(symbol)
-                    if method == 'watch_ticker':
-
-                        # log.info(response['last'], symbol=response['symbol'])
-
-                        # Save ticker price every 5 sec.
-                        save_ticker_price(market, response, freq=5)
-
-                        if not market.is_updated():
-                            log = log.bind(dt=dt_aware_now().strftime(datetime_directive_ISO_8601),
-                                           market=market.type,
-                                           last=response['last'])
-
-                            Price.objects.create(market=market,
-                                                 response=response,
-                                                 dt=dt_aware_now(),
-                                                 last=response['last']
-                                                 )
-                            log.info('Price object created')
-
-                    await asyncio.sleep(2)
-
-                except ccxt.NetworkError as e:
-
-                    log.error('Stream disconnection', cause=str(e), method=method)
-                    log.info('Restart containers...')
-                    os.system("docker-compose restart")
-
-                except Exception as e:
-                    log.error('Stream disconnection', cause=str(e))
-                    break
-
-            await client.close()
-
-        async def clients_loop(loop, dic):
-
-            exid, wallet, method, args = dic.values()
-
-            # Initialize exchange CCXT instance
-            exchange = Exchange.objects.get(exid=exid)
-            client = getattr(ccxt.pro, exchange.exid)
-            client = client(dict(enableRateLimit=True,
-                                 asyncio_loop=loop,
-                                 newUpdates=True
-                                 ))
-
-            if wallet:
-                if 'defaultType' in client.options:
-                    client.options['defaultType'] = wallet
-
-            # Close PostgreSQL connections
-            close_old_connections()
-
-            await asyncio.gather(method_loop(client, exid, wallet, method, args))
-            await client.close()
-
-        async def main(loop):
-
-            lst = []
-            exchanges = EXCHANGES.keys()
-
-            for exid in exchanges:
-                exchange = Exchange.objects.get(exid=exid)
-
-                for wallet_key in EXCHANGES[exid].keys():
-                    wallet = None if wallet_key == 'default' else wallet_key
-
-                    # Append markets loops
-                    for instrument in EXCHANGES[exid][wallet_key]['markets']['instruments']:
-                        for method in EXCHANGES[exid][wallet_key]['markets']['methods']:
-                            market = get_market(exchange,
-                                                base=instrument['base'],
-                                                quote=instrument['quote'],
-                                                tp=instrument['type']
-                                                )[0]
-
-                            lst.append(dict(exid=exid,
-                                            wallet=wallet,
-                                            method=method,
-                                            args=dict(symbol=market.symbol,
-                                                      market=market
-                                                      )
-                                            )
-                                       )
-
-            # Close PostgreSQL connections
-            close_old_connections()
-
-            loops = [clients_loop(loop, dic) for dic in lst]
-
-            try:
-                await asyncio.gather(*loops)
-
-            except Exception as e:
-                log.exception(str(e))
-            else:
-                pass
-
-        loop = asyncio.new_event_loop()
-        loop.run_until_complete(main(loop))
-
-    except SynchronousOnlyOperation as e:
-        log.error('Stream establishment failed !', cause=str(e))
-
-    except OperationalError as e:
-        log.error('Operational error', cause=str(e))
-
-    except Exception as e:
-        log.error('Unknown exception', cause=str(e))
-
