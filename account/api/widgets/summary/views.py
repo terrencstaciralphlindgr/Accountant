@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAdminUser
-from accountant.methods import get_start_datetime
+from accountant.methods import get_start_datetime, datetime_directive_ISO_8601
 from account.models import Balance, Account
 from market.models import Price
 import structlog
@@ -56,7 +56,7 @@ class HistoricalValueViewSet(APIView):
 
         data = {}
         for (a, b) in zip(qs, price):
-            str_date = a['dt'].strftime("%Y/%m/%d")
+            str_date = a['dt'].strftime(datetime_directive_ISO_8601)
             if a['dt'] == b['dt']:
                 data[str_date] = {}
                 data[str_date]['last'] = b['last']
