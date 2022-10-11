@@ -320,7 +320,7 @@ def ws_loops(self):
                     response = await getattr(client, method)(symbol)
                     if method == 'watch_ticker':
 
-                        log.info(response['last'], symbol=response['symbol'])
+                        # log.info(response['last'], symbol=response['symbol'])
 
                         # Save ticker price every 5 sec.
                         save_ticker_price(market, response, freq=5)
