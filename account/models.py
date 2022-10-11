@@ -125,7 +125,6 @@ class Balance(TimestampedModel):
         unique_together = ('dt', 'account',)
 
     def save(self, *args, **kwargs):
-        self.update_assets_value()
         return super(Balance, self).save(*args, **kwargs)
 
     def __str__(self):
