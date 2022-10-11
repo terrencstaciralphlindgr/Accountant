@@ -65,8 +65,8 @@ def ws_loops(self):
             try:
                 p = 1/market
             except Exception as e:
-                log.info('Restart')
-                raise self.retry(exc=e)
+                log.info('Restart after 5s')
+                raise self.retry(exc=e, countdown=5)
 
             while True:
 
