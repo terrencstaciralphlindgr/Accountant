@@ -19,6 +19,8 @@ import celery
 logger = structlog.wrap_logger(celery.utils.log.get_task_logger(__name__))
 print(logger)
 
+logger.info('Fetch test')
+
 
 @app.task(bind=True, name='Account______Fetch orders')
 def fetch_orders(self, pk):
