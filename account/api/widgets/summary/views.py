@@ -59,7 +59,7 @@ class HistoricalValueViewSet(APIView):
             if a['dt'] == b['dt']:
                 data[str_date] = {}
                 data[str_date]['last'] = b['last']
-                data[str_date]['value'] = a['value']
+                data[str_date]['assets_total_value'] = a['assets_total_value']
 
         print(data)
         return Response(data)
