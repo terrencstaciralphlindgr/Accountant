@@ -4,6 +4,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAdminUser
 from accountant.methods import get_start_datetime
 from account.models import Balance, Account
+from market.models import Price
 import structlog
 
 log = structlog.get_logger(__name__)
@@ -45,5 +46,11 @@ class HistoricalValueViewSet(APIView):
     def get(self, request, account_id):
         period = request.GET.get('period')
         account = Account.objects.get(id=account_id)
+
+        price = Price.objects.filter(dt__gte=get_start_datetime(account, period)).order_by('-dt')
+        price = price.values('last', 'dt')
+
         qs = Balance.objects.filter(account=account, dt__gte=get_start_datetime(account, period)).order_by('-dt')
+        qs = qs.values('assets_total_value', 'dt')
+
         return Response(qs.values('assets_total_value', 'dt'))

@@ -5,9 +5,13 @@ from account.models import Account, Trade
 from accountant.methods import datetime_directive_ISO_8601
 from accountant.celery import app
 from pnl.models import Inventory
+import celery
 
-logger = structlog.get_logger(__name__)
-logger.try_unbind('task_id', 'parent_task_id', 'request_id', 'user_id', 'ip',)
+# logger = structlog.get_logger(__name__)
+logger = structlog.wrap_logger(celery.utils.log.get_task_logger(__name__))
+
+
+# logger.try_unbind('task_id', 'parent_task_id', 'request_id', 'user_id', 'ip',)
 
 
 @app.task(bind=True, name='PnL_____Update_asset_inventory')
@@ -19,7 +23,7 @@ def update_asset_inventory(self, pk):
     account = Account.objects.get(pk=pk)
     log = logger.bind(account=account.name)
     if self.request.id:
-        log.bind(worker=current_process().index, task=self.request.id[:3])
+        log = log.bind(worker=current_process().index, task=self.request.id[:3])
 
     # Determine start datetime
     entries = Inventory.objects.filter(account=account, instrument=0)
@@ -30,7 +34,7 @@ def update_asset_inventory(self, pk):
         prev_entries = False
         start_datetime = account.dt_created
 
-    log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
+    log = log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
     log.info('Update assets inventory')
 
     # Select trades and iterate
@@ -42,9 +46,9 @@ def update_asset_inventory(self, pk):
 
         for index, trade in enumerate(trades):
 
-            # log.bind(trade=trade.tradeid,
-            #          amount=trade.amount,
-            #          side=trade.side)
+            log = log.bind(trade=trade.tradeid,
+                           amount=trade.amount,
+                           side=trade.side)
 
             log.info('Create new entry')
             entry = Inventory.objects.create(account=account,
@@ -57,7 +61,7 @@ def update_asset_inventory(self, pk):
             # Determine stock, total and average costs from previous inventory entry
 
             if prev_entries or index > 0:
-                prev_dt = trades[index-1].datetime if index > 0 else start_datetime
+                prev_dt = trades[index - 1].datetime if index > 0 else start_datetime
                 prev = Inventory.objects.get(account=account, datetime=prev_dt, instrument=0)
                 prev_stock = prev.stock
                 prev_total_cost = prev.total_cost
@@ -113,9 +117,9 @@ def update_contract_inventory(self, pk):
     """
 
     account = Account.objects.get(pk=pk)
-    log_cont = logger.bind(account=account.name)
+    log = logger.bind(account=account.name)
     if self.request.id:
-        log_cont.bind(worker=current_process().index, task=self.request.id[:3])
+        log = log.bind(worker=current_process().index, task=self.request.id[:3])
 
     # Determine start datetime
     entries = Inventory.objects.filter(account=account, instrument=1)
@@ -138,11 +142,11 @@ def update_contract_inventory(self, pk):
 
         for index, trade in enumerate(trades):
 
-            # log_cont.bind(trade=trade.tradeid,
-            #          amount=trade.amount,
-            #          side=trade.side)
+            log = log.bind(trade=trade.tradeid,
+                           amount=trade.amount,
+                           side=trade.side)
 
-            log_cont.info('Create new entry')
+            log.info('Create new entry')
             entry = Inventory.objects.create(account=account,
                                              exchange=account.exchange,
                                              currency=trade.order.market.base,
@@ -153,7 +157,7 @@ def update_contract_inventory(self, pk):
             # Determine stock, total and average costs from previous inventory entry
 
             if prev_entries or index > 0:
-                prev_dt = trades[index-1].datetime if index > 0 else start_datetime
+                prev_dt = trades[index - 1].datetime if index > 0 else start_datetime
                 prev = Inventory.objects.get(account=account, datetime=prev_dt, instrument=1)
                 prev_stock = prev.stock
                 prev_total_cost = prev.total_cost
@@ -227,10 +231,10 @@ def update_contract_inventory(self, pk):
             entry.save()
 
     else:
-        log_cont.info('Update contracts inventory no required')
+        log.info('Update contracts inventory no required')
         return
 
-    log_cont.info('Update contracts inventory complete')
+    log.info('Update contracts inventory complete')
 
 
 @app.task(name='PnL_____Update_inventories')
