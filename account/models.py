@@ -39,7 +39,7 @@ class Account(TimestampedModel):
             return self.name
         return str(self.pk)
 
-    def realized_pnl(self, period):
+    def cumulated_realized_pnl(self, period):
         from pnl.models import Inventory
         dt = get_start_datetime(self, period)
         qs = Inventory.objects.filter(account=self, datetime__gte=dt)
@@ -48,15 +48,18 @@ class Account(TimestampedModel):
     def growth(self, period):
         dt = get_start_datetime(self, period)
         try:
-            asset_value = Balance.objects.get(dt=dt)
+            initial_asset_value = Balance.objects.get(dt=dt)
         except ObjectDoesNotExist:
             return 'Not data'
         else:
+
+            cumulated_realized_pnl = self.realized_pnl(period)
+
             return dict(
                 period=period,
-                asset_value=asset_value,
-                realized_pnl=self.realized_pnl(period),
-                growth_rate=self.realized_pnl(period) / asset_value
+                initial_asset_value=initial_asset_value,
+                cumulated_realized_pnl=cumulated_realized_pnl,
+                growth_rate=cumulated_realized_pnl / initial_asset_value
             )
 
 

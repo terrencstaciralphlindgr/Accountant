@@ -22,9 +22,20 @@ class AssetValueViewSet(APIView):
         growth = Account.objects.get(id=account_id).growth(period)
 
         return Response(dict(
-            growth=growth,
             total_value=dic['assets_total_value'],
-            datetime=dic['last_update'],
+            last_update=dic['last_update'],
+            )
         )
-        )
+
+
+@permission_classes([IsAdminUser])
+class AssetGrowthViewSet(APIView):
+
+    def get(self, request, account_id):
+
+        period = request.GET.get('period')
+        log.info('Return growth', period=period)
+
+        growth = Account.objects.get(id=account_id).growth(period)
+        return Response(growth)
 
