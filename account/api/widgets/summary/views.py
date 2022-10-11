@@ -44,6 +44,6 @@ class HistoricalValueViewSet(APIView):
 
     def get(self, request, account_id):
         period = request.GET.get('period')
-
-        qs = Balance.objects.filter(account__id=account_id, datetime__gte=get_start_datetime(self, period))
+        account = Account.objects.get(id=account_id)
+        qs = Balance.objects.filter(account=account, datetime__gte=get_start_datetime(account, period))
         return Response(qs.values('assets_total_value', 'dt'))
