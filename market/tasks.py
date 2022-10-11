@@ -62,9 +62,11 @@ def ws_loops(self):
 
             log.info('Stream', symbol=symbol, method=method, exid=exid)
 
-            log.warning('Revoke task', task_id=self.request.id)
-            app.control.revoke(self.request.id, terminate=True, signal='SIGKILL')
-
+            # log.warning('Revoke task', task_id=self.request.id)
+            # app.control.revoke(self.request.id, terminate=True, signal='SIGKILL')
+            log.info('Restart')
+            ws_loops.apply_async(task_id=self.request.id)
+            
             while True:
 
                 try:
