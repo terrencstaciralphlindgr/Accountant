@@ -208,3 +208,12 @@ def update_inventory(self, pk):
     chord(fetch_orders.si(pk),
           fetch_trades.si(pk)
           )(update_inventories.si(pk))
+
+
+@app.task(bind=True, name='Account______Bulk Update inventory')
+def bulk_update_inventory(self):
+    for account in Account.objects.all():
+        pk = account.pk
+        chord(fetch_orders.si(pk),
+              fetch_trades.si(pk)
+              )(update_inventories.si(pk))
