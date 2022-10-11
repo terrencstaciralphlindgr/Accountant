@@ -320,29 +320,22 @@ def ws_loops(self):
                     response = await getattr(client, method)(symbol)
                     if method == 'watch_ticker':
 
-                        # log.info(response['last'], symbol=response['symbol'])
+                        log.info(response['last'], symbol=response['symbol'])
 
-                        try:
-                            # Save ticker price every 5 sec.
-                            save_ticker_price(market, response, freq=5)
+                        # Save ticker price every 5 sec.
+                        save_ticker_price(market, response, freq=5)
 
-                            if not market.is_updated():
-                                log = log.bind(dt=dt_aware_now().strftime(datetime_directive_ISO_8601),
-                                               market=market.type,
-                                               last=response['last'])
+                        if not market.is_updated():
+                            log = log.bind(dt=dt_aware_now().strftime(datetime_directive_ISO_8601),
+                                           market=market.type,
+                                           last=response['last'])
 
-                                Price.objects.create(market=market,
-                                                     response=response,
-                                                     dt=dt_aware_now(),
-                                                     last=response['last']
-                                                     )
-                                log.info('Price object created')
-
-                        except Exception as e:
-                            log.exception(str(e))
-
-                        else:
-                            pass
+                            Price.objects.create(market=market,
+                                                 response=response,
+                                                 dt=dt_aware_now(),
+                                                 last=response['last']
+                                                 )
+                            log.info('Price object created')
 
                     await asyncio.sleep(2)
 
