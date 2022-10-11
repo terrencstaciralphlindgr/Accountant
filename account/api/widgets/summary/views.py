@@ -35,7 +35,7 @@ class AssetGrowthViewSet(APIView):
 class ExpositionViewSet(APIView):
 
     def get(self, request, account_id):
-        growth = Account.objects.get(id=account_id)
-        return Response(growth)
+        exposition = Account.objects.get(id=account_id).current_exposition()
+        return Response(exposition)
 
 

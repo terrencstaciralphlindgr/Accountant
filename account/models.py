@@ -64,19 +64,26 @@ class Account(TimestampedModel):
 
     def current_exposition(self):
 
+        code = 'BTC'
         balance = Balance.objects.filter(account=self).latest('dt')
 
         # Select asset value
         asset = balance.get_assets_value()
         assets_value_total = asset['assets_total_value']
-        exposition_value = asset['BTC']['value']['total']
+        exposition_value = asset[code]['value']['total']
 
         # Select position value
         pos = balance.get_position_value()
         if 'position_value' in pos:
             exposition_value += pos['position_value']
 
-        return exposition_value / assets_value_total
+        # Determine side
+        side = 'long' if exposition_value > 0 else 'short'
+
+        return dict(side=side,
+                    code=code,
+                    exposition=exposition_value/assets_value_total
+                    )
 
 
 class Order(TimestampedModel):
