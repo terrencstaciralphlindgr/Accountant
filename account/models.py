@@ -141,6 +141,7 @@ class Balance(TimestampedModel):
 
             dic[code] = dict()
             dic[code]['value'] = dict()
+            dic[code]['quantity'] = dict()
 
             if code != quote:
                 market, flip = get_market(self.account.exchange, base=code, quote=quote, tp='spot')
@@ -150,10 +151,11 @@ class Balance(TimestampedModel):
                 last = 1
 
             for key in ['total', 'free', 'used']:
+                dic[code]['quantity'][key] = self.assets[code]['quantity'][key]
                 dic[code]['value'][key] = self.assets[code]['quantity'][key] * last
 
         # Calculate total assets value
         dic['assets_total_value'] = sum([dic['total'] for dic in [k['value'] for k in [v for v in dic.values()]]])
-        dic['last_update'] = int(datetime.utcnow().timestamp())
+        dic['last_update'] = datetime.utcnow().strftime(datetime_directive_ISO_8601)
 
         return dic
