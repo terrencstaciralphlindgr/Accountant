@@ -22,8 +22,9 @@ class AssetValueViewSet(APIView):
         growth = Account.objects.get(id=account_id).growth(period)
 
         return Response(dict(
-            asset_value=dic['assets_total_value'],
+            growth=growth,
+            total_value=dic['assets_total_value'],
             datetime=dic['last_update'],
-            growth=growth)
+        )
         )
 

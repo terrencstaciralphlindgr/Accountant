@@ -52,7 +52,12 @@ class Account(TimestampedModel):
         except ObjectDoesNotExist:
             return 'Not data'
         else:
-            return self.realized_pnl(period) / asset_value
+            return dict(
+                period=period,
+                asset_value=asset_value,
+                realized_pnl=self.realized_pnl(period),
+                growth_rate=self.realized_pnl(period) / asset_value
+            )
 
 
 class Order(TimestampedModel):
