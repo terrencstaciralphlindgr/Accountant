@@ -46,13 +46,14 @@ class HistoricalValueViewSet(APIView):
     def get(self, request, account_id):
         period = request.GET.get('period')
         account = Account.objects.get(id=account_id)
+        start_datetime = get_start_datetime(account, period)
 
-        price = Price.objects.filter(dt__gte=get_start_datetime(account, period)).order_by('-dt')
+        price = Price.objects.filter(dt__gte=start_datetime, market__type='spot').order_by('-dt')
         price = price.values('last', 'dt')
 
-        qs = Balance.objects.filter(account=account, dt__gte=get_start_datetime(account, period)).order_by('-dt')
+        qs = Balance.objects.filter(account=account, dt__gte=start_datetime).order_by('-dt')
         qs = qs.values('assets_total_value', 'dt')
-        
+
         print(price)
         print(qs)
 
