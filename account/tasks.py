@@ -14,7 +14,7 @@ import structlog
 import logging
 import ccxt
 
-logger = logging.getLogger(__name__)
+logger = structlog.getLogger(__name__)
 
 
 @app.task(bind=True, name='Account______Fetch orders')
