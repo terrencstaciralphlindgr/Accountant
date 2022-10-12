@@ -240,6 +240,8 @@ os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
 EXCHANGES = {
     'ftx': {
+        'supported_quote': ['USD'],
+        'supported_base': ['BTC'],
         'default': {
             'markets': {
                 'methods': ['watch_ticker'],
