@@ -7,10 +7,10 @@ from kombu import Queue
 import logging
 import structlog
 from django_structlog.celery.steps import DjangoStructLogInitStep
+from celery.signals import setup_logging
 from django_structlog.celery import signals
 from django_structlog.signals import bind_extra_request_metadata
 from django.dispatch import receiver
-from celery.signals import setup_logging
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'accountant.settings')
 
