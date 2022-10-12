@@ -30,11 +30,11 @@ CELERY_TASK_QUEUES = (
 app.steps['worker'].add(DjangoStructLogInitStep)
 
 
-# @setup_logging.connect
-# def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pragma: no cover
-#     from logging.config import dictConfig
-#     from django.conf import settings
-#     dictConfig(settings.LOGGING)
+@setup_logging.connect
+def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pragma: no cover
+    from logging.config import dictConfig
+    from django.conf import settings
+    dictConfig(settings.LOGGING)
 
     # logging.config.dictConfig(
     #     {

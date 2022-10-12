@@ -127,173 +127,90 @@ CELERY_IMPORTS = ('authentication.tasks', 'pnl.tasks', 'statistic.tasks', 'accou
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
-# LOGGING = {
-#     "version": 1,
-#     "disable_existing_loggers": False,
-#     "formatters": {
-#         "json_formatter": {
-#             "()": structlog.stdlib.ProcessorFormatter,
-#             "processor": structlog.processors.JSONRenderer(sort_keys=False),
-#             "foreign_pre_chain": [
-#                 structlog.contextvars.merge_contextvars,
-#                 structlog.processors.TimeStamper(fmt="iso"),
-#                 structlog.stdlib.add_logger_name,
-#                 structlog.stdlib.add_log_level,
-#                 structlog.stdlib.PositionalArgumentsFormatter(),
-#             ],
-#         },
-#         "plain_console": {
-#             "()": structlog.stdlib.ProcessorFormatter,
-#             "processor": structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True),
-#         },
-#         "key_value": {
-#             "()": structlog.stdlib.ProcessorFormatter,
-#             "processor": structlog.processors.KeyValueRenderer(key_order=['level',
-#                                                                           'logger',
-#                                                                           'event',
-#                                                                           'timestamp'],
-#                                                                sort_keys=False
-#             ),
-#         },
-#     },
-#     "handlers": {
-#         "console": {
-#             "class": "logging.StreamHandler",
-#             "formatter": "plain_console",
-#         },
-#         "json_file": {
-#             "class": "logging.handlers.WatchedFileHandler",
-#             "filename": "logs/json.log",
-#             "formatter": "json_formatter",
-#         },
-#         "flat_line_file": {
-#             "class": "logging.handlers.WatchedFileHandler",
-#             "filename": "logs/flat_line.log",
-#             "formatter": "key_value",
-#         },
-#     },
-#     "loggers": {
-#         "authentication": {
-#             "handlers": ["console", "flat_line_file", "json_file"],
-#             "level": "INFO",
-#         },
-#         "pnl": {
-#             "handlers": ["console", "flat_line_file", "json_file"],
-#             "level": "DEBUG",
-#         },
-#         "market": {
-#             "handlers": ["console", "flat_line_file", "json_file"],
-#             "level": "INFO",
-#         },
-#         "account": {
-#             "handlers": ["console", "flat_line_file", "json_file"],
-#             "level": "INFO",
-#         },
-#         "statistics": {
-#             "handlers": ["console", "flat_line_file", "json_file"],
-#             "level": "INFO",
-#         }
-#     }
-# }
-#
-# structlog.configure(
-#     processors=[
-#         structlog.contextvars.merge_contextvars,
-#         structlog.stdlib.filter_by_level,
-#         structlog.processors.TimeStamper(fmt="iso"),  #
-#         structlog.stdlib.add_logger_name,
-#         structlog.stdlib.add_log_level,
-#         structlog.stdlib.PositionalArgumentsFormatter(),
-#         structlog.processors.StackInfoRenderer(),
-#         structlog.processors.format_exc_info,
-#         structlog.processors.UnicodeDecoder(),
-#         structlog.processors.ExceptionPrettyPrinter(),
-#         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
-#     ],
-#     logger_factory=structlog.stdlib.LoggerFactory(),
-#     cache_logger_on_first_use=True,
-# )
-
-timestamper = structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S")
-pre_chain = [
-    # Add the log level and a timestamp to the event_dict if the log entry
-    # is not from structlog.
-    structlog.stdlib.add_log_level,
-    # Add extra attributes of LogRecord objects to the event dictionary
-    # so that values passed in the extra parameter of log methods pass
-    # through to log output.
-    structlog.stdlib.ExtraAdder(),
-    timestamper,
-]
-
-
-def extract_from_record(_, __, event_dict):
-    """
-    Extract thread and process names and add them to the event dict.
-    """
-    record = event_dict["_record"]
-    event_dict["thread_name"] = record.threadName
-    event_dict["process_name"] = record.processName
-
-    return event_dict
-
-
-from logging.config import dictConfig
-
-dictConfig({
-        "version": 1,
-        "disable_existing_loggers": False,
-        "formatters": {
-            "plain": {
-                "()": structlog.stdlib.ProcessorFormatter,
-                "processors": [
-                   structlog.stdlib.ProcessorFormatter.remove_processors_meta,
-                   structlog.dev.ConsoleRenderer(colors=False),
-                ],
-                "foreign_pre_chain": pre_chain,
-            },
-            "colored": {
-                "()": structlog.stdlib.ProcessorFormatter,
-                "processors": [
-                   extract_from_record,
-                   structlog.stdlib.ProcessorFormatter.remove_processors_meta,
-                   structlog.dev.ConsoleRenderer(colors=True),
-                ],
-                "foreign_pre_chain": pre_chain,
-            },
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "json_formatter": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.processors.JSONRenderer(sort_keys=False),
+            "foreign_pre_chain": [
+                structlog.contextvars.merge_contextvars,
+                structlog.processors.TimeStamper(fmt="iso"),
+                structlog.stdlib.add_logger_name,
+                structlog.stdlib.add_log_level,
+                structlog.stdlib.PositionalArgumentsFormatter(),
+            ],
         },
-        "handlers": {
-            "default": {
-                "level": "DEBUG",
-                "class": "logging.StreamHandler",
-                "formatter": "colored",
-            },
-            "file": {
-                "level": "DEBUG",
-                "class": "logging.handlers.WatchedFileHandler",
-                "filename": "test.log",
-                "formatter": "plain",
-            },
+        "plain_console": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True),
         },
-        "loggers": {
-            "": {
-                "handlers": ["default", "file"],
-                "level": "DEBUG",
-                "propagate": True,
-            },
+        "key_value": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "processor": structlog.processors.KeyValueRenderer(key_order=['level',
+                                                                          'logger',
+                                                                          'event',
+                                                                          'timestamp'],
+                                                               sort_keys=False
+            ),
+        },
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "plain_console",
+        },
+        "json_file": {
+            "class": "logging.handlers.WatchedFileHandler",
+            "filename": "logs/json.log",
+            "formatter": "json_formatter",
+        },
+        "flat_line_file": {
+            "class": "logging.handlers.WatchedFileHandler",
+            "filename": "logs/flat_line.log",
+            "formatter": "key_value",
+        },
+    },
+    "loggers": {
+        "authentication": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "INFO",
+        },
+        "pnl": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "DEBUG",
+        },
+        "market": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "INFO",
+        },
+        "account": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "INFO",
+        },
+        "statistics": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "INFO",
         }
-})
+    }
+}
+
 structlog.configure(
     processors=[
+        structlog.contextvars.merge_contextvars,
+        structlog.stdlib.filter_by_level,
+        structlog.processors.TimeStamper(fmt="iso"),  #
+        structlog.stdlib.add_logger_name,
         structlog.stdlib.add_log_level,
         structlog.stdlib.PositionalArgumentsFormatter(),
-        timestamper,
         structlog.processors.StackInfoRenderer(),
         structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder(),
+        structlog.processors.ExceptionPrettyPrinter(),
         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
     ],
     logger_factory=structlog.stdlib.LoggerFactory(),
-    wrapper_class=structlog.stdlib.BoundLogger,
     cache_logger_on_first_use=True,
 )
 
