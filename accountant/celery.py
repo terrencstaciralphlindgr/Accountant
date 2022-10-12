@@ -28,7 +28,7 @@ CELERY_TASK_QUEUES = (
 )
 
 # A step to initialize django-structlog
-app.steps['worker'].add(DjangoStructLogInitStep)
+# app.steps['worker'].add(DjangoStructLogInitStep)
 
 
 # @setup_logging.connect
