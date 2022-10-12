@@ -245,7 +245,7 @@ logging.config.dictConfig({
             "plain": {
                 "()": structlog.stdlib.ProcessorFormatter,
                 "processors": [
-                   structlog.stdlib.ProcessorFormatter.remove_processors_meta,
+                   # structlog.stdlib.ProcessorFormatter.remove_processors_meta,
                    structlog.dev.ConsoleRenderer(colors=False),
                 ],
                 "foreign_pre_chain": pre_chain,
@@ -254,7 +254,7 @@ logging.config.dictConfig({
                 "()": structlog.stdlib.ProcessorFormatter,
                 "processors": [
                    extract_from_record,
-                   structlog.stdlib.ProcessorFormatter.remove_processors_meta,
+                   # structlog.stdlib.ProcessorFormatter.remove_processors_meta,
                    structlog.dev.ConsoleRenderer(colors=True),
                 ],
                 "foreign_pre_chain": pre_chain,
