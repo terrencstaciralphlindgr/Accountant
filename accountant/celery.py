@@ -27,15 +27,14 @@ CELERY_TASK_QUEUES = (
     Queue('accountant_queue_2'),
 )
 
-# A step to initialize django-structlog
-# app.steps['worker'].add(DjangoStructLogInitStep)
+app.steps['worker'].add(DjangoStructLogInitStep)
 
 
-# @setup_logging.connect
-# def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pragma: no cover
-#     from logging.config import dictConfig
-#     from django.conf import settings
-#     dictConfig(settings.LOGGING)
+@setup_logging.connect
+def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pragma: no cover
+    from logging.config import dictConfig
+    from django.conf import settings
+    dictConfig(settings.LOGGING)
 
     # logging.config.dictConfig(
     #     {
