@@ -274,7 +274,12 @@ logging.config.dictConfig({
             },
         },
         "loggers": {
-            "": {
+            "account": {
+                "handlers": ["default", "file"],
+                "level": "DEBUG",
+                "propagate": True,
+            },
+            "market": {
                 "handlers": ["default", "file"],
                 "level": "DEBUG",
                 "propagate": True,
