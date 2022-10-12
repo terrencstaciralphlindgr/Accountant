@@ -269,7 +269,7 @@ logging.config.dictConfig({
             "file": {
                 "level": "DEBUG",
                 "class": "logging.handlers.WatchedFileHandler",
-                "filename": "test.log",
+                "filename": "logs/flat_line.log",
                 "formatter": "plain",
             },
         },
