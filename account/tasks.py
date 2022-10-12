@@ -11,9 +11,10 @@ from market.models import Market
 from pnl.tasks import update_inventories
 from celery import chord
 import structlog
+import logging
 import ccxt
 
-logger = structlog.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 @app.task(bind=True, name='Account______Fetch orders')
