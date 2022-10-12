@@ -216,24 +216,24 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 timestamper = structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S")
 pre_chain = [
-    # Add the log level and a timestamp to the event_dict if the log entry
-    # is not from structlog.
-    structlog.stdlib.add_log_level,
-    # Add extra attributes of LogRecord objects to the event dictionary
-    # so that values passed in the extra parameter of log methods pass
-    # through to log output.
-    structlog.stdlib.ExtraAdder(),
-    timestamper,
+    # # Add the log level and a timestamp to the event_dict if the log entry
+    # # is not from structlog.
+    # structlog.stdlib.add_log_level,
+    # # Add extra attributes of LogRecord objects to the event dictionary
+    # # so that values passed in the extra parameter of log methods pass
+    # # through to log output.
+    # structlog.stdlib.ExtraAdder(),
+    # timestamper,
 ]
 
 
 def extract_from_record(_, __, event_dict):
-    """
-    Extract thread and process names and add them to the event dict.
-    """
-    record = event_dict["_record"]
-    event_dict["thread_name"] = record.threadName
-    event_dict["process_name"] = record.processName
+    # """
+    # Extract thread and process names and add them to the event dict.
+    # """
+    # record = event_dict["_record"]
+    # event_dict["thread_name"] = record.threadName
+    # event_dict["process_name"] = record.processName
 
     return event_dict
 
