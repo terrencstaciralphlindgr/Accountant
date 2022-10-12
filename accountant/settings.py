@@ -240,6 +240,18 @@ SIMPLE_JWT = {
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
+
+CODES = {
+    'binance': {
+        'supported_quote': ['USDT', 'BUSD'],
+        'supported_base': ['BTC']
+    },
+    'ftx': {
+        'supported_quote': ['USD'],
+        'supported_base': ['BTC']
+    }
+}
+
 EXCHANGES = {
     'ftx': {
         'default': {

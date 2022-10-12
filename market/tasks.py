@@ -14,7 +14,7 @@ from django.db.utils import OperationalError
 from django.core.exceptions import ObjectDoesNotExist, SynchronousOnlyOperation
 from django.db import close_old_connections
 from celery import Task
-from accountant.settings import EXCHANGES
+from accountant.settings import EXCHANGES, CODES
 from accountant.methods import dt_aware_now, datetime_directive_ISO_8601
 from accountant.celery import app
 from market.models import Exchange, Market, Currency, Price
@@ -282,15 +282,15 @@ def update_currencies(exid):
 
             else:
                 for code, dic in client.currencies.items():
-                    if code in EXCHANGES[exid]['supported_quote'] or \
-                            code in EXCHANGES[exid]['supported_base']:
+                    if code in CODES[exid]['supported_quote'] or \
+                            code in CODES[exid]['supported_base']:
                         update(code, dic)
 
         else:
             client.load_markets(True)
             for code, dic in client.currencies.items():
-                if code in EXCHANGES[exid]['supported_quote'] or \
-                        code in EXCHANGES[exid]['supported_base']:
+                if code in CODES[exid]['supported_quote'] or \
+                        code in CODES[exid]['supported_base']:
                     update(code, dic)
 
         log.info('Task complete', exid=exid)
@@ -318,8 +318,8 @@ def update_markets(exid):
 
             base, quote = response['base'], response['quote']
 
-            if quote in EXCHANGES[exid]['supported_quote'] and \
-                    base in EXCHANGES[exid]['supported_base']:
+            if quote in CODES[exid]['supported_quote'] and \
+                    base in CODES[exid]['supported_base']:
 
                 try:
                     Currency.objects.get(exchange=exchange, code=base)
@@ -332,7 +332,7 @@ def update_markets(exid):
 
                 else:
 
-                    if quote in EXCHANGES[exid]['supported_quote']:
+                    if quote in CODES[exid]['supported_quote']:
 
                         tp = response['type'] if 'type' in response else None
                         swap = response['swap'] if 'swap' in response else None
