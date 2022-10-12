@@ -177,7 +177,7 @@ def ws_loops(self):
         log.error('Operational error', cause=str(e))
 
     except Exception as e:
-        log.error('Unknown exception', cause=str(e))
+        log.exception('Unknown exception', cause=str(e))
 
 
 @app.task(name='Markets_____Update_exchange_currencies')
