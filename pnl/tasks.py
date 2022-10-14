@@ -42,7 +42,7 @@ def update_asset_inventory(self, pk):
     trades = Trade.objects.filter(account=account,
                                   order__market__type='spot',
                                   datetime__gt=start_datetime
-                                  ).order_by('datetime')
+                                  ).order_by('dt_created')
     if trades.exists():
 
         for index, trade in enumerate(trades):
@@ -62,8 +62,8 @@ def update_asset_inventory(self, pk):
             # Determine stock, total and average costs from previous inventory entry
 
             if prev_entries or index > 0:
-                prev_dt = trades[index - 1].datetime if index > 0 else start_datetime
-                prev = Inventory.objects.get(account=account, datetime=prev_dt, instrument=0)
+                prev_dt = trades[index - 1].dt_created if index > 0 else start_datetime
+                prev = Inventory.objects.get(account=account, dt_created=prev_dt, instrument=0)
                 prev_stock = prev.stock
                 prev_total_cost = prev.total_cost
                 prev_average_cost = prev.average_cost
@@ -140,7 +140,7 @@ def update_contract_inventory(self, pk):
     trades = Trade.objects.filter(account=account,
                                   order__market__type='perpetual',
                                   datetime__gt=start_datetime
-                                  ).order_by('datetime')
+                                  ).order_by('dt_created')
     if trades.exists():
 
         for index, trade in enumerate(trades):
@@ -160,8 +160,8 @@ def update_contract_inventory(self, pk):
             # Determine stock, total and average costs from previous inventory entry
 
             if prev_entries or index > 0:
-                prev_dt = trades[index - 1].datetime if index > 0 else start_datetime
-                prev = Inventory.objects.get(account=account, datetime=prev_dt, instrument=1)
+                prev_dt = trades[index - 1].dt_created if index > 0 else start_datetime
+                prev = Inventory.objects.get(account=account, dt_created=prev_dt, instrument=1)
                 prev_stock = prev.stock
                 prev_total_cost = prev.total_cost
                 prev_average_cost = prev.average_cost
