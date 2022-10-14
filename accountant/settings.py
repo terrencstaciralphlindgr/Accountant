@@ -173,6 +173,11 @@ LOGGING = {
         },
     },
     "loggers": {
+        "": {
+            "handlers": ["console", "flat_line_file", "json_file"],
+            "level": "INFO",
+            'propagate': True
+        },
         "authentication": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "INFO",
