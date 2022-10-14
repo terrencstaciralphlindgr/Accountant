@@ -12,8 +12,11 @@ from pnl.tasks import update_inventories
 from celery import chord
 import structlog
 import ccxt
+from celery.utils.log import get_task_logger
 
-logger = structlog.get_logger(__name__)
+logger = get_task_logger(__name__)
+
+# logger = structlog.get_logger(__name__)
 
 
 @app.task(bind=True, name='Account______Fetch orders')
@@ -22,9 +25,11 @@ def fetch_orders(self, pk):
     Fetch orders history
     """
     account = Account.objects.get(pk=pk)
-    log = logger.bind(account=account.name)
+    # log = logger.bind(account=account.name)
+    log = logger
     if self.request.id:
-        log.bind(worker=current_process().index, task=self.request.id[:3])
+        pass
+        # log.bind(worker=current_process().index, task=self.request.id[:3])
 
     # Determine start datetime
     qs = Order.objects.filter(account=account)
@@ -32,7 +37,7 @@ def fetch_orders(self, pk):
     start_datetime = int(start_datetime.timestamp())
     params = dict(start_datetime=start_datetime)
 
-    log.bind(start_datetime=start_datetime)
+    # log.bind(start_datetime=start_datetime)
     log.info('Fetch orders')
 
     def create_update_order(dic, wallet=None):
@@ -112,16 +117,18 @@ def fetch_trades(self, pk):
     Fetch trades history
     """
     account = Account.objects.get(pk=pk)
-    log = logger.bind(account=account.name)
+    # log = logger.bind(account=account.name)
+    log = logger
     if self.request.id:
-        log.bind(worker=current_process().index, task=self.request.id[:3])
+        pass
+        # log.bind(worker=current_process().index, task=self.request.id[:3])
 
     # Determine start datetime
     qs = Trade.objects.filter(account=account)
     start_datetime = qs.latest('datetime').datetime if qs else account.dt_created
     start_datetime = int(start_datetime.timestamp() * 1000)
 
-    log.bind(start_datetime=start_datetime)
+    # log.bind(start_datetime=start_datetime)
 
     def create_trade(dic):
 

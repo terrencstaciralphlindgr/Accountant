@@ -6,8 +6,11 @@ from accountant.methods import datetime_directive_ISO_8601
 from accountant.celery import app
 from pnl.models import Inventory
 import logging
+from celery.utils.log import get_task_logger
 
-logger = structlog.getLogger(__name__)
+logger = get_task_logger(__name__)
+
+# logger = structlog.getLogger(__name__)
 
 
 @app.task(bind=True, name='PnL_____Update_asset_inventory')
@@ -17,9 +20,11 @@ def update_asset_inventory(self, pk):
     """
 
     account = Account.objects.get(pk=pk)
-    log = logger.bind(account=account.name)
+    # log = logger.bind(account=account.name)
+    log = logger
     if self.request.id:
-        log = log.bind(worker=current_process().index, task=self.request.id[:3])
+        pass
+        # log = log.bind(worker=current_process().index, task=self.request.id[:3])
 
     # Determine start datetime
     entries = Inventory.objects.filter(account=account, instrument=0)
@@ -30,7 +35,7 @@ def update_asset_inventory(self, pk):
         prev_entries = False
         start_datetime = account.dt_created
 
-    log = log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
+    # log = log.bind(start_datetime=start_datetime.strftime(datetime_directive_ISO_8601))
     log.info('Update assets inventory')
 
     # Select trades and iterate
@@ -42,9 +47,9 @@ def update_asset_inventory(self, pk):
 
         for index, trade in enumerate(trades):
 
-            log = log.bind(trade=trade.tradeid,
-                           amount=trade.amount,
-                           side=trade.side)
+            # log = log.bind(trade=trade.tradeid,
+            #                amount=trade.amount,
+            #                side=trade.side)
 
             log.info('Create new entry')
             entry = Inventory.objects.create(account=account,
@@ -113,9 +118,11 @@ def update_contract_inventory(self, pk):
     """
 
     account = Account.objects.get(pk=pk)
-    log = logger.bind(account=account.name)
+    # log = logger.bind(account=account.name)
+    log = logger
     if self.request.id:
-        log = log.bind(worker=current_process().index, task=self.request.id[:3])
+        pass
+        # log = log.bind(worker=current_process().index, task=self.request.id[:3])
 
     # Determine start datetime
     entries = Inventory.objects.filter(account=account, instrument=1)
@@ -138,9 +145,9 @@ def update_contract_inventory(self, pk):
 
         for index, trade in enumerate(trades):
 
-            log = log.bind(trade=trade.tradeid,
-                           amount=trade.amount,
-                           side=trade.side)
+            # log = log.bind(trade=trade.tradeid,
+            #                amount=trade.amount,
+            #                side=trade.side)
 
             log.info('Create new entry')
             entry = Inventory.objects.create(account=account,
