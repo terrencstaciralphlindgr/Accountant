@@ -176,22 +176,27 @@ LOGGING = {
         "authentication": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "INFO",
+            'propagate': True
         },
         "pnl": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "DEBUG",
+            'propagate': True
         },
         "market": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "INFO",
+            'propagate': True
         },
         "account": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "INFO",
+            'propagate': True
         },
         "statistics": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "INFO",
+            'propagate': True
         }
     }
 }
