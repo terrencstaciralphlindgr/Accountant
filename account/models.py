@@ -134,7 +134,7 @@ class Trade(TimestampedModel):
 
     class Meta:
         verbose_name_plural = "Trades"
-        unique_together = ('datetime', 'symbol', 'account',)
+        unique_together = ('datetime', 'tradeid', 'symbol', 'account',)
 
     def save(self, *args, **kwargs):
         return super(Trade, self).save(*args, **kwargs)
