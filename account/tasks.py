@@ -14,7 +14,8 @@ import structlog
 import ccxt
 from celery.utils.log import get_task_logger
 
-log = get_task_logger(__name__)
+log = structlog.wrap_logger(get_task_logger(__name__))
+# log = get_task_logger(__name__)
 
 # logger = structlog.get_logger(__name__)
 
