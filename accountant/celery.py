@@ -40,6 +40,13 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
                 "json_formatter": {
                     "()": structlog.stdlib.ProcessorFormatter,
                     "processor": structlog.processors.JSONRenderer(),
+                    "foreign_pre_chain": [
+                        structlog.contextvars.merge_contextvars,
+                        structlog.processors.TimeStamper(fmt="iso"),
+                        structlog.stdlib.add_logger_name,
+                        structlog.stdlib.add_log_level,
+                        structlog.stdlib.PositionalArgumentsFormatter(),
+                    ],
                 },
                 "plain_console": {
                     "()": structlog.stdlib.ProcessorFormatter,
