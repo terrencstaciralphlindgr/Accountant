@@ -14,7 +14,7 @@ import structlog
 import ccxt
 from celery.utils.log import get_task_logger
 
-logger = get_task_logger(__name__)
+log = get_task_logger(__name__)
 
 # logger = structlog.get_logger(__name__)
 
@@ -26,7 +26,7 @@ def fetch_orders(self, pk):
     """
     account = Account.objects.get(pk=pk)
     # log = logger.bind(account=account.name)
-    log = logger
+
     if self.request.id:
         pass
         # log.bind(worker=current_process().index, task=self.request.id[:3])
@@ -118,7 +118,7 @@ def fetch_trades(self, pk):
     """
     account = Account.objects.get(pk=pk)
     # log = logger.bind(account=account.name)
-    log = logger
+
     if self.request.id:
         pass
         # log.bind(worker=current_process().index, task=self.request.id[:3])
@@ -160,8 +160,6 @@ def fetch_trades(self, pk):
             timestamp=dic['timestamp'],
             type=dic['type']
         )
-
-        print(dic['id'], account, dic['symbol'], dt)
 
         obj, created = Trade.objects.update_or_create(tradeid=dic['id'],
                                                       account=account,
