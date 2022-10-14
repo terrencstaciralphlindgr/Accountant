@@ -133,27 +133,15 @@ LOGGING = {
     "formatters": {
         "json_formatter": {
             "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.processors.JSONRenderer(sort_keys=False),
-            "foreign_pre_chain": [
-                structlog.contextvars.merge_contextvars,
-                structlog.processors.TimeStamper(fmt="iso"),
-                structlog.stdlib.add_logger_name,
-                structlog.stdlib.add_log_level,
-                structlog.stdlib.PositionalArgumentsFormatter(),
-            ],
+            "processor": structlog.processors.JSONRenderer(),
         },
         "plain_console": {
             "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.dev.ConsoleRenderer(pad_event=43, colors=True, force_colors=True),
+            "processor": structlog.dev.ConsoleRenderer(pad_event=43),
         },
         "key_value": {
             "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.processors.KeyValueRenderer(key_order=['level',
-                                                                          'logger',
-                                                                          'event',
-                                                                          'timestamp'],
-                                                               sort_keys=False
-            ),
+            "processor": structlog.processors.KeyValueRenderer(),
         },
     },
     "handlers": {
@@ -173,7 +161,7 @@ LOGGING = {
         },
     },
     "loggers": {
-        "": {
+        "django_structlog": {
             "handlers": ["console", "flat_line_file", "json_file"],
             "level": "INFO",
             'propagate': False
