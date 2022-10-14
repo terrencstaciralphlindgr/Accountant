@@ -182,7 +182,7 @@ def fetch_trades(self, pk):
                 symbols = (qs.filter(wallet=wallet))
                 for symbol in symbols:
                     response = client.fetchMyTrades(symbol, since=start_datetime)
-                    log.info('Fetch trades', length=len(response), wallet=wallet, symbol=symbol)
+                    log.info('Fetch trades')  # , length=len(response), wallet=wallet, symbol=symbol)
                     for dic in response:
                         create_trade(dic)
 
@@ -190,7 +190,7 @@ def fetch_trades(self, pk):
             symbols = list(qs)
             for symbol in symbols:
                 response = client.fetchMyTrades(symbol, since=start_datetime)
-                log.info('Fetch trades', length=len(response), symbol=symbol)
+                log.info('Fetch trades')  # , length=len(response), symbol=symbol)
                 for dic in response:
                     create_trade(dic)
 
@@ -203,7 +203,8 @@ def fetch_trades(self, pk):
         raise self.retry(exc=e)
 
     except Exception as e:
-        log.exception('Fetch trades failure', cause=str(e))
+        # log.exception('Fetch trades failure', cause=str(e))
+        log.exception('Fetch trades failure')
 
     else:
         log.info('Fetch trades complete')
