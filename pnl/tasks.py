@@ -8,8 +8,7 @@ from pnl.models import Inventory
 import logging
 from celery.utils.log import get_task_logger
 
-logger = get_task_logger(__name__)
-
+log = structlog.wrap_logger(get_task_logger(__name__))
 # logger = structlog.getLogger(__name__)
 
 
@@ -21,7 +20,7 @@ def update_asset_inventory(self, pk):
 
     account = Account.objects.get(pk=pk)
     # log = logger.bind(account=account.name)
-    log = logger
+
     if self.request.id:
         pass
         # log = log.bind(worker=current_process().index, task=self.request.id[:3])
@@ -62,6 +61,7 @@ def update_asset_inventory(self, pk):
             # Determine stock, total and average costs from previous inventory entry
 
             if prev_entries or index > 0:
+                # Select dt_created as Trade objects can have the same datetime
                 prev_dt = trades[index - 1].dt_created if index > 0 else start_datetime
                 prev = Inventory.objects.get(account=account, dt_created=prev_dt, instrument=0)
                 prev_stock = prev.stock
@@ -119,7 +119,7 @@ def update_contract_inventory(self, pk):
 
     account = Account.objects.get(pk=pk)
     # log = logger.bind(account=account.name)
-    log = logger
+
     if self.request.id:
         pass
         # log = log.bind(worker=current_process().index, task=self.request.id[:3])
