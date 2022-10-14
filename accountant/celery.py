@@ -78,35 +78,37 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
                 "": {
                     "handlers": ["console", "flat_line_file", "json_file"],
                     "level": "INFO",
+                    'propagate': True
                 },
                 "django_structlog": {
                     "handlers": ["console", "flat_line_file", "json_file"],
                     "level": "INFO",
+                    'propagate': True
                 },
                 "authentication": {
                     "handlers": ["console", "flat_line_file", "json_file"],
                     "level": "INFO",
-                    'propagate': False
+                    'propagate': True
                 },
                 "pnl": {
                     "handlers": ["console", "flat_line_file", "json_file"],
                     "level": "DEBUG",
-                    'propagate': False
+                    'propagate': True
                 },
                 "market": {
                     "handlers": ["console", "flat_line_file", "json_file"],
                     "level": "INFO",
-                    'propagate': False
+                    'propagate': True
                 },
                 "account": {
                     "handlers": ["console", "flat_line_file", "json_file"],
                     "level": "INFO",
-                    'propagate': False
+                    'propagate': True
                 },
                 "statistics": {
                     "handlers": ["console", "flat_line_file", "json_file"],
                     "level": "INFO",
-                    'propagate': False
+                    'propagate': True
                 }
             }
         }
