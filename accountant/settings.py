@@ -161,11 +161,11 @@ LOGGING = {
         },
     },
     "loggers": {
-        "": {
-            "handlers": ["console", "flat_line_file", "json_file"],
-            "level": "INFO",
-            'propagate': False
-        },
+        # "": {
+        #     "handlers": ["console", "flat_line_file", "json_file"],
+        #     "level": "INFO",
+        #     'propagate': False
+        # },
         # "django_structlog": {
         #     "handlers": ["console", "flat_line_file", "json_file"],
         #     "level": "INFO",
