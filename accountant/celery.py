@@ -81,9 +81,9 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
                 #     'propagate': False
                 # },
                 "django_structlog": {
-                    "handlers": ["console", "flat_line_file", "json_file"],
+                    "handlers": ["console"],  # , "flat_line_file", "json_file"],
                     "level": "INFO",
-                    'propagate': False
+                    'propagate': True
                 },
                 # "authentication": {
                 #     "handlers": ["console", "flat_line_file", "json_file"],
