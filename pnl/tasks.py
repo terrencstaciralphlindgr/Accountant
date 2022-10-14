@@ -8,8 +8,8 @@ from pnl.models import Inventory
 import logging
 from celery.utils.log import get_task_logger
 
-log = structlog.wrap_logger(get_task_logger(__name__))
-# logger = structlog.getLogger(__name__)
+# log = structlog.wrap_logger(get_task_logger(__name__))
+log = get_task_logger(__name__)
 
 
 @app.task(bind=True, name='PnL_____Update_asset_inventory')
