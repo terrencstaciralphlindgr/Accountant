@@ -46,7 +46,7 @@ class CustomerAdmin(admin.ModelAdmin):
     list_display = ('orderid', 'account', 'market', 'clientid', 'status', 'type', 'amount', 'remaining', 'filled',
                     'side', 'cost', 'average', 'price', 'datetime')
     readonly_fields = ('orderid', 'account', 'market', 'clientid', 'status', 'type', 'amount', 'remaining', 'filled',
-                       'side', 'cost', 'average', 'price', 'datetime')
+                       'side', 'cost', 'average', 'price', 'datetime', 'dt_created', )
     ordering = ('-datetime',)
     list_filter = (
         ('account', admin.RelatedOnlyFieldListFilter),
@@ -58,7 +58,7 @@ class CustomerAdmin(admin.ModelAdmin):
 class CustomerAdmin(admin.ModelAdmin):
     list_display = ('tradeid', 'account', 'order', 'symbol', 'side', 'type', 'taker_or_maker', 'datetime',)
     readonly_fields = ('tradeid', 'id', 'account', 'order', 'symbol', 'side', 'type', 'taker_or_maker', 'price',
-                       'amount', 'cost', 'datetime', 'timestamp', 'fee', 'fees', 'info', )
+                       'amount', 'cost', 'datetime', 'timestamp', 'fee', 'fees', 'info', 'dt_created', )
     ordering = ('-datetime',)
     list_filter = (
         ('account', admin.RelatedOnlyFieldListFilter),
