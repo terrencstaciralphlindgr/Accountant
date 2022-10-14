@@ -127,77 +127,77 @@ CELERY_IMPORTS = ('authentication.tasks', 'pnl.tasks', 'statistic.tasks', 'accou
 en_formats.DATETIME_FORMAT = 'Y-m-d H:i:s'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "json_formatter": {
-            "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.processors.JSONRenderer(),
-        },
-        "plain_console": {
-            "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.dev.ConsoleRenderer(pad_event=43),
-        },
-        "key_value": {
-            "()": structlog.stdlib.ProcessorFormatter,
-            "processor": structlog.processors.KeyValueRenderer(),
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "plain_console",
-        },
-        "json_file": {
-            "class": "logging.handlers.WatchedFileHandler",
-            "filename": "logs/json.log",
-            "formatter": "json_formatter",
-        },
-        "flat_line_file": {
-            "class": "logging.handlers.WatchedFileHandler",
-            "filename": "logs/flat_line.log",
-            "formatter": "key_value",
-        },
-    },
-    "loggers": {
-        # "": {
-        #     "handlers": ["console"],  # , "flat_line_file", "json_file"],
-        #     "level": "INFO",
-        #     'propagate': False
-        # },
-        # "django_structlog": {
-        #     "handlers": ["console"],  # , "flat_line_file", "json_file"],
-        #     "level": "INFO",
-        #     'propagate': False
-        # },
-        # "authentication": {
-        #     "handlers": ["console", "flat_line_file", "json_file"],
-        #     "level": "INFO",
-        #     'propagate': False
-        # },
-        # "pnl": {
-        #     "handlers": ["console", "flat_line_file", "json_file"],
-        #     "level": "DEBUG",
-        #     'propagate': False
-        # },
-        # "market": {
-        #     "handlers": ["console"],  # , "flat_line_file", "json_file"],
-        #     "level": "INFO",
-        #     'propagate': False
-        # },
-        # "account": {
-        #     "handlers": ["console"],  # , "flat_line_file", "json_file"],
-        #     "level": "INFO",
-        #     'propagate': False
-        # },
-        # "statistics": {
-        #     "handlers": ["console", "flat_line_file", "json_file"],
-        #     "level": "INFO",
-        #     'propagate': False
-        # }
-    }
-}
+# LOGGING = {
+#     "version": 1,
+#     "disable_existing_loggers": False,
+#     "formatters": {
+#         "json_formatter": {
+#             "()": structlog.stdlib.ProcessorFormatter,
+#             "processor": structlog.processors.JSONRenderer(),
+#         },
+#         "plain_console": {
+#             "()": structlog.stdlib.ProcessorFormatter,
+#             "processor": structlog.dev.ConsoleRenderer(pad_event=43),
+#         },
+#         "key_value": {
+#             "()": structlog.stdlib.ProcessorFormatter,
+#             "processor": structlog.processors.KeyValueRenderer(),
+#         },
+#     },
+#     "handlers": {
+#         "console": {
+#             "class": "logging.StreamHandler",
+#             "formatter": "plain_console",
+#         },
+#         "json_file": {
+#             "class": "logging.handlers.WatchedFileHandler",
+#             "filename": "logs/json.log",
+#             "formatter": "json_formatter",
+#         },
+#         "flat_line_file": {
+#             "class": "logging.handlers.WatchedFileHandler",
+#             "filename": "logs/flat_line.log",
+#             "formatter": "key_value",
+#         },
+#     },
+#     "loggers": {
+#         # "": {
+#         #     "handlers": ["console"],  # , "flat_line_file", "json_file"],
+#         #     "level": "INFO",
+#         #     'propagate': False
+#         # },
+#         # "django_structlog": {
+#         #     "handlers": ["console"],  # , "flat_line_file", "json_file"],
+#         #     "level": "INFO",
+#         #     'propagate': False
+#         # },
+#         # "authentication": {
+#         #     "handlers": ["console", "flat_line_file", "json_file"],
+#         #     "level": "INFO",
+#         #     'propagate': False
+#         # },
+#         # "pnl": {
+#         #     "handlers": ["console", "flat_line_file", "json_file"],
+#         #     "level": "DEBUG",
+#         #     'propagate': False
+#         # },
+#         # "market": {
+#         #     "handlers": ["console"],  # , "flat_line_file", "json_file"],
+#         #     "level": "INFO",
+#         #     'propagate': False
+#         # },
+#         # "account": {
+#         #     "handlers": ["console"],  # , "flat_line_file", "json_file"],
+#         #     "level": "INFO",
+#         #     'propagate': False
+#         # },
+#         # "statistics": {
+#         #     "handlers": ["console", "flat_line_file", "json_file"],
+#         #     "level": "INFO",
+#         #     'propagate': False
+#         # }
+#     }
+# }
 
 structlog.configure(
     processors=[
