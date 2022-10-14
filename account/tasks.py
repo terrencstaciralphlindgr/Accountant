@@ -161,6 +161,8 @@ def fetch_trades(self, pk):
             type=dic['type']
         )
 
+        print(dic['id'], account, dic['symbol'])
+        
         obj, created = Trade.objects.update_or_create(tradeid=dic['id'],
                                                       account=account,
                                                       symbol=dic['symbol'],
