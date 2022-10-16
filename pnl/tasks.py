@@ -9,10 +9,9 @@ import logging
 from celery.utils.log import get_task_logger
 from celery import group
 
-log = get_task_logger(__name__)
+# log = get_task_logger(__name__)
 
-
-# log = structlog.wrap_logger(get_task_logger(__name__))
+log = structlog.wrap_logger(get_task_logger(__name__))
 # log = get_task_logger(__name__)
 
 
