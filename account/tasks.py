@@ -9,7 +9,7 @@ from accountant.celery import app
 from account.models import Account, Order, Trade, Balance
 from market.models import Market
 from pnl.tasks import update_inventories
-from celery import chord
+from celery import chord, chain
 import structlog
 import ccxt
 from celery.utils.log import get_task_logger
@@ -223,6 +223,6 @@ def update_inventory(self, pk):
 def bulk_update_inventory(self):
     for account in Account.objects.all():
         pk = account.pk
-        chord(fetch_orders.si(pk),
-              fetch_trades.si(pk)
-              )(update_inventories.si(pk))
+        ch = chain(fetch_orders.si(pk), fetch_trades.si(pk))
+
+        chord(ch())(update_inventories.si(pk))
