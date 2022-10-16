@@ -31,6 +31,7 @@ def update_asset_inventory(self, pk):
     if entries.exists():
         prev_entries = True
         start_datetime = entries.latest('datetime').datetime
+        prev_dt_created = entries.latest('datetime').dt_created
     else:
         prev_entries = False
         start_datetime = account.dt_created
@@ -63,8 +64,8 @@ def update_asset_inventory(self, pk):
 
             if prev_entries or index > 0:
                 # Select dt_created as Trade objects can have the same datetime
-                prev_dt = trades[index - 1].dt_created if index > 0 else start_datetime
-                
+                prev_dt = trades[index - 1].dt_created if index > 0 else prev_dt_created
+
                 print(prev_entries, index, prev_dt)
 
                 prev = Inventory.objects.get(account=account, dt_created=prev_dt, instrument=0)
@@ -133,6 +134,7 @@ def update_contract_inventory(self, pk):
     if entries.exists():
         prev_entries = True
         start_datetime = entries.latest('datetime').datetime
+        prev_dt_created = entries.latest('datetime').dt_created
     else:
         prev_entries = False
         start_datetime = account.dt_created
@@ -164,7 +166,7 @@ def update_contract_inventory(self, pk):
             # Determine stock, total and average costs from previous inventory entry
 
             if prev_entries or index > 0:
-                prev_dt = trades[index - 1].dt_created if index > 0 else start_datetime
+                prev_dt = trades[index - 1].dt_created if index > 0 else prev_dt_created
                 prev = Inventory.objects.get(account=account, dt_created=prev_dt, instrument=1)
                 prev_stock = prev.stock
                 prev_total_cost = prev.total_cost
