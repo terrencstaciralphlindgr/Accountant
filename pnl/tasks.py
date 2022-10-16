@@ -64,7 +64,9 @@ def update_asset_inventory(self, pk):
             if prev_entries or index > 0:
                 # Select dt_created as Trade objects can have the same datetime
                 prev_dt = trades[index - 1].dt_created if index > 0 else start_datetime
-                log.info(prev_dt)
+                
+                print(prev_entries, index, prev_dt)
+
                 prev = Inventory.objects.get(account=account, dt_created=prev_dt, instrument=0)
                 prev_stock = prev.stock
                 prev_total_cost = prev.total_cost
