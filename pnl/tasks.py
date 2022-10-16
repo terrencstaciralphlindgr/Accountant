@@ -181,8 +181,8 @@ def update_contract_inventory(self, pk):
                 # Close short
                 if prev_stock < 0:
 
-                    entry.stock = prev_stock + trade.amount
-                    entry.total_cost = entry.stock * prev_average_cost  # decrease
+                    entry.stock = str(prev_stock + trade.amount)
+                    entry.total_cost = str(entry.stock * prev_average_cost)  # decrease
                     entry.average_cost = prev_average_cost
 
                     # Determine realized and unrealized profit and loss for USDⓈ-margined contracts
