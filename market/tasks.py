@@ -21,7 +21,8 @@ from market.models import Exchange, Market, Currency, Price
 from market.methods import get_market, save_ticker_price
 import celery
 
-logger = structlog.get_logger(__name__)
+logger = celery.utils.log.get_task_logger(__name__)
+# logger = structlog.get_logger(__name__)
 # logger = structlog.wrap_logger(celery.utils.log.get_task_logger(__name__))
 
 
