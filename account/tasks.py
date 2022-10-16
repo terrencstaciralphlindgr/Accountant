@@ -225,5 +225,8 @@ def bulk_update_inventory(self):
         pk = account.pk
 
         chord(
-            group(fetch_orders.si(pk), fetch_trades.si(pk))
-        )(update_inventories.si(pk))
+            group(fetch_orders.si(pk),
+                  fetch_trades.si(pk))
+        )(
+            update_inventories.s(pk)
+        )
