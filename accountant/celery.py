@@ -103,7 +103,7 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
                 'celery': {
                     'handlers': ['console'],
                     'level': 'DEBUG',
-                    'propagate': True
+                    'propagate': False
                 },
                 "account": {
                     "handlers": ["console"],  # , "flat_line_file", "json_file"],
