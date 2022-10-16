@@ -253,4 +253,4 @@ def update_inventories(pk):
     """
     group(update_asset_inventory.si(pk),
           update_contract_inventory.si(pk)
-          )
+          )()
