@@ -44,12 +44,16 @@ class CustomerAdmin(admin.ModelAdmin):
     def get_stock(self, obj):
         if obj.stock:
             return round(obj.stock, 4)
+        elif obj.stock == 0:
+            return '0'
 
     get_stock.short_description = 'Stock'
 
     def get_total_cost(self, obj):
         if obj.total_cost:
             return round(obj.total_cost, 2)
+        elif obj.total_cost == 0:
+            return '0'
 
     get_total_cost.short_description = 'Total cost'
 
