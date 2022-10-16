@@ -228,5 +228,5 @@ def bulk_update_inventory(self):
             group(fetch_orders.si(pk),
                   fetch_trades.si(pk))
         )(
-            update_inventories.s(pk)
+            update_inventories.delay(pk)
         )
