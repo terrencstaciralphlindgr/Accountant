@@ -223,6 +223,6 @@ def update_inventory(self, pk):
 def bulk_update_inventory(self):
     for account in Account.objects.all():
         pk = account.pk
-        ch = group(fetch_orders.si(pk), fetch_trades.si(pk))
+        ch = chain(fetch_orders.si(pk), fetch_trades.si(pk))
 
-        chord(ch())(update_inventories.si(pk))
+        chord(ch)(update_inventories.si(pk))
