@@ -8,7 +8,8 @@ from pnl.models import Inventory
 import logging
 from celery.utils.log import get_task_logger
 
-log = structlog.wrap_logger(get_task_logger(__name__))
+log = get_task_logger(__name__)
+# log = structlog.wrap_logger(get_task_logger(__name__))
 # log = get_task_logger(__name__)
 
 
