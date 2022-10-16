@@ -130,6 +130,7 @@ def fetch_trades(self, pk):
     start_datetime = int(start_datetime.timestamp() * 1000)
 
     # log.bind(start_datetime=start_datetime)
+    log.info('Fetch trades')
 
     def create_trade(dic):
 
