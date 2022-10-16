@@ -176,6 +176,8 @@ def update_contract_inventory(self, pk):
 
             if trade.side == 'buy':
 
+                print(prev_stock, trade.amount, prev_total_cost, trade.cost)
+
                 # Close short
                 if prev_stock < 0:
 
@@ -198,8 +200,6 @@ def update_contract_inventory(self, pk):
 
                 # Open long
                 elif prev_stock >= 0:
-
-                    print(prev_stock, trade.amount, prev_total_cost, trade.cost)
 
                     entry.stock = prev_stock + trade.amount
                     entry.total_cost = prev_total_cost + trade.cost  # increase
