@@ -187,14 +187,13 @@ def update_contract_inventory(self, pk):
                     # https://www.binance.com/en/support/faq/3a55a23768cb416fb404f06ffedde4b2
 
                     # Directives
-                    position_size = trade.cost
                     exit_price = trade.price
                     mark_price = trade.price
                     entry_price = entry.average_cost
 
-                    realized_pnl_base = ((1 / entry_price) - (1 / exit_price)) * (position_size * -1)
+                    realized_pnl_base = ((1 / entry_price) - (1 / exit_price)) * (trade.cost * -1)
                     entry.realized_pnl = realized_pnl_base * exit_price
-                    entry.unrealized_pnl = position_size * -1 * (mark_price - entry_price)
+                    entry.unrealized_pnl = trade.amount * -1 * (mark_price - entry_price)
 
                 # Open long
                 elif prev_stock >= 0:
@@ -227,14 +226,13 @@ def update_contract_inventory(self, pk):
                     # https://www.binance.com/en/support/faq/3a55a23768cb416fb404f06ffedde4b2
 
                     # Directives
-                    position_size = trade.cost
                     exit_price = trade.price
                     mark_price = trade.price
                     entry_price = entry.average_cost
 
-                    realized_pnl_base = ((1 / entry_price) - (1 / exit_price)) * position_size
+                    realized_pnl_base = ((1 / entry_price) - (1 / exit_price)) * trade.cost
                     entry.realized_pnl = realized_pnl_base * exit_price
-                    entry.unrealized_pnl = position_size * 1 * (mark_price - entry_price)
+                    entry.unrealized_pnl = trade.amount * 1 * (mark_price - entry_price)
 
             entry.save()
 
