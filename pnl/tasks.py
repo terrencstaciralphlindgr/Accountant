@@ -7,11 +7,11 @@ from accountant.celery import app
 from pnl.models import Inventory
 import logging
 from celery.utils.log import get_task_logger
-from celery import group
+from celery import group, chain
 
-log = get_task_logger(__name__)
+# log = get_task_logger(__name__)
 
-# log = structlog.wrap_logger(get_task_logger(__name__))
+log = structlog.wrap_logger(get_task_logger(__name__))
 # log = get_task_logger(__name__)
 
 
@@ -250,6 +250,6 @@ def update_inventories(pk):
     """
     Update inventories
     """
-    group(update_asset_inventory.si(pk),
+    chain(update_asset_inventory.si(pk),
           update_contract_inventory.si(pk)
           )()
