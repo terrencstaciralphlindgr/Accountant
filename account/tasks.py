@@ -39,7 +39,7 @@ def fetch_orders(self, pk):
     params = dict(start_datetime=start_datetime)
 
     # log.bind(start_datetime=start_datetime)
-    log.info('Fetch orders')
+    log.info('Fetch orders {0}'.format(account.name))
 
     def create_update_order(dic, wallet=None):
 
@@ -130,7 +130,7 @@ def fetch_trades(self, pk):
     start_datetime = int(start_datetime.timestamp() * 1000)
 
     # log.bind(start_datetime=start_datetime)
-    log.info('Fetch trades')
+    log.info('Fetch trades {0}'.format(account.name))
 
     def create_trade(dic):
 
@@ -223,7 +223,6 @@ def update_inventory(self, pk):
 def bulk_update_inventory(self):
     for account in Account.objects.all():
         pk = account.pk
-
         chord(
             group(fetch_orders.si(pk),
                   fetch_trades.si(pk))
