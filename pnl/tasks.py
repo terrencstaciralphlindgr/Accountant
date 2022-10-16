@@ -165,6 +165,9 @@ def update_contract_inventory(self, pk):
 
             # Determine stock, total and average costs from previous inventory entry
             if prev_entries or index > 0:
+
+                print(prev_dt_created, prev_entries, index)
+
                 prev_dt = trades[index - 1].dt_created if index > 0 else prev_dt_created
                 prev = Inventory.objects.get(account=account, dt_created=prev_dt, instrument=1)
                 prev_stock = prev.stock
