@@ -181,9 +181,12 @@ def update_contract_inventory(self, pk):
                 # Close short
                 if prev_stock < 0:
 
-                    entry.stock = str(prev_stock + trade.amount)
-                    entry.total_cost = str(entry.stock * prev_average_cost)  # decrease
+                    entry.stock = prev_stock + trade.amount
+                    entry.total_cost = entry.stock * prev_average_cost  # decrease
                     entry.average_cost = prev_average_cost
+
+                    entry.stock = str(entry.stock)
+                    entry.total_cost = str(entry.total_cost)
 
                     # Determine realized and unrealized profit and loss for USDⓈ-margined contracts
                     # https://www.binance.com/en/support/faq/3a55a23768cb416fb404f06ffedde4b2
