@@ -67,13 +67,11 @@ def receiver_setup_logging(loglevel, logfile, format, colorize, **kwargs):  # pr
                     "class": "logging.handlers.WatchedFileHandler",
                     "filename": "logs/json.log",
                     "formatter": "json_formatter",
-                    'maxBytes': 1024 * 1024 * 100,  # 100 mb
                 },
                 "flat_line_file": {
                     "class": "logging.handlers.WatchedFileHandler",
                     "filename": "logs/flat_line.log",
                     "formatter": "key_value",
-                    'maxBytes': 1024 * 1024 * 100,  # 100 mb
                 },
             },
             "loggers": {
