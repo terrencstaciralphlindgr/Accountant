@@ -116,3 +116,15 @@ class RecentTradesViewSet(APIView):
             date_only=Cast('datetime', DateTimeField())).order_by('-datetime').values(*fields)[:int(last_n)]
 
         return Response(qs)
+
+
+@permission_classes([IsAdminUser])
+class AssetsViewSet(APIView):
+
+    def get(self, request, account_id):
+
+        account = Account.objects.get(id=account_id)
+        qs = Balance.objects.filter(account=account).values("dt", "assets").order_by('-dt')[:1]
+
+        return Response(qs)
+
