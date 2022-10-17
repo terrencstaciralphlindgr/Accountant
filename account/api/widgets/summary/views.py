@@ -98,7 +98,12 @@ class RecentTradesViewSet(APIView):
         account = Account.objects.get(id=account_id)
         start_datetime = get_start_datetime(account, period)
 
-        fields = ['tradeid', 'order__orderid', 'symbol', 'side', 'type', 'taker_or_maker', 'price',
+        fields = ['tradeid', 'order__orderid',
+                  'order__market__base__code',
+                  'order__market__quote__code',
+                  'order__market__type',
+                  'order__market__exchange',
+                  'symbol', 'side', 'taker_or_maker', 'price',
                   'amount', 'cost', 'fee', 'account', 'datetime', 'timestamp']
 
         qs = Trade.objects.filter(account=account, datetime__gte=start_datetime).annotate(
