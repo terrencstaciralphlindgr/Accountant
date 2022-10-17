@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework import routers
 from account.api.views import AccountViewSet, BalanceViewSet
 from account.api.widgets.summary.views import *
+from account.api.widgets.futures.views import *
 
 
 router = routers.DefaultRouter()
@@ -17,4 +18,6 @@ urlpatterns = [
     path('account/<int:account_id>/summary/historical_value/', HistoricalAssetsValueViewSet.as_view()),
     path('account/<int:account_id>/summary/historical_weight/', HistoricalAssetsWeightViewSet.as_view()),
     path('account/<int:account_id>/summary/historical_trades/', HistoricalTradesViewSet.as_view()),
+
+    path('account/<int:account_id>/futures/open_position/', OpenPositionViewSet.as_view()),
 ]

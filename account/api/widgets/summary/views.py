@@ -8,7 +8,6 @@ from accountant.methods import get_start_datetime, datetime_directive_ISO_8601
 from account.models import Balance, Account, Trade
 from market.models import Price
 import structlog
-import time
 
 log = structlog.get_logger(__name__)
 
@@ -127,4 +126,3 @@ class HistoricalTradesViewSet(APIView):
             date_only=Cast('datetime', DateTimeField())).order_by('-datetime').values(*fields)[:int(last_n)]
 
         return Response(qs)
-
