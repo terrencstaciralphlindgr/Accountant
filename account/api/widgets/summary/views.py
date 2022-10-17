@@ -87,4 +87,4 @@ class HistoricalWeightsViewSet(APIView):
                     data[str_date][code] = dict()
                     data[str_date][code] = a['assets'][code]['weight']
 
-        return Response(qs)
+        return Response(data)
