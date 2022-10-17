@@ -80,7 +80,7 @@ class HistoricalWeightsViewSet(APIView):
         data = {}
         for a in qs:
             str_date = a['date_only'].strftime(datetime_directive_ISO_8601)
-            codes = [c['assets'] for c in a.keys() if c != 'date_only']
+            codes = [c for c in a['assets'].keys() if c != 'date_only']
             for code in codes:
                 data[str_date] = dict()
                 data[str_date][code] = dict()
