@@ -115,14 +115,14 @@ class HistoricalTradesViewSet(APIView):
         account = Account.objects.get(id=account_id)
         start_datetime = get_start_datetime(account, period)
 
-        fields = ['tradeid',
+        fields = ['account', 'amount', 'cost', 'fee', 
                   'order__orderid',
                   'order__market__base__code',
                   'order__market__quote__code',
                   'order__market__type',
                   'order__market__exchange',
-                  'symbol', 'side', 'taker_or_maker', 'price',
-                  'amount', 'cost', 'fee', 'account', 'datetime', 'timestamp']
+                  'price', 'side', 'symbol', 'taker_or_maker', 'tradeid',
+                  'timestamp', 'datetime']
 
         qs = Trade.objects.filter(account=account, datetime__gte=start_datetime).annotate(
             date_only=Cast('datetime', DateTimeField())).order_by('-datetime').values(*fields)[:int(last_n)]
