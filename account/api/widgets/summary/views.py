@@ -75,8 +75,6 @@ class HistoricalWeightsViewSet(APIView):
         start_datetime = get_start_datetime(account, period)
 
         qs = Balance.objects.filter(account=account, dt__gte=start_datetime).annotate(
-            date_only=Cast('dt', DateTimeField())).values("date_only", "assets_total_value").order_by('-dt')
+            date_only=Cast('dt', DateTimeField())).values("date_only", "assets").order_by('-dt')
 
-
-
-
+        return Response(qs)
