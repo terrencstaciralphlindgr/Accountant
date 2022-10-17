@@ -98,6 +98,6 @@ class RecentTradesViewSet(APIView):
         account = Account.objects.get(id=account_id)
         start_datetime = get_start_datetime(account, period)
 
-        qs = Trade.objects.defer('info').filter(account=account, datetime__gte=start_datetime)
+        qs = Trade.objects.defer('info').filter(account=account, datetime__gte=start_datetime).values()
 
         return Response(qs)
