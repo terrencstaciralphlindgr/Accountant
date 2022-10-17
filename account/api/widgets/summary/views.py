@@ -98,7 +98,7 @@ class RecentTradesViewSet(APIView):
         account = Account.objects.get(id=account_id)
         start_datetime = get_start_datetime(account, period)
 
-        qs = Trade.objects.filter(account=account, dt__gte=start_datetime).annotate(
+        qs = Trade.objects.filter(account=account, datetime__gte=start_datetime).annotate(
             datetime=Cast('datetime', DateTimeField())).values().order_by('-datetime')
 
         return Response(qs)
