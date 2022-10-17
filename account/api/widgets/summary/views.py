@@ -112,10 +112,7 @@ class RecentTradesViewSet(APIView):
                   'symbol', 'side', 'taker_or_maker', 'price',
                   'amount', 'cost', 'fee', 'account', 'datetime', 'timestamp']
 
-        start_time = time.time()
         qs = Trade.objects.filter(account=account, datetime__gte=start_datetime).annotate(
             date_only=Cast('datetime', DateTimeField())).order_by('-datetime').values(*fields)[:int(last_n)]
-
-        qs['execution_time'] = time.time() - start_time
 
         return Response(qs)
