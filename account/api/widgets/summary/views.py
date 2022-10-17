@@ -85,7 +85,7 @@ class HistoricalWeightsViewSet(APIView):
             for code in codes:
                 if 'weight' in a['assets'][code]:
                     data[str_date][code] = dict()
-                    data[str_date][code] = a['assets'][code]['weight']
+                    data[str_date][code] = a['assets'][code]['weight'] 
 
         return Response(data)
 
