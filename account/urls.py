@@ -11,10 +11,10 @@ router.register('balance', BalanceViewSet, basename="balances-list")
 urlpatterns = [
     path('', include(router.urls)),
     path('account/<int:account_id>/summary/assets/', AssetsViewSet.as_view()),
-    path('account/<int:account_id>/summary/assets_value/', AssetValueViewSet.as_view()),
-    path('account/<int:account_id>/summary/assets_growth/', AssetGrowthViewSet.as_view()),
-    path('account/<int:account_id>/summary/assets_exposition/', ExpositionViewSet.as_view()),
+    path('account/<int:account_id>/summary/assets_value/', AssetsValueViewSet.as_view()),
+    path('account/<int:account_id>/summary/assets_growth/', AssetsGrowthViewSet.as_view()),
+    path('account/<int:account_id>/summary/assets_exposition/', AssetsExpositionViewSet.as_view()),
     path('account/<int:account_id>/summary/historical_value/', HistoricalValueViewSet.as_view()),
     path('account/<int:account_id>/summary/historical_weight/', HistoricalWeightsViewSet.as_view()),
-    path('account/<int:account_id>/summary/historical_trades/', RecentTradesViewSet.as_view()),
+    path('account/<int:account_id>/summary/historical_trades/', HistoricalTradesViewSet.as_view()),
 ]

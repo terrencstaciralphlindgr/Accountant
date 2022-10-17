@@ -14,7 +14,18 @@ log = structlog.get_logger(__name__)
 
 
 @permission_classes([IsAdminUser])
-class AssetValueViewSet(APIView):
+class AssetsViewSet(APIView):
+
+    def get(self, request, account_id):
+
+        account = Account.objects.get(id=account_id)
+        qs = Balance.objects.filter(account=account).values("dt", "assets").order_by('-dt')[:1]
+
+        return Response(qs)
+
+
+@permission_classes([IsAdminUser])
+class AssetsValueViewSet(APIView):
 
     def get(self, request, account_id):
         dic = Balance.objects.filter(account__id=account_id).latest('dt').get_assets_value()
@@ -26,7 +37,7 @@ class AssetValueViewSet(APIView):
 
 
 @permission_classes([IsAdminUser])
-class AssetGrowthViewSet(APIView):
+class AssetsGrowthViewSet(APIView):
 
     def get(self, request, account_id):
         period = request.GET.get('period')
@@ -35,7 +46,7 @@ class AssetGrowthViewSet(APIView):
 
 
 @permission_classes([IsAdminUser])
-class ExpositionViewSet(APIView):
+class AssetsExpositionViewSet(APIView):
 
     def get(self, request, account_id):
         exposition = Account.objects.get(id=account_id).current_exposition()
@@ -43,7 +54,7 @@ class ExpositionViewSet(APIView):
 
 
 @permission_classes([IsAdminUser])
-class HistoricalValueViewSet(APIView):
+class HistoricalAssetsValueViewSet(APIView):
 
     def get(self, request, account_id):
         period = request.GET.get('period')
@@ -68,7 +79,7 @@ class HistoricalValueViewSet(APIView):
 
 
 @permission_classes([IsAdminUser])
-class HistoricalWeightsViewSet(APIView):
+class HistoricalAssetsWeightsViewSet(APIView):
 
     def get(self, request, account_id):
         period = request.GET.get('period')
@@ -92,7 +103,7 @@ class HistoricalWeightsViewSet(APIView):
 
 
 @permission_classes([IsAdminUser])
-class RecentTradesViewSet(APIView):
+class HistoricalTradesViewSet(APIView):
 
     def get(self, request, account_id):
 
@@ -114,17 +125,6 @@ class RecentTradesViewSet(APIView):
 
         qs = Trade.objects.filter(account=account, datetime__gte=start_datetime).annotate(
             date_only=Cast('datetime', DateTimeField())).order_by('-datetime').values(*fields)[:int(last_n)]
-
-        return Response(qs)
-
-
-@permission_classes([IsAdminUser])
-class AssetsViewSet(APIView):
-
-    def get(self, request, account_id):
-
-        account = Account.objects.get(id=account_id)
-        qs = Balance.objects.filter(account=account).values("dt", "assets").order_by('-dt')[:1]
 
         return Response(qs)
 
