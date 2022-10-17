@@ -13,6 +13,6 @@ urlpatterns = [
     path('account/<int:account_id>/summary/portfolio_value/', AssetValueViewSet.as_view()),
     path('account/<int:account_id>/summary/portfolio_growth/', AssetGrowthViewSet.as_view()),
     path('account/<int:account_id>/summary/portfolio_exposition/', ExpositionViewSet.as_view()),
-    path('account/<int:account_id>/summary/portfolio_hist_value/', HistoricalValueViewSet.as_view()),
-    path('account/<int:account_id>/summary/portfolio_hist_weight/', HistoricalWeightsViewSet.as_view()),
+    path('account/<int:account_id>/summary/portfolio_historical_value/', HistoricalValueViewSet.as_view()),
+    path('account/<int:account_id>/summary/portfolio_historical_weight/', HistoricalWeightsViewSet.as_view()),
 ]
