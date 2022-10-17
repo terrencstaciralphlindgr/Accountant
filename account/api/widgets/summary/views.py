@@ -8,6 +8,7 @@ from accountant.methods import get_start_datetime, datetime_directive_ISO_8601
 from account.models import Balance, Account, Trade
 from market.models import Price
 import structlog
+import time
 
 log = structlog.get_logger(__name__)
 
@@ -111,7 +112,10 @@ class RecentTradesViewSet(APIView):
                   'symbol', 'side', 'taker_or_maker', 'price',
                   'amount', 'cost', 'fee', 'account', 'datetime', 'timestamp']
 
+        start_time = time.time()
         qs = Trade.objects.filter(account=account, datetime__gte=start_datetime).annotate(
             date_only=Cast('datetime', DateTimeField())).order_by('-datetime').values(*fields)[:int(last_n)]
+
+        qs['execution_time'] = time.time() - start_time
 
         return Response(qs)
