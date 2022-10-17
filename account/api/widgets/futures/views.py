@@ -17,21 +17,20 @@ class OpenPositionViewSet(APIView):
     def get(self, request, account_id):
 
         account = Account.objects.get(id=account_id)
-        qs = Balance.objects.filter(account=account).values("open_positions").order_by('-dt')[:1]
+        data = Balance.objects.filter(account=account).latest('-dt').values("open_position")
 
-        return Response(qs)
+        return Response(data)
 
 
 @permission_classes([IsAdminUser])
 class NotionalValueViewSet(APIView):
 
     def get(self, request, account_id):
-        dic = Balance.objects.filter(account__id=account_id).latest('dt').get_assets_value()
-        return Response(dict(
-            total_value=dic['assets_total_value'],
-            last_update=dic['last_update'],
-        )
-        )
+
+        account = Account.objects.get(id=account_id)
+        data = Balance.objects.filter(account=account).latest('-dt').values("open_position")
+
+        return Response(dict(notional_value=data['open_position']['notional_value']))
 
 
 @permission_classes([IsAdminUser])
