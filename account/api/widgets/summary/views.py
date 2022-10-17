@@ -64,3 +64,14 @@ class HistoricalValueViewSet(APIView):
                 data[str_date]['assets_total_value'] = a['assets_total_value']
 
         return Response(data)
+
+
+@permission_classes([IsAdminUser])
+class HistoricalWeightsViewSet(APIView):
+
+    def get(self, request, account_id):
+        period = request.GET.get('period')
+        account = Account.objects.get(id=account_id)
+        start_datetime = get_start_datetime(account, period)
+
+
