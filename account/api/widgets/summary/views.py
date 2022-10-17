@@ -67,7 +67,7 @@ class HistoricalValueViewSet(APIView):
 
 
 @permission_classes([IsAdminUser])
-class HistoricalWeightsViewSet(APIView):
+class HistoricalWeightsViewSet(APIView): 
 
     def get(self, request, account_id):
         period = request.GET.get('period')
