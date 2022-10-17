@@ -67,7 +67,7 @@ class HistoricalValueViewSet(APIView):
 
 
 @permission_classes([IsAdminUser])
-class HistoricalWeightsViewSet(APIView): 
+class HistoricalWeightsViewSet(APIView):
 
     def get(self, request, account_id):
         period = request.GET.get('period')
@@ -77,4 +77,12 @@ class HistoricalWeightsViewSet(APIView):
         qs = Balance.objects.filter(account=account, dt__gte=start_datetime).annotate(
             date_only=Cast('dt', DateTimeField())).values("date_only", "assets").order_by('-dt')
 
+        data = {}
+        for a in qs:
+            str_date = a['date_only'].strftime(datetime_directive_ISO_8601)
+            codes = [c for c in a.keys() if c != 'date_only']
+            for code in codes:
+                data[str_date][code] = dict()
+                data[str_date][code] = a[code]['weight']
+            
         return Response(qs)
