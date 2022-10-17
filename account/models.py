@@ -148,7 +148,7 @@ class Balance(TimestampedModel):
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='balance', null=True)
     assets_total_value = models.FloatField(default=0)
     assets = models.JSONField(default=dict)
-    open_positions = models.JSONField(default=dict, blank=True, null=True)
+    open_position = models.JSONField(default=dict, blank=True, null=True)
     dt = models.DateTimeField()
 
     class Meta:
@@ -200,11 +200,11 @@ class Balance(TimestampedModel):
         log = logger.bind(account=self.account.name)
         log.info('Get latest position value')
 
-        if 'side' in self.open_positions:
+        if 'side' in self.open_position:
 
-            side = self.open_positions['side']
-            contacts = self.open_positions['contracts']
-            symbol = self.open_positions['market__symbol']
+            side = self.open_position['side']
+            contacts = self.open_position['contracts']
+            symbol = self.open_position['market__symbol']
 
             # Get last price
             market, flip = get_market(self.account.exchange, symbol=symbol)
@@ -213,8 +213,8 @@ class Balance(TimestampedModel):
             position_value = contacts * last if side == 'buy' else -contacts * last
 
             return dict(
-                side=self.open_positions['side'],
-                notional=self.open_positions['contracts'] * last,
+                side=self.open_position['side'],
+                notional=self.open_position['contracts'] * last,
                 position_value=position_value,
                 last_update=datetime.utcnow().strftime(datetime_directive_ISO_8601)
             )
