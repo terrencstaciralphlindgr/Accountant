@@ -94,7 +94,12 @@ class HistoricalWeightsViewSet(APIView):
 class RecentTradesViewSet(APIView):
 
     def get(self, request, account_id):
+        
         period = request.GET.get('period')
+        last_n = request.GET.get('last_n')
+        if not last_n:
+            last_n = 5
+
         account = Account.objects.get(id=account_id)
         start_datetime = get_start_datetime(account, period)
 
@@ -107,6 +112,6 @@ class RecentTradesViewSet(APIView):
                   'amount', 'cost', 'fee', 'account', 'datetime', 'timestamp']
 
         qs = Trade.objects.filter(account=account, datetime__gte=start_datetime).annotate(
-            date_only=Cast('datetime', DateTimeField())).order_by('-datetime').values(*fields)[:5]
+            date_only=Cast('datetime', DateTimeField())).order_by('-datetime').values(*fields)[:last_n]
 
         return Response(qs)
