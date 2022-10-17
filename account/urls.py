@@ -14,7 +14,7 @@ urlpatterns = [
     path('account/<int:account_id>/summary/assets_value/', AssetsValueViewSet.as_view()),
     path('account/<int:account_id>/summary/assets_growth/', AssetsGrowthViewSet.as_view()),
     path('account/<int:account_id>/summary/assets_exposition/', AssetsExpositionViewSet.as_view()),
-    path('account/<int:account_id>/summary/historical_value/', HistoricalValueViewSet.as_view()),
-    path('account/<int:account_id>/summary/historical_weight/', HistoricalWeightsViewSet.as_view()),
+    path('account/<int:account_id>/summary/historical_value/', HistoricalAssetsValueViewSet.as_view()),
+    path('account/<int:account_id>/summary/historical_weight/', HistoricalAssetsWeightViewSet.as_view()),
     path('account/<int:account_id>/summary/historical_trades/', HistoricalTradesViewSet.as_view()),
 ]
