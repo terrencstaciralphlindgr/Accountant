@@ -17,7 +17,7 @@ class OpenPositionViewSet(APIView):
     def get(self, request, account_id):
 
         account = Account.objects.get(id=account_id)
-        qs = Balance.objects.filter(account=account).values("dt", "open_positions").order_by('-dt')[:1]
+        qs = Balance.objects.filter(account=account).values("open_positions").order_by('-dt')[:1]
 
         return Response(qs)
 
