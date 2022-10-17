@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAdminUser
 from accountant.methods import get_start_datetime, datetime_directive_ISO_8601
-from account.models import Balance, Account
+from account.models import Balance, Account, Trade
 from market.models import Price
 import structlog
 
@@ -88,3 +88,18 @@ class HistoricalWeightsViewSet(APIView):
                     data[str_date][code] = a['assets'][code]['weight']
 
         return Response(data)
+
+
+@permission_classes([IsAdminUser])
+class RecentTradesViewSet(APIView):
+
+    def get(self, request, account_id):
+        period = request.GET.get('period')
+        account = Account.objects.get(id=account_id)
+        start_datetime = get_start_datetime(account, period)
+
+        qs = Trade.objects.filter(account=account, dt__gte=start_datetime).annotate(
+            date_only=Cast('dt', DateTimeField())).values().order_by('-dt')
+
+        return Response(qs)
+    
