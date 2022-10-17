@@ -107,6 +107,6 @@ class RecentTradesViewSet(APIView):
                   'amount', 'cost', 'fee', 'account', 'datetime', 'timestamp']
 
         qs = Trade.objects.filter(account=account, datetime__gte=start_datetime).annotate(
-            date_only=Cast('datetime', DateTimeField())).order_by('-datetime').values(*fields)
+            date_only=Cast('datetime', DateTimeField())).order_by('-datetime').values(*fields)[:5]
 
         return Response(qs)
