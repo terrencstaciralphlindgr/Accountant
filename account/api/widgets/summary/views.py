@@ -60,7 +60,7 @@ class HistoricalValueViewSet(APIView):
             str_date = a['date_only'].strftime(datetime_directive_ISO_8601)
             if a['date_only'] == b['date_only']:
                 data[str_date] = {}
-                data[str_date]['last'] = b['last']
+                data[str_date]['bitcoin_price'] = b['last']
                 data[str_date]['assets_total_value'] = a['assets_total_value']
 
         return Response(data)
