@@ -115,7 +115,8 @@ class HistoricalTradesViewSet(APIView):
         account = Account.objects.get(id=account_id)
         start_datetime = get_start_datetime(account, period)
 
-        fields = ['tradeid', 'order__orderid',
+        fields = ['tradeid',
+                  'order__orderid',
                   'order__market__base__code',
                   'order__market__quote__code',
                   'order__market__type',
